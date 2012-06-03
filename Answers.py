@@ -1,7 +1,7 @@
 class Answer: pass
 
-class TimeAnswer (Answer):
+class TimeAnswer( Answer ):
 
-    def __init__ (self, time):
+    def __init__( self, time ):
         self.time = time
         
