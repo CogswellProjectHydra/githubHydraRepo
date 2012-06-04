@@ -7,14 +7,10 @@ import Connections
 import Clients
 import Servers
 
-localConnection = None
-
 class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
-
 
     def setUp( self ):
 
-        global localConnection
         self.connection = localConnection
         
     def testQA( self ):
@@ -42,8 +38,9 @@ class TestQuestionsSocket( TestQuestionsLocal ):
         self.connection = Connections.TCPConnection ()
     
 if __name__ == '__main__':
-    global localServer, socketServer
+
     localConnection = Connections.LocalConnection ()
     socketServer = Servers.TCPServer( )
     unittest.main( exit=False )
+    socketServer.shutdown( )
     

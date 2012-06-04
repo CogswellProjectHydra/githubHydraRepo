@@ -27,6 +27,9 @@ class TCPServer( Server ):
                                               )
         self.serverThread.start( )
 
+    def shutdown( self ):
+        self.serverObject.shutdown( )
+
 def runTheServer( serverObject ):
     print "enter runTheServer"
     print "starting actual server"
@@ -39,7 +42,7 @@ class MyTCPHandler( SocketServer.StreamRequestHandler ):
     server = None # the Hydra server object, NOT the SocketServer.
 
     def handle( self ):
-
+        print "handle"
         questionBytes = self.rfile.read( )
         question = pickle.loads( questionBytes )
         
