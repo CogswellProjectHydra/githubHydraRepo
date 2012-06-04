@@ -36,27 +36,20 @@ class TCPConnection( Connection ):
     
     def getAnswer( self, question ):
 
-        print "getAnswer", self, question        
         sock = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 
         try:
-            print "getAnswer", "connect"
             sock.connect( ( self.hostname, self.port ) )
-            print "getAnswer", "connected"
             questionBytes = pickle.dumps( question )
-            print "getAnswer", "sendall"
             sock.sendall( questionBytes )
             sock.shutdown( socket.SHUT_WR)
-            print "getAnswer", "receiving"
         
             answerBytes = sock.recv( Constants.MANYBYTES)
-            print "getAnswer", "received"
             answer = pickle.loads( answerBytes )
  
         finally:
             sock.close( )
-        print "return from getAnswer", self, question        
-
+        
         return answer
 
 
