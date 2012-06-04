@@ -1,4 +1,6 @@
 import exceptions
+import socket
+import pickle
 
 import Servers
 import Constants
@@ -6,7 +8,7 @@ import Answers
 
 class Connection:
 
-    def sendQuestionToServer( self, question ):
+    def getAnswer( self, question ):
 
         raise exceptions.NotImplementedError
 
@@ -18,11 +20,11 @@ class LocalConnection( Connection ):
         
         self.localServer = localServer
 
-    def sendQuestionToServer( self, question ):
+    def getAnswer( self, question ):
         
         return question.computeAnswer( self.localServer )
 
-class SocketConnection( Connection ):
+class TCPConnection( Connection ):
 
     def __init__( self,
                   hostname = Constants.HOSTNAME,
@@ -32,20 +34,23 @@ class SocketConnection( Connection ):
         self.hostname = hostname
         self.port = port
     
-    def sendQuestionToServer( self, question ):
-        
+    def getAnswer( self, question ):
+
+        print "getAnswer", self, question        
         sock = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 
         try:
             sock.connect( ( self.hostname, self.port ) )
             questionBytes = pickle.dumps( question )
             sock.sendall( questionBytes )
+            sock.flush ( )
         
             answerBytes = sock.recv( Constants.MANYBYTES)
             answer = pickle.loads( answerBytes )
  
         finally:
             sock.close( )
+        print "return from getAnswer", self, question        
 
         return answer
 
