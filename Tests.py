@@ -11,9 +11,7 @@ import Servers
 
 class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
 
-    def setUp( self ):
-
-        self.connection = localConnection
+    connection = Connections.LocalConnection( )
         
     def testQA( self ):
         
@@ -42,7 +40,7 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
 
         object = time
         question = Questions.EchoQuestion( object )
-        if self.connection is localConnection:
+        if isinstance( self.connection, Connections.LocalConnection ):
             self.assertEqual( object, self.getAnswer( question ).object )
         else:
             self.assertRaises( exceptions.TypeError, self.getAnswer, question )
@@ -51,13 +49,10 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
 
 class TestQuestionsSocket( TestQuestionsLocal ):
 
-    def setUp( self ):
-        
-        self.connection = Connections.TCPConnection ()
+    connection = Connections.TCPConnection ()
     
 if __name__ == '__main__':
 
-    localConnection = Connections.LocalConnection ()
     socketServer = Servers.TCPServer( )
     unittest.main( exit=False )
     socketServer.shutdown( )
