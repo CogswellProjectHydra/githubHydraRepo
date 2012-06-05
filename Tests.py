@@ -13,11 +13,12 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
 
     connection = Connections.LocalConnection( )
         
+
     def testQA( self ):
         
         question = Questions.Question( )
         answer = self.getAnswer( question )
-        self.assertEqual( answer.__class__, Answers.Answer )
+        self.assert_( isinstance( answer, Answers.Answer ) )
 
     def testTime( self ):
         
@@ -45,7 +46,6 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
         else:
             self.assertRaises( exceptions.TypeError, self.getAnswer, question )
 
-    def tearDown( self ): pass
 
 class TestQuestionsSocket( TestQuestionsLocal ):
 
