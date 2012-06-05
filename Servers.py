@@ -1,8 +1,10 @@
 import SocketServer
 import threading
 import pickle
+import traceback
 
 import Constants
+from LoggingSetup import logger
 
 class Server: pass
 
@@ -31,6 +33,7 @@ class TCPServer( Server ):
         self.serverObject.shutdown( )
 
 def runTheServer( serverObject ):
+    logger.info ("off to the races")
     serverObject.serve_forever( )
         
 class MyTCPHandler( SocketServer.StreamRequestHandler ):
@@ -38,12 +41,19 @@ class MyTCPHandler( SocketServer.StreamRequestHandler ):
     server = None # the Hydra server object, NOT the SocketServer.
 
     def handle( self ):
-        
-        questionBytes = self.rfile.read( )
-        question = pickle.loads( questionBytes )
-        
-        answer = question.computeAnswer( self.server )
 
-        answerBytes = pickle.dumps( answer )
-        self.wfile.write( answerBytes )
+        logger.info ("request")
+
+        try:        
+            questionBytes = self.rfile.read( )
+            question = pickle.loads( questionBytes )
+            
+            answer = question.computeAnswer( self.server )
+
+            answerBytes = pickle.dumps( answer )
+            self.wfile.write( answerBytes )
+        except:
+            logger.error( traceback.format_exc( ) )
+            
+        
         

@@ -8,6 +8,7 @@ import Answers
 import Connections
 import Clients
 import Servers
+from LoggingSetup import logger
 
 class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
 
