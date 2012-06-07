@@ -2,6 +2,7 @@ import unittest
 import time
 import random
 import exceptions
+import os
 
 import Questions
 import Answers
@@ -47,6 +48,11 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
         else:
             self.assertRaises( exceptions.TypeError, self.getAnswer, question )
 
+    def testCommand( self ):
+        question = Questions.CMDQuestion( 'cmd /c echo %computername%' )
+        answer = self.getAnswer( question )
+        thisComputerName = os.getenv( 'COMPUTERNAME' )
+        self.assertEqual( answer.output.strip( ), thisComputerName )
 
 class TestQuestionsSocket( TestQuestionsLocal ):
 
