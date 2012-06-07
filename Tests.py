@@ -2,6 +2,7 @@ import unittest
 import time
 import random
 import exceptions
+import os
 
 import Questions
 import Answers
@@ -10,16 +11,23 @@ import Clients
 import Servers
 from LoggingSetup import logger
 
+__doc__="""Multiple tests are performed to check the performance of our modules."""""
+
 class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
+    """This calls on the unit test and the client class and the client module."""
 
     connection = Connections.LocalConnection( )
-        
+    """This defines the variable connection"""
 
     def testQA( self ):
         
         question = Questions.Question( )
         answer = self.getAnswer( question )
         self.assert_( isinstance( answer, Answers.Answer ) )
+
+        """This class defines a test, within the class the variable question is defined as the module and subclass.
+        Answer is defined as well, the self.assert calls on the isinstance which only returns true if the object
+        argument is an instance of the classinfo argument or of a subclass."""       
 
     def testTime( self ):
         
@@ -31,12 +39,18 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
 
         self.assertEqual( time1, time2 )
 
+        """This class defines a test, that checks the time. The variables time1 and time 2 are defined
+        and for this test to be true time1 and time2 need to be equal"""
+
     def testEchoSuccess( self ):
 
         object = random.random( )
         question = Questions.EchoQuestion( object )
         answer = self.getAnswer( question )
         self.assertEqual( question.object, answer.object )
+
+        """In this class echo is defined as a command with multiple parameters. It checks to makes sure
+        the object in answer recieved is the same as the object in question."""
 
     def testEchoFail( self ):
 
@@ -47,6 +61,14 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
         else:
             self.assertRaises( exceptions.TypeError, self.getAnswer, question )
 
+            """This class defines what happens if the test fails. The object defined as time is then set into
+            put into an isinstance and set equal to the answer."""
+
+    def testCommand( self ):
+        question = Questions.CMDQuestion( 'cmd /c echo %computername%' )
+        answer = self.getAnswer( question )
+        thisComputerName = os.getenv( 'COMPUTERNAME' )
+        self.assertEqual( answer.output.strip( ), thisComputerName )
 
 class TestQuestionsSocket( TestQuestionsLocal ):
 

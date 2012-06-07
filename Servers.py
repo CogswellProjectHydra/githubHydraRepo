@@ -53,7 +53,8 @@ class MyTCPHandler( SocketServer.StreamRequestHandler ):
             answerBytes = pickle.dumps( answer )
             self.wfile.write( answerBytes )
         except:
-            logger.error( traceback.format_exc( ) )
+            logger.error( """Exception caught:
+%s""", traceback.format_exc( ) )
             
         
         
