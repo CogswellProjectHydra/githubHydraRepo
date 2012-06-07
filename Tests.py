@@ -2,6 +2,7 @@ import unittest
 import time
 import random
 import exceptions
+import os
 
 import Questions
 import Answers
@@ -16,7 +17,7 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
     """This calls on the unit test and the client class and the client module."""
 
     connection = Connections.LocalConnection( )
-        """This defines the variable connection"""
+    """This defines the variable connection"""
 
     def testQA( self ):
         
@@ -63,6 +64,11 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
             """This class defines what happens if the test fails. The object defined as time is then set into
             put into an isinstance and set equal to the answer."""
 
+    def testCommand( self ):
+        question = Questions.CMDQuestion( 'cmd /c echo %computername%' )
+        answer = self.getAnswer( question )
+        thisComputerName = os.getenv( 'COMPUTERNAME' )
+        self.assertEqual( answer.output.strip( ), thisComputerName )
 
 class TestQuestionsSocket( TestQuestionsLocal ):
 
