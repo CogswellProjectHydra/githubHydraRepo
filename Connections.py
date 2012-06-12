@@ -5,6 +5,7 @@ import pickle
 import Servers
 import Constants
 import Answers
+from LoggingSetup import logger
 
 __doc__ = """A Connection allows a Client to ask a Server for
 an Answer to a Question."""
@@ -49,6 +50,7 @@ class TCPConnection( Connection ):
 
         try:
             # connect to the server
+            logger.info( 'connect to %s %s', self.hostname, self.port )
             sock.connect( ( self.hostname, self.port ) )
             # convert the question to ASCII
             questionBytes = pickle.dumps( question )

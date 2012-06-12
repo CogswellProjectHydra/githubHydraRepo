@@ -17,11 +17,14 @@ class MySocketServer(  SocketServer.TCPServer ):
 class TCPServer( Server ):
 
 
-    def __init__( self, port = Constants.PORT ):
+    def __init__( self,
+                  port = Constants.PORT,
+                  hostname = Constants.HOSTNAME
+                  ):
 
         MyTCPHandler.server = self
-        
-        self.serverObject = MySocketServer( ("localhost", port),
+        logger.info( 'open socket %s %s', hostname, port )
+        self.serverObject = MySocketServer( ( hostname, port),
                                             MyTCPHandler)
         self.serverThread = threading.Thread( target = runTheServer,
                                               name = "server thread",
