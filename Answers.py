@@ -9,6 +9,8 @@ class TimeAnswer( Answer ):
         self.time = time
 
 
+
+
 class EchoAnswer( Answer ):
     """An answer class that returns the original quesion from the Client
     as an answer."""
