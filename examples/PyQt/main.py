@@ -31,8 +31,8 @@ class listExample( QMainWindow, Ui_listMainWindow ):
             rowNumber += 1
 
     def handleCellClicked (self, r, c):
-        self.label.setText( repr ([r, c]) )
-
+        self.label.setText( self.tableWidget.item( r, c ).text( ) )
+        
 testData = [ ("one", "this"),
              ("two", "that"),
              ("three", "the other"),
