@@ -23,3 +23,7 @@ class CMDAnswer( Answer ):
         self.output = output
         
         
+class RenderAnswer( Answer ):
+    def __init__( self ):
+        pass
+    

@@ -4,6 +4,9 @@ import random
 import exceptions
 import os
 
+import DjangoSetup
+from Hydra.models import RenderTask
+
 import Questions
 import Answers
 import Connections
@@ -69,6 +72,15 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
         answer = self.getAnswer( question )
         thisComputerName = os.getenv( 'COMPUTERNAME' )
         self.assertEqual( answer.output.strip( ), thisComputerName )
+
+    def testRenderQA( self ):
+        task = RenderTask( )
+        task.save( )
+        
+        question = Questions.RenderQuestion( task.id )
+        answer = self.getAnswer( question )
+        logger.debug(answer)
+        
 
 class TestQuestionsSocket( TestQuestionsLocal ):
 
