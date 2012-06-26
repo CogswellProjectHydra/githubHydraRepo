@@ -19,11 +19,10 @@ class TCPServer( Server ):
 
     def __init__( self,
                   port = Constants.PORT,
-                  hostname = ""
                   ):
 
         MyTCPHandler.server = self
-        logger.info( 'open socket %r %s', hostname, port )
+        logger.info( 'open socket %r %s', "", port )
         self.serverObject = MySocketServer( ( hostname, port),
                                             MyTCPHandler)
         self.serverThread = threading.Thread( target = runTheServer,
