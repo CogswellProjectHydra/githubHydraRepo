@@ -48,5 +48,6 @@ class RenderQuestion( Question ):
 
     def computeAnswer( self, server ):
         task = RenderTask.objects.get( id = self.render_task_id )
+        
         print(task)
         return RenderAnswer( )
