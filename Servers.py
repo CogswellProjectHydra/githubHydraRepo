@@ -23,7 +23,7 @@ class TCPServer( Server ):
 
         MyTCPHandler.server = self
         logger.info( 'open socket %r %s', "", port )
-        self.serverObject = MySocketServer( ( hostname, port),
+        self.serverObject = MySocketServer( ( "", port),
                                             MyTCPHandler)
         self.serverThread = threading.Thread( target = runTheServer,
                                               name = "server thread",

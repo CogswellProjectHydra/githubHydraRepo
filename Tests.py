@@ -73,6 +73,9 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
         thisComputerName = os.getenv( 'COMPUTERNAME' )
         self.assertEqual( answer.output.strip( ), thisComputerName )
 
+    #def testRenderCommand( self ):
+    #    question = Questions.CMDQuestion( 'cmd /c "c:\Program Files\Autodesk\Maya2011\bin\render.exe -log "\\flex2\ProjectHydra\HydraLogs\tmp" -r file "\\flex2\ProjectHydra\TestMayaFiles\Chair2.ma" ' )
+
     def testRenderQA( self ):
         task = RenderTask( )
         task.save( )
