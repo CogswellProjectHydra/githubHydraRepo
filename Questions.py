@@ -38,7 +38,8 @@ class CMDQuestion( Question ):
         self.args = args
 
     def computeAnswer( self, server ):
-        output = subprocess.check_output( self.args, stderr=subprocess.STDOUT )
+        output = subprocess.check_output( self.args,
+                                          stderr=subprocess.STDOUT )
         return CMDAnswer( output )
 
 class RenderQuestion( Question ):

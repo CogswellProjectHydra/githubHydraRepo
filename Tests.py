@@ -73,16 +73,25 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
         thisComputerName = os.getenv( 'COMPUTERNAME' )
         self.assertEqual( answer.output.strip( ), thisComputerName )
 
-    #def testRenderCommand( self ):
-    #    question = Questions.CMDQuestion( 'cmd /c "c:\Program Files\Autodesk\Maya2011\bin\render.exe -log "\\flex2\ProjectHydra\HydraLogs\tmp" -r file "\\flex2\ProjectHydra\TestMayaFiles\Chair2.ma" ' )
+    def testRenderCommand( self ):
+        #command = [r'cmd \c',
+        #           r'"c:\Program Files\Autodesk\Maya2011\bin\render.exe"',
+        #           r'-log "\\flex2\ProjectHydra\HydraLogs\tmp"',
+        #           r'-r file "\\flex2\ProjectHydra\TestMayaFiles\Chair2.ma"']
 
+        command = r'"c:\Program Files\Autodesk\Maya2011\bin\render.exe" -log "\\flex2\ProjectHydra\HydraLogs\tmp" -r file "\\flex2\ProjectHydra\TestMayaFiles\Chair2.ma"'
+        
+        question = Questions.CMDQuestion( command )
+        answer = self.getAnswer( question )
+        logger.debug( answer )
+        
     def testRenderQA( self ):
         task = RenderTask( )
         task.save( )
         
         question = Questions.RenderQuestion( task.id )
         answer = self.getAnswer( question )
-        logger.debug(answer)
+        logger.debug( answer )
         
 
 class TestQuestionsSocket( TestQuestionsLocal ):
