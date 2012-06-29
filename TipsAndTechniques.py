@@ -70,7 +70,7 @@ def actualMayaRender( ):
            r'c:\program files\autodesk\maya2011\bin\render.exe',
            
            '-mr:v', '5',
-           # we need verbose output to see where the
+           # we need verbosity 5 to see where the
            # render went and to get progress during long renders
            
            r'c:\users\gladstein\desktop\chair2.ma',
@@ -82,8 +82,8 @@ def actualMayaRender( ):
         log.write( 'Hydra log file %s on %s\n' % ( logFileName, os.environ['COMPUTERNAME'] ) )
         # identify the log file in the log file itself, so if it gets emailed you know where it came from.
         
-        log.write( 'Command is %r\n\n' % ( command ) )
-        # put the command arguments in the log file, using %r so we can see
+        log.write( 'Command is %s\n\n' % ( command ) )
+        # put the command arguments in the log file
 
         log.flush( )
         
