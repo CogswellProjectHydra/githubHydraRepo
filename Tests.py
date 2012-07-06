@@ -2,6 +2,7 @@ import unittest
 import time
 import random
 import exceptions
+import traceback
 import os
 
 import DjangoSetup
@@ -74,26 +75,21 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
         self.assertEqual( answer.output.strip( ), thisComputerName )
 
     def testRenderCommand( self ):
-        #command = [r'cmd \c',
-        #           r'"c:\Program Files\Autodesk\Maya2011\bin\render.exe"',
-        #           r'-log "\\flex2\ProjectHydra\HydraLogs\tmp"',
-        #           r'-r file "\\flex2\ProjectHydra\TestMayaFiles\Chair2.ma"']
+        command = [
+                r'c:\program files\autodesk\maya2011\bin\render.exe',
+                '-mr:v', '5',
+                r'\\flex2\ProjectHydra\TestMayaFiles\Chair2.ma'
+                  ]
 
-        command = r'"c:\Program Files\Autodesk\Maya2011\bin\render.exe" -log "\\flex2\ProjectHydra\HydraLogs\tmp" -r file "\\flex2\ProjectHydra\TestMayaFiles\Chair2.ma"'
-        
-        question = Questions.CMDQuestion( command )
-        answer = self.getAnswer( question )
-        logger.debug( answer )
-        
-    def testRenderQA( self ):
-        task = RenderTask( )
-        task.save( )
-        
-        question = Questions.RenderQuestion( task.id )
-        answer = self.getAnswer( question )
-        logger.debug( answer )
-        
+        log_file = r'\\flex2\projecthydra\l\log'
+        # We need a longer logfile field in the database!!!
+        # Kept getting truncated errors.
 
+        render_question = Questions.RenderQuestion( command, log_file )
+        render_answer = render_question.computeAnswer( os.getenv( 'COMPUTERNAME' ) )
+        logger.debug( 'Render CMD output: %s\n', render_answer.output )
+        
+        
 class TestQuestionsSocket( TestQuestionsLocal ):
 
     connection = Connections.TCPConnection ()
