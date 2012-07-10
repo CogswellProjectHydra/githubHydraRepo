@@ -80,14 +80,16 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
                 '-mr:v', '5',
                 r'\\flex2\ProjectHydra\TestMayaFiles\Chair2.ma'
                   ]
+        render_task = RenderTask( )
+        render_task.status = 'R'
+        render_task.command = repr( command )
+        render_task.save( )
 
-        log_file = r'\\flex2\projecthydra\l\log'
-        # We need a longer logfile field in the database!!!
-        # Kept getting truncated errors.
+        logger.debug(render_task)
 
-        render_question = Questions.RenderQuestion( command, log_file )
-        render_answer = render_question.computeAnswer( os.getenv( 'COMPUTERNAME' ) )
-        logger.debug( 'Render CMD output: %s\n', render_answer.output )
+        render_question = Questions.RenderQuestion( render_task.id )
+        render_answer = self.getAnswer( render_question )
+        logger.debug( render_answer )
         
         
 class TestQuestionsSocket( TestQuestionsLocal ):

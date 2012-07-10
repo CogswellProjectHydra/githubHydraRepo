@@ -28,7 +28,7 @@ class RenderTask( models.Model ):
 
     exitCode = models.IntegerField( null = True )
 
-    logFile = models.CharField( max_length = 32,
+    logFile = models.CharField( max_length = 64,
                                 null = True
                                 )
 
