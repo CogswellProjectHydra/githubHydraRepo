@@ -1,4 +1,5 @@
 import sys
+import traceback
 from random import random, randint
 
 from PyQt4.QtGui import *
@@ -20,8 +21,10 @@ class DBWindow( QMainWindow, Ui_DBWindow ):
 
     
     def doFetch( self ):
+
+        records = None
         
-        print( "Fetching record" )
+        print( "Fetching records" )
         
         try:
             records = RenderTask.objects.all( )
