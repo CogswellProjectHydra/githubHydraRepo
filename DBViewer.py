@@ -7,9 +7,7 @@ from PyQt4.QtCore import *
 from DBViewer_UI import Ui_DBWindow
 
 import DjangoSetup
-
 from Hydra.models import RenderTask
-
 
 class DBWindow( QMainWindow, Ui_DBWindow ):
 
@@ -22,32 +20,39 @@ class DBWindow( QMainWindow, Ui_DBWindow ):
 
     
     def doFetch( self ):
-
-        records = RenderTask.objects.all( )
-        columns = [
-            'id',
-            'status',
-            'logFile',
-            'host',
-            'command',
-            'startTime',
-            'endTime',
-            'exitCode']
-        table = self.tableWidget
-        table.setRowCount( len( records)  )
-        table.setColumnCount( len( columns ) )
         
-        for (column, attr) in enumerate( columns ):
-            self.tableWidget.setHorizontalHeaderItem( column, QTableWidgetItem( attr ) )
+        print( "Fetching record" )
         
-        for (row, record) in enumerate( records ):
+        try:
+            records = RenderTask.objects.all( )
+            print( len( records ) )
+            columns = [
+                'id',
+                'status',
+                'logFile',
+                'host',
+                'command',
+                'startTime',
+                'endTime',
+                'exitCode']
+            table = self.tableWidget
+            table.setRowCount( len( records)  )
+            table.setColumnCount( len( columns ) )
+            
             for (column, attr) in enumerate( columns ):
-                table.setItem( row,
-                               column,
-                               QTableWidgetItem( str( getattr( record, attr ) ) )
-                               )
-        table.resizeColumnsToContents( )
-
+                self.tableWidget.setHorizontalHeaderItem( column, QTableWidgetItem( attr ) )
+            
+            for (row, record) in enumerate( records ):
+                for (column, attr) in enumerate( columns ):
+                    table.setItem( row,
+                                   column,
+                                   QTableWidgetItem( str( getattr( record, attr ) ) )
+                                   )
+            table.resizeColumnsToContents( )
+        except Exception, e:
+            traceback.print_exc( e )
+            raise
+        
 class Record( ):
  
     columns = ['x', 'y', 'z']
