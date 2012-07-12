@@ -50,6 +50,7 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
                         sceneFile
                       ]
             logger.debug( command )
+            RenderTask( status = 'R', command = repr( command ) ).save( )
 
 if __name__ == '__main__':
     try:
