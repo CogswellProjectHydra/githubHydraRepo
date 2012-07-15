@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ParentChild</class>
- <widget class="QWidget" name="ParentChild">
+ <class>TreeNodeWidget</class>
+ <widget class="QWidget" name="TreeNodeWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -26,7 +26,7 @@
       <number>0</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" name="parentWidgetLayout">
+      <layout class="QVBoxLayout" name="nodeWidgetLayout">
        <property name="spacing">
         <number>0</number>
        </property>

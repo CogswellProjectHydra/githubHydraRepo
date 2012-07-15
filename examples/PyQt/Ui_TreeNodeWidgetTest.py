@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Ui_ParentChildTest.ui'
+# Form implementation generated from reading ui file 'Ui_TreeNodeWidgetTest.ui'
 #
-# Created: Sat Jul 14 20:49:00 2012
+# Created: Sat Jul 14 22:47:56 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -14,11 +14,11 @@ try:
 except AttributeError:
     _fromUtf8 = lambda s: s
 
-class Ui_ParentChildTest(object):
-    def setupUi(self, ParentChildTest):
-        ParentChildTest.setObjectName(_fromUtf8("ParentChildTest"))
-        ParentChildTest.resize(800, 600)
-        self.centralwidget = QtGui.QWidget(ParentChildTest)
+class Ui_TreeNodeWidgetTest(object):
+    def setupUi(self, TreeNodeWidgetTest):
+        TreeNodeWidgetTest.setObjectName(_fromUtf8("TreeNodeWidgetTest"))
+        TreeNodeWidgetTest.resize(800, 600)
+        self.centralwidget = QtGui.QWidget(TreeNodeWidgetTest)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout_2 = QtGui.QGridLayout(self.centralwidget)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -36,18 +36,18 @@ class Ui_ParentChildTest(object):
         self.gridLayout.addLayout(self.widgetLayout, 0, 0, 1, 1)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.gridLayout_2.addWidget(self.scrollArea, 0, 0, 1, 1)
-        ParentChildTest.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(ParentChildTest)
+        TreeNodeWidgetTest.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(TreeNodeWidgetTest)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 18))
         self.menubar.setObjectName(_fromUtf8("menubar"))
-        ParentChildTest.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(ParentChildTest)
+        TreeNodeWidgetTest.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar(TreeNodeWidgetTest)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        ParentChildTest.setStatusBar(self.statusbar)
+        TreeNodeWidgetTest.setStatusBar(self.statusbar)
 
-        self.retranslateUi(ParentChildTest)
-        QtCore.QMetaObject.connectSlotsByName(ParentChildTest)
+        self.retranslateUi(TreeNodeWidgetTest)
+        QtCore.QMetaObject.connectSlotsByName(TreeNodeWidgetTest)
 
-    def retranslateUi(self, ParentChildTest):
-        ParentChildTest.setWindowTitle(QtGui.QApplication.translate("ParentChildTest", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
+    def retranslateUi(self, TreeNodeWidgetTest):
+        TreeNodeWidgetTest.setWindowTitle(QtGui.QApplication.translate("TreeNodeWidgetTest", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
 

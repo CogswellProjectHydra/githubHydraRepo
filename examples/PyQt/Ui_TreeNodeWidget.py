@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Ui_parentChild.ui'
+# Form implementation generated from reading ui file 'Ui_TreeNodeWidget.ui'
 #
-# Created: Sat Jul 14 21:29:20 2012
+# Created: Sat Jul 14 22:42:38 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -14,22 +14,22 @@ try:
 except AttributeError:
     _fromUtf8 = lambda s: s
 
-class Ui_ParentChild(object):
-    def setupUi(self, ParentChild):
-        ParentChild.setObjectName(_fromUtf8("ParentChild"))
-        ParentChild.resize(470, 331)
-        self.gridLayout_2 = QtGui.QGridLayout(ParentChild)
+class Ui_TreeNodeWidget(object):
+    def setupUi(self, TreeNodeWidget):
+        TreeNodeWidget.setObjectName(_fromUtf8("TreeNodeWidget"))
+        TreeNodeWidget.resize(470, 331)
+        self.gridLayout_2 = QtGui.QGridLayout(TreeNodeWidget)
         self.gridLayout_2.setMargin(0)
         self.gridLayout_2.setSpacing(0)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.parentWidgetLayout = QtGui.QVBoxLayout()
-        self.parentWidgetLayout.setSpacing(0)
-        self.parentWidgetLayout.setObjectName(_fromUtf8("parentWidgetLayout"))
-        self.verticalLayout_2.addLayout(self.parentWidgetLayout)
-        self.childContainerWidget = QtGui.QWidget(ParentChild)
+        self.nodeWidgetLayout = QtGui.QVBoxLayout()
+        self.nodeWidgetLayout.setSpacing(0)
+        self.nodeWidgetLayout.setObjectName(_fromUtf8("nodeWidgetLayout"))
+        self.verticalLayout_2.addLayout(self.nodeWidgetLayout)
+        self.childContainerWidget = QtGui.QWidget(TreeNodeWidget)
         self.childContainerWidget.setObjectName(_fromUtf8("childContainerWidget"))
         self.gridLayout = QtGui.QGridLayout(self.childContainerWidget)
         self.gridLayout.setSpacing(0)
@@ -43,9 +43,9 @@ class Ui_ParentChild(object):
         self.verticalLayout_2.addWidget(self.childContainerWidget)
         self.gridLayout_2.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
 
-        self.retranslateUi(ParentChild)
-        QtCore.QMetaObject.connectSlotsByName(ParentChild)
+        self.retranslateUi(TreeNodeWidget)
+        QtCore.QMetaObject.connectSlotsByName(TreeNodeWidget)
 
-    def retranslateUi(self, ParentChild):
-        ParentChild.setWindowTitle(QtGui.QApplication.translate("ParentChild", "Form", None, QtGui.QApplication.UnicodeUTF8))
+    def retranslateUi(self, TreeNodeWidget):
+        TreeNodeWidget.setWindowTitle(QtGui.QApplication.translate("TreeNodeWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
 
