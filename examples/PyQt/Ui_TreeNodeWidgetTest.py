@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_TreeNodeWidgetTest.ui'
 #
-# Created: Sat Jul 14 22:47:56 2012
+# Created: Sat Jul 14 23:00:05 2012
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -23,10 +23,16 @@ class Ui_TreeNodeWidgetTest(object):
         self.gridLayout_2 = QtGui.QGridLayout(self.centralwidget)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.scrollArea = QtGui.QScrollArea(self.centralwidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Ignored)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
+        self.scrollArea.setSizePolicy(sizePolicy)
+        self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 778, 542))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 762, 542))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.gridLayout = QtGui.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
