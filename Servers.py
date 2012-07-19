@@ -2,11 +2,29 @@ import SocketServer
 import threading
 import pickle
 import traceback
+import time
 
 import Constants
 from LoggingSetup import logger
 
-class Server: pass
+class Server:
+
+    def createIdleLoop( self, interval, function ):
+
+        self.idleThread = threading.Thread( target = self.idleLoop,
+                                            name = "idle thread",
+                                            args = ( interval, function )
+                                            )
+        self.idleThread.start( )
+
+    def idleLoop( self, interval, function ):
+        while True:
+            try:
+                function( )
+            except Exception, e:
+                logger.error( """Idle loop exception:
+%s""", traceback.format_exc( e ) )
+            time.sleep( interval )
 
 class LocalServer( Server ): pass
 
