@@ -12,6 +12,8 @@ from django.db import transaction
 
 from LoggingSetup import logger
 
+from JobTicket import MayaTicket
+
 class SubmitterWindow( QMainWindow, Ui_MainWindow ):
 
     def __init__( self ):
@@ -35,22 +37,8 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         endFrame = self.endSpinBox.value( )
         batchSize = self.batchSizeSpinBox.value( )
 
-        starts = range( startFrame, endFrame + 1, batchSize )
-        ends = [min( start + batchSize - 1,
-                     endFrame )
-                for start in starts
-                ]
-        logger.debug( zip( starts, ends ) )
-        for start, end in zip( starts, ends ):
-            command = [
-                        r'c:\program files\autodesk\maya2011\bin\render.exe',
-                        '-mr:v', '5',
-                        '-s', str( start ),
-                        '-e', str( end ),
-                        sceneFile
-                      ]
-            logger.debug( command )
-            RenderTask( status = 'R', command = repr( command ) ).save( )
+        MayaTicket( sceneFile, startFrame, endFrame, batchSize ).submit( )
+
 
 if __name__ == '__main__':
     try:

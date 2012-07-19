@@ -6,6 +6,8 @@ class Job( models.Model ):
     """A submitted job"""
     
     createTime = models.DateTimeField( auto_now_add = True )
+    
+    pickledTicket = models.CharField( max_length = 1024, null = False )
 
 class RenderTask( models.Model ):
     """A command to be executed by a render machine."""
