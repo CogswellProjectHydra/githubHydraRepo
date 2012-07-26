@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Submitter</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -25,8 +25,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>369</width>
-         <height>132</height>
+         <width>371</width>
+         <height>129</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -58,7 +58,7 @@
      <x>0</x>
      <y>0</y>
      <width>391</width>
-     <height>18</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

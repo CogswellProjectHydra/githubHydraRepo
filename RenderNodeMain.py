@@ -32,7 +32,7 @@ def processRenderTasks( ):
             os.makedirs( RENDERLOGDIR )
         render_task.logFile = os.path.join( RENDERLOGDIR, '%010d.log.txt' % render_task.id )
         render_task.status = 'S'
-        render_task.node = thisNode.host
+        render_task.host = thisNode.host
         thisNode.status = 'S'
         thisNode.task = render_task
         render_task.startTime = datetime.datetime.now( )
@@ -58,6 +58,7 @@ def processRenderTasks( ):
         render_task.status = 'D'
         render_task.endTime = datetime.datetime.now( )
         thisNode.status = 'I'
+        thisNode.task = None
         
         with transaction.commit_on_success( ):
             render_task.save( )
