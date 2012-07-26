@@ -24,5 +24,5 @@ if __name__ == '__main__':
 
     socketServer = Servers.TCPServer( )
 #    socketServer.serverThread.join( )
-    socketServer.createIdleLoop (5, assignRenderTasks )
+#    socketServer.createIdleLoop (5, assignRenderTasks )
 
