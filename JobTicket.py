@@ -45,6 +45,11 @@ class MayaTicket( JobTicket ):
                         '-e', str( end ),
                         self.sceneFile
                       ]
+            path = self.sceneFile.split( '/' )
+            if 'scenes' in path:
+                project = '/'.join( path[ : path.index( 'scenes' ) ])
+                command[-1:-1] = ['-proj', project]
+                                    
             logger.debug( command )
             RenderTask( status = 'R',
                         command = repr( command ),
