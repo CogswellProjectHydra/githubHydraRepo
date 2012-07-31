@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_FarmView.ui'
 #
-# Created: Thu Jul 26 15:04:44 2012
+# Created: Tue Jul 31 14:48:31 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -48,6 +48,8 @@ class Ui_FarmView(object):
         self.renderNodesGrid = QtGui.QGridLayout()
         self.renderNodesGrid.setObjectName(_fromUtf8("renderNodesGrid"))
         self.gridLayout_3.addLayout(self.renderNodesGrid, 0, 0, 1, 1)
+        spacerItem1 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout_3.addItem(spacerItem1, 1, 0, 1, 1)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.gridLayout_4.addWidget(self.scrollArea, 0, 0, 1, 1)
         self.tabWidget.addTab(self.renderNodesTab, _fromUtf8(""))
@@ -66,6 +68,8 @@ class Ui_FarmView(object):
         self.jobsGrid = QtGui.QGridLayout()
         self.jobsGrid.setObjectName(_fromUtf8("jobsGrid"))
         self.gridLayout_2.addLayout(self.jobsGrid, 0, 0, 1, 1)
+        spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout_2.addItem(spacerItem2, 1, 0, 1, 1)
         self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
         self.gridLayout_5.addWidget(self.scrollArea_2, 0, 0, 1, 1)
         self.tabWidget.addTab(self.jobsTab, _fromUtf8(""))
@@ -80,7 +84,7 @@ class Ui_FarmView(object):
         FarmView.setStatusBar(self.statusbar)
 
         self.retranslateUi(FarmView)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(FarmView)
 
     def retranslateUi(self, FarmView):

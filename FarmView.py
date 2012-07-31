@@ -25,12 +25,14 @@ class FarmView( QMainWindow, Ui_FarmView ):
     # always get a consistent, unchanging result.
     def doFetch( self ):
 
+
+
         try:
             records = RenderNode.objects.all( )
             columns = [
-                'host',
-                'status',
-                'task']
+                labelAttr( 'host' ),
+                labelAttr( 'status' ),
+                labelAttr( 'task' )]
             grid = self.renderNodesGrid
             
             for (column, attr) in enumerate( columns ):
@@ -38,7 +40,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
                 if item:
                     grid.removeItem( item )
                     item.widget( ).hide(  )
-                grid.addWidget( QLabel( '<b>' + attr + '</b>' ), 0, column )
+                grid.addWidget(attr.labelWidget( ) , 0, column )
             
             for (row, record) in enumerate( records ):
                 for (column, attr) in enumerate( columns ):
@@ -46,7 +48,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
                     if item:
                         grid.removeItem( item )
                         item.widget( ).hide( )
-                    grid.addWidget(QLabel( str( getattr( record, attr ) ) ),
+                    grid.addWidget(attr.dataWidget( record ),
                                    row + 1,
                                    column,
                                    )
@@ -58,14 +60,14 @@ class FarmView( QMainWindow, Ui_FarmView ):
         try:
             records = RenderTask.objects.all( )
             columns = [
-                'id',
-                'status',
-                'logFile',
-                'host',
-                'command',
-                'startTime',
-                'endTime',
-                'exitCode']
+                labelAttr( 'id' ),
+                labelAttr( 'status' ),
+                textAttr( 'logFile' ),
+                labelAttr( 'host' ),
+                labelAttr( 'command' ),
+                labelAttr( 'startTime' ),
+                labelAttr( 'endTime' ),
+                labelAttr( 'exitCode' )]
             grid = self.jobsGrid
             
             for (column, attr) in enumerate( columns ):
@@ -73,7 +75,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
                 if item:
                     grid.removeItem( item )
                     item.widget( ).hide(  )
-                grid.addWidget( QLabel( '<b>' + attr + '</b>' ), 0, column )
+                grid.addWidget( attr.labelWidget(  ), 0, column )
             
             for (row, record) in enumerate( records ):
                 for (column, attr) in enumerate( columns ):
@@ -81,7 +83,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
                     if item:
                         grid.removeItem( item )
                         item.widget( ).hide( )
-                    grid.addWidget(QLabel( str( getattr( record, attr ) ) ),
+                    grid.addWidget(attr.dataWidget( record ),
                                    row + 1,
                                    column,
                                    )
@@ -89,6 +91,27 @@ class FarmView( QMainWindow, Ui_FarmView ):
             traceback.print_exc( e )
             raise
 
+class labelAttr:
+
+    def __init__( self, name ):
+        self.name = name
+
+    def labelWidget( self ):
+        return QLabel( '<b>' + self.name + '</b>' )
+
+    def data( self, record ):
+        return str( getattr( record, self.name ) )
+
+    def dataWidget( self, record ):
+        return QLabel( self.data( record ) )
+
+class textAttr( labelAttr ):
+
+    def dataWidget( self, record ):
+        w = QLineEdit( )
+        w.setText( self.data( record ) )
+        w.setReadOnly( True )
+        return w
             
 if __name__ == '__main__':
     app = QApplication( sys.argv )
