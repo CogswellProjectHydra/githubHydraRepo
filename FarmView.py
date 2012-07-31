@@ -28,37 +28,12 @@ class FarmView( QMainWindow, Ui_FarmView ):
 
 
         try:
-            records = RenderNode.objects.all( )
             columns = [
                 labelAttr( 'host' ),
                 labelAttr( 'status' ),
                 labelAttr( 'task' )]
-            grid = self.renderNodesGrid
-            
-            for (column, attr) in enumerate( columns ):
-                item = grid.itemAtPosition( 0, column )
-                if item:
-                    grid.removeItem( item )
-                    item.widget( ).hide(  )
-                grid.addWidget(attr.labelWidget( ) , 0, column )
-            
-            for (row, record) in enumerate( records ):
-                for (column, attr) in enumerate( columns ):
-                    item = grid.itemAtPosition( row + 1, column )
-                    if item:
-                        grid.removeItem( item )
-                        item.widget( ).hide( )
-                    grid.addWidget(attr.dataWidget( record ),
-                                   row + 1,
-                                   column,
-                                   )
-        except Exception, e:
-            traceback.print_exc( e )
-            raise
-        
+            setup( RenderNode.objects.all( ), columns, self.renderNodesGrid)        
 
-        try:
-            records = RenderTask.objects.all( )
             columns = [
                 labelAttr( 'id' ),
                 labelAttr( 'status' ),
@@ -68,28 +43,30 @@ class FarmView( QMainWindow, Ui_FarmView ):
                 labelAttr( 'startTime' ),
                 labelAttr( 'endTime' ),
                 labelAttr( 'exitCode' )]
-            grid = self.jobsGrid
-            
-            for (column, attr) in enumerate( columns ):
-                item = grid.itemAtPosition( 0, column )
-                if item:
-                    grid.removeItem( item )
-                    item.widget( ).hide(  )
-                grid.addWidget( attr.labelWidget(  ), 0, column )
-            
-            for (row, record) in enumerate( records ):
-                for (column, attr) in enumerate( columns ):
-                    item = grid.itemAtPosition( row + 1, column )
-                    if item:
-                        grid.removeItem( item )
-                        item.widget( ).hide( )
-                    grid.addWidget(attr.dataWidget( record ),
-                                   row + 1,
-                                   column,
-                                   )
+            setup( RenderTask.objects.all( ), columns, self.jobsGrid)
+
         except Exception, e:
             traceback.print_exc( e )
             raise
+
+def setup( records, columns, grid):
+    for (column, attr) in enumerate( columns ):
+        item = grid.itemAtPosition( 0, column )
+        if item:
+            grid.removeItem( item )
+            item.widget( ).hide(  )
+        grid.addWidget( attr.labelWidget(  ), 0, column )
+    
+    for (row, record) in enumerate( records ):
+        for (column, attr) in enumerate( columns ):
+            item = grid.itemAtPosition( row + 1, column )
+            if item:
+                grid.removeItem( item )
+                item.widget( ).hide( )
+            grid.addWidget(attr.dataWidget( record ),
+                           row + 1,
+                           column,
+                           )
 
 class labelAttr:
 
