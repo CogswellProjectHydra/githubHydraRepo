@@ -1,3 +1,5 @@
+"""Miscellaneous pieces of useful code."""
+
 from LoggingSetup import logger
 import subprocess
 import os
