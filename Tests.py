@@ -95,6 +95,7 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
         
         
 class TestQuestionsSocket( TestQuestionsLocal ):
+    """Class to represent a test socket connection to send Questions to."""
 
     connection = Connections.TCPConnection ()
     

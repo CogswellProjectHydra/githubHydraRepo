@@ -1,4 +1,4 @@
-# Django settings for HydraDjango project.
+"""Django settings for HydraDjango project."""
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
