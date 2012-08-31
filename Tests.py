@@ -69,12 +69,14 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
             put into an isinstance and set equal to the answer."""
 
     def testCommand( self ):
+        """Tests a CMDQuestion, a command issued to this or another host."""
         question = Questions.CMDQuestion( 'cmd /c echo %computername%' )
         answer = self.getAnswer( question )
         thisComputerName = os.getenv( 'COMPUTERNAME' )
         self.assertEqual( answer.output.strip( ), thisComputerName )
 
     def testRenderCommand( self ):
+        """Tests a Render Command, a command that invokes the Maya renderer."""
         command = [
                 r'c:\program files\autodesk\maya2011\bin\render.exe',
                 '-mr:v', '5',
@@ -93,6 +95,7 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
         
         
 class TestQuestionsSocket( TestQuestionsLocal ):
+    """Class to represent a test socket connection to send Questions to."""
 
     connection = Connections.TCPConnection ()
     

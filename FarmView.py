@@ -25,70 +25,70 @@ class FarmView( QMainWindow, Ui_FarmView ):
     # always get a consistent, unchanging result.
     def doFetch( self ):
 
-        try:
-            records = RenderNode.objects.all( )
-            columns = [
-                'host',
-                'status',
-                'task']
-            grid = self.renderNodesGrid
-            
-            for (column, attr) in enumerate( columns ):
-                item = grid.itemAtPosition( 0, column )
-                if item:
-                    grid.removeItem( item )
-                    item.widget( ).hide(  )
-                grid.addWidget( QLabel( '<b>' + attr + '</b>' ), 0, column )
-            
-            for (row, record) in enumerate( records ):
-                for (column, attr) in enumerate( columns ):
-                    item = grid.itemAtPosition( row + 1, column )
-                    if item:
-                        grid.removeItem( item )
-                        item.widget( ).hide( )
-                    grid.addWidget(QLabel( str( getattr( record, attr ) ) ),
-                                   row + 1,
-                                   column,
-                                   )
-        except Exception, e:
-            traceback.print_exc( e )
-            raise
-        
+
 
         try:
-            records = RenderTask.objects.all( )
             columns = [
-                'id',
-                'status',
-                'logFile',
-                'host',
-                'command',
-                'startTime',
-                'endTime',
-                'exitCode']
-            grid = self.jobsGrid
-            
-            for (column, attr) in enumerate( columns ):
-                item = grid.itemAtPosition( 0, column )
-                if item:
-                    grid.removeItem( item )
-                    item.widget( ).hide(  )
-                grid.addWidget( QLabel( '<b>' + attr + '</b>' ), 0, column )
-            
-            for (row, record) in enumerate( records ):
-                for (column, attr) in enumerate( columns ):
-                    item = grid.itemAtPosition( row + 1, column )
-                    if item:
-                        grid.removeItem( item )
-                        item.widget( ).hide( )
-                    grid.addWidget(QLabel( str( getattr( record, attr ) ) ),
-                                   row + 1,
-                                   column,
-                                   )
+                labelAttr( 'host' ),
+                labelAttr( 'status' ),
+                labelAttr( 'task' )]
+            setup( RenderNode.objects.all( ), columns, self.renderNodesGrid)        
+
+            columns = [
+                labelAttr( 'id' ),
+                labelAttr( 'status' ),
+                textAttr( 'logFile' ),
+                labelAttr( 'host' ),
+                labelAttr( 'command' ),
+                labelAttr( 'startTime' ),
+                labelAttr( 'endTime' ),
+                labelAttr( 'exitCode' )]
+            setup( RenderTask.objects.all( ), columns, self.jobsGrid)
+
         except Exception, e:
             traceback.print_exc( e )
             raise
 
+def setup( records, columns, grid):
+    for (column, attr) in enumerate( columns ):
+        item = grid.itemAtPosition( 0, column )
+        if item:
+            grid.removeItem( item )
+            item.widget( ).hide(  )
+        grid.addWidget( attr.labelWidget(  ), 0, column )
+    
+    for (row, record) in enumerate( records ):
+        for (column, attr) in enumerate( columns ):
+            item = grid.itemAtPosition( row + 1, column )
+            if item:
+                grid.removeItem( item )
+                item.widget( ).hide( )
+            grid.addWidget(attr.dataWidget( record ),
+                           row + 1,
+                           column,
+                           )
+
+class labelAttr:
+
+    def __init__( self, name ):
+        self.name = name
+
+    def labelWidget( self ):
+        return QLabel( '<b>' + self.name + '</b>' )
+
+    def data( self, record ):
+        return str( getattr( record, self.name ) )
+
+    def dataWidget( self, record ):
+        return QLabel( self.data( record ) )
+
+class textAttr( labelAttr ):
+
+    def dataWidget( self, record ):
+        w = QLineEdit( )
+        w.setText( self.data( record ) )
+        w.setReadOnly( True )
+        return w
             
 if __name__ == '__main__':
     app = QApplication( sys.argv )

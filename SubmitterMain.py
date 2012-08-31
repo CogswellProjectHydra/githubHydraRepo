@@ -17,6 +17,7 @@ from JobTicket import MayaTicket
 class SubmitterWindow( QMainWindow, Ui_MainWindow ):
 
     def __init__( self ):
+        """Initializes the Maya render job submission window."""
         
         QMainWindow.__init__( self )
         self.setupUi( self )
@@ -30,6 +31,8 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         
 
     def doSubmit( self ):
+        """Submits a job ticket for this scene to be split into tasks and processed."""
+        
         logger.debug ('doSubmit')
 
         sceneFile = str( self.sceneLabel.text( ) )
