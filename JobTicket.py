@@ -4,9 +4,7 @@ not strictly necessary to getting the jobs executed."""
 import pickle
 from LoggingSetup import logger
 
-import DjangoSetup
-from Hydra.models import RenderTask, Job
-from django.db import transaction
+from MySQLSetup import Hydra_job, Hydra_rendertask
 
 class JobTicket:
     """A generic job ticket"""
@@ -16,8 +14,8 @@ class JobTicket:
         self.createTasks( job )
 
     def createJob( self ):
-        job = Job( pickledTicket = pickle.dumps( self ) )
-        job.save( )
+        job = Hydra_job( pickledTicket = pickle.dumps( self ) )
+        job.insert( )
         return job
 
     def createTasks( self, job ):
@@ -51,6 +49,6 @@ class MayaTicket( JobTicket ):
                 command[-1:-1] = ['-proj', project]
                                     
             logger.debug( command )
-            RenderTask( status = 'R',
-                        command = repr( command ),
-                        job = job).save( )
+            Hydra_rendertask( status = 'R',
+                              command = repr( command ),
+                              job_id = job.id).insert( )

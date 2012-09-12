@@ -1,5 +1,8 @@
 import sys
 import traceback
+import datetime
+
+from LoggingSetup import logger
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -10,7 +13,13 @@ from Ui_FarmView import Ui_FarmView
 #from Hydra.models import RenderNode, RenderTask
 #from django.db import transaction
 
-from MySQLSetup import queryDict
+from MySQLSetup import Hydra_rendernode, Hydra_rendertask, Hydra_job, transaction, cur
+
+codes = {'I': 'idle',
+         'R': 'ready',
+         'A': 'assigned',
+         'O': 'offline',
+         'F': 'finished'}
 
 class FarmView( QMainWindow, Ui_FarmView ):
 
@@ -27,12 +36,12 @@ class FarmView( QMainWindow, Ui_FarmView ):
     # always get a consistent, unchanging result.
     def doFetch( self ):
 
-        try:
+        with transaction ():
             columns = [
                 labelAttr( 'host' ),
                 labelAttr( 'status' ),
                 labelAttr( 'task_id' )]
-            setup( queryDict ("select * from Hydra_rendernode"), columns, self.renderNodesGrid)        
+            setup( Hydra_rendernode.fetch (), columns, self.renderNodesGrid)        
 
             columns = [
                 labelAttr( 'id' ),
@@ -43,11 +52,20 @@ class FarmView( QMainWindow, Ui_FarmView ):
                 labelAttr( 'startTime' ),
                 labelAttr( 'endTime' ),
                 labelAttr( 'exitCode' )]
-            setup( queryDict ("select * from Hydra_rendertask"), columns, self.jobsGrid)
+            setup( Hydra_rendertask.fetch (), columns, self.jobsGrid)
 
-        except Exception, e:
-            traceback.print_exc( e )
-            raise
+            cur.execute ("""
+select count(status), status from Hydra_rendernode
+group by status
+""")
+            counts = cur.fetchall ()
+            logger.debug (counts)
+            countString = ", ".join (["%d %s" % (count, codes[status])
+                                      for (count, status) in counts])
+            time = datetime.datetime.now().strftime ("%H:%M")
+            msg = "As of %s: %s" % (time, countString)
+            self.statusLabel.setText (msg)
+
 
 def setup( records, columns, grid):
     for (column, attr) in enumerate( columns ):
@@ -77,7 +95,7 @@ class labelAttr:
         return QLabel( '<b>' + self.name + '</b>' )
 
     def data( self, record ):
-        return str( record[self.name] )
+        return str( getattr (record, self.name) )
     
     def dataWidget( self, record ):
         return QLabel( self.data( record ) )

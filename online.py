@@ -1,13 +1,12 @@
 import os
 
 import LoggingSetup
-import DjangoSetup
 import Utils
 
-from Hydra.models import RenderNode
+from MySQLSetup import Hydra_rendernode
 
-thisNode = RenderNode.objects.get( host = Utils.myHostName( ) )
+[thisNode] = Hydra_rendernode.fetch( "where host = '%s'" % Utils.myHostName( ) )
 if thisNode.status == 'O':
     thisNode.status = 'I'
-    thisNode.save( )
+    thisNode.update( )
     

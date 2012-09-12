@@ -11,20 +11,21 @@ from LoggingSetup import logger
 import Utils
 from Answers import RenderAnswer
 
-import DjangoSetup
-from Hydra.models import RenderTask, RenderNode
-from django.db import transaction
+from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction
 
 def processRenderTasks( ):
 
-    with transaction.commit_on_success( ):
+    with transaction( ):
 
-        thisNode = RenderNode.objects.get( host = Utils.myHostName( ) )
+        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        #RenderNode.objects.get( host = Utils.myHostName( ) )
+
         if thisNode.status != 'I':
             return
         
-        render_tasks = RenderTask.objects.filter( status = 'R' )
-        if render_tasks.count( ) == 0:
+        render_tasks = Hydra_rendertask.fetch ("where status = 'R'", limit=1)
+        # RenderTask.objects.filter( status = 'R' )
+        if not render_tasks:
             return
         render_task = render_tasks[0]
         
@@ -34,10 +35,10 @@ def processRenderTasks( ):
         render_task.status = 'S'
         render_task.host = thisNode.host
         thisNode.status = 'S'
-        thisNode.task = render_task
+        thisNode.task_id = render_task.id
         render_task.startTime = datetime.datetime.now( )
-        render_task.save( )
-        thisNode.save( )
+        render_task.update( )
+        thisNode.update( )
         
     log = file( render_task.logFile, 'w' )
         
@@ -58,19 +59,19 @@ def processRenderTasks( ):
         render_task.status = 'D'
         render_task.endTime = datetime.datetime.now( )
         thisNode.status = 'I'
-        thisNode.task = None
+        thisNode.task_id = None
         
-        with transaction.commit_on_success( ):
-            render_task.save( )
-            thisNode.save( )
+        with transaction( ):
+            render_task.update( )
+            thisNode.update( )
 
         log.close( )
 
 if __name__ == '__main__':
 
-    thisNode = RenderNode.objects.get( host = Utils.myHostName( ) )
+    [thisNode] = Hydra_rendernode.fetch( "where host = '%s'" % Utils.myHostName( ) )
     thisNode.status = 'I'
-    thisNode.save( )
+    thisNode.update( )
     socketServer = Servers.TCPServer( )
 #    socketServer.serverThread.join( )
     socketServer.createIdleLoop (5, processRenderTasks )

@@ -6,10 +6,6 @@ from PyQt4.QtCore import *
 
 from submitter import Ui_MainWindow
 
-import DjangoSetup
-from Hydra.models import RenderTask
-from django.db import transaction
-
 from LoggingSetup import logger
 
 from JobTicket import MayaTicket
@@ -26,6 +22,8 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
 
         scene, start, end, by = sys.argv[1:] # proper command line args would be nice
         self.sceneLabel.setText( scene )
+        if 'scenes' not in scene.split ('/'):
+            self.errorLabel.setText ('<B>File not in a scene folder.</B>')
         self.startSpinBox.setValue( eval (start ) )
         self.endSpinBox.setValue( eval( end ) )
         
@@ -39,8 +37,9 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         startFrame = self.startSpinBox.value( )
         endFrame = self.endSpinBox.value( )
         batchSize = self.batchSizeSpinBox.value( )
-
-        MayaTicket( sceneFile, startFrame, endFrame, batchSize ).submit( )
+        if 'scenes' in sceneFile.split ('/'):
+            MayaTicket( sceneFile, startFrame, endFrame, batchSize ).submit( )
+            self.errorLabel.setText ('Done. Close the window.')
 
 
 if __name__ == '__main__':

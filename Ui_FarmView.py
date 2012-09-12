@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_FarmView.ui'
 #
-# Created: Tue Jul 31 14:48:31 2012
+# Created: Wed Sep 12 08:48:07 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -29,7 +29,7 @@ class Ui_FarmView(object):
         self.horizontalLayout.addWidget(self.fetchButton)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
+        self.gridLayout.addLayout(self.horizontalLayout, 2, 0, 1, 1)
         self.tabWidget = QtGui.QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
         self.renderNodesTab = QtGui.QWidget()
@@ -41,7 +41,7 @@ class Ui_FarmView(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 739, 335))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 739, 316))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.gridLayout_3 = QtGui.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
@@ -61,7 +61,7 @@ class Ui_FarmView(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 756, 335))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 98, 28))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -74,6 +74,10 @@ class Ui_FarmView(object):
         self.gridLayout_5.addWidget(self.scrollArea_2, 0, 0, 1, 1)
         self.tabWidget.addTab(self.jobsTab, _fromUtf8(""))
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
+        self.statusLabel = QtGui.QLabel(self.centralwidget)
+        self.statusLabel.setText(_fromUtf8(""))
+        self.statusLabel.setObjectName(_fromUtf8("statusLabel"))
+        self.gridLayout.addWidget(self.statusLabel, 1, 0, 1, 1)
         FarmView.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(FarmView)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))

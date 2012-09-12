@@ -1,11 +1,11 @@
 import os
 
 import LoggingSetup
-import DjangoSetup
 import Utils
 
-from Hydra.models import RenderNode
+from MySQLSetup import Hydra_rendernode
 
-if RenderNode.objects.filter(  host = Utils.myHostName( ) ):
+me = Utils.myHostName( )
+if Hydra_rendernode.fetch( "where host = '%s'" % me ):
     raise Exception( 'already registered' )
-RenderNode( host = Utils.myHostName( ) ).save( )
+Hydra_rendernode ( host = me, status = 'O' ).insert( )
