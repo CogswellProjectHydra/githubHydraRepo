@@ -63,7 +63,7 @@ group by status
             countString = ", ".join (["%d %s" % (count, codes[status])
                                       for (count, status) in counts])
             time = datetime.datetime.now().strftime ("%H:%M")
-            msg = "As of %s: %s" % (time, countString)
+            msg = "%s as of %s" % (countString, time)
             self.statusLabel.setText (msg)
 
 
