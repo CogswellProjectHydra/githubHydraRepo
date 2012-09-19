@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_FarmView.ui'
 #
-# Created: Wed Sep 12 08:48:07 2012
+# Created: Tue Sep 18 19:54:39 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -61,15 +61,20 @@ class Ui_FarmView(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 98, 28))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 756, 316))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
+        self.limitSpinBox = QtGui.QSpinBox(self.scrollAreaWidgetContents_2)
+        self.limitSpinBox.setMaximum(999)
+        self.limitSpinBox.setProperty("value", 100)
+        self.limitSpinBox.setObjectName(_fromUtf8("limitSpinBox"))
+        self.gridLayout_2.addWidget(self.limitSpinBox, 0, 0, 1, 1)
+        spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout_2.addItem(spacerItem2, 2, 0, 1, 1)
         self.jobsGrid = QtGui.QGridLayout()
         self.jobsGrid.setObjectName(_fromUtf8("jobsGrid"))
-        self.gridLayout_2.addLayout(self.jobsGrid, 0, 0, 1, 1)
-        spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.gridLayout_2.addItem(spacerItem2, 1, 0, 1, 1)
+        self.gridLayout_2.addLayout(self.jobsGrid, 1, 0, 1, 1)
         self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
         self.gridLayout_5.addWidget(self.scrollArea_2, 0, 0, 1, 1)
         self.tabWidget.addTab(self.jobsTab, _fromUtf8(""))
@@ -88,7 +93,7 @@ class Ui_FarmView(object):
         FarmView.setStatusBar(self.statusbar)
 
         self.retranslateUi(FarmView)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(FarmView)
 
     def retranslateUi(self, FarmView):

@@ -32,10 +32,12 @@ class tupleObject:
             logger.debug (('dirty', k, v))
 
     @classmethod
-    def fetch (cls, whereClause = "", limit = None):
+    def fetch (cls, whereClause = "", order = None, limit = None):
+        orderClause = "" if order is None else " " + order + " "
         limitClause = "" if limit is None else " limit %d " % limit
-        select = "select * from %s %s %s" % (cls.tableName (),
+        select = "select * from %s %s %s %s" % (cls.tableName (),
                                              whereClause,
+                                                orderClause,
                                              limitClause)
         logger.debug (select)
         cur.execute (select)

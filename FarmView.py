@@ -52,7 +52,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
                 labelAttr( 'startTime' ),
                 labelAttr( 'endTime' ),
                 labelAttr( 'exitCode' )]
-            setup( Hydra_rendertask.fetch (), columns, self.jobsGrid)
+            setup( Hydra_rendertask.fetch (order = "order by id desc",
+                                           limit = self.limitSpinBox.value ()), columns, self.jobsGrid)
 
             cur.execute ("""
 select count(status), status from Hydra_rendernode

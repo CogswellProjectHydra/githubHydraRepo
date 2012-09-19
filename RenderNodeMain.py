@@ -67,8 +67,8 @@ def processRenderTasks( ):
 
         log.close( )
 
-if __name__ == '__main__':
 
+def main ():
     [thisNode] = Hydra_rendernode.fetch( "where host = '%s'" % Utils.myHostName( ) )
     thisNode.status = 'I'
     thisNode.update( )
@@ -76,3 +76,5 @@ if __name__ == '__main__':
 #    socketServer.serverThread.join( )
     socketServer.createIdleLoop (5, processRenderTasks )
 
+if __name__ == '__main__':
+    main ()
