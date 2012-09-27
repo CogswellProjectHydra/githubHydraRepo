@@ -20,7 +20,9 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
 
         QObject.connect(self.submitButton, SIGNAL("clicked()"), self.doSubmit)
 
-        scene, start, end, by = sys.argv[1:] # proper command line args would be nice
+        sys.argv.extend (['1', '1', '1'])
+        scene, start, end, by = sys.argv[1:5] # proper command line args would be nice
+        scene = scene.replace ('\\', '/')
         self.sceneLabel.setText( scene )
         if 'scenes' not in scene.split ('/'):
             self.errorLabel.setText ('<B>File not in a scene folder.</B>')
