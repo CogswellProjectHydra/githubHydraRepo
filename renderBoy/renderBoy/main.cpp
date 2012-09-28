@@ -23,22 +23,24 @@ private:
 
 
 char *copyString (string s) {
-	char *ret = new char[1 + s.length ()];
-	strcpy (ret, s.c_str ());
+	const int size = 1 + s.length ();
+	char *ret = new char[size];
+	strcpy_s (ret, size, s.c_str ());
 	return ret;
 }
 
 int main (int argc, char * argv[]) {
+	
+	cout << endl;
 
-	//if (argc != 2) {
-	//	cerr << "Expected exactly 1 argument, a Maya scene file." << endl;
-	//	exit (-1);
-	//}
+	if (argc != 2) {
+		cerr << "Expected exactly 1 argument, a Maya scene file." << endl;
+		exit (-1);
+	}
 
-	string mayaFile ("C:\\Users\\gladstein\\AppData\\Roaming\\renderBoy\\Debug\\scenes\\rotor.ma");
+	string mayaFile (argv[1]);
 	transform (mayaFile.begin (), mayaFile.end (), 
 			   mayaFile.begin (), repl<char> ('\\', '/'));
-	cout << "Rendering " << mayaFile << endl;
 
 	if (mayaFile.substr (mayaFile.length () - 3) != ".ma" &&
 		mayaFile.substr (mayaFile.length () - 3) != ".mb") {
@@ -48,7 +50,7 @@ int main (int argc, char * argv[]) {
 
 	int scenePos = mayaFile.find ("/scenes/");
 	if (scenePos == mayaFile.npos) {
-		cerr << mayaFile << "Scene isn't in a /scenes/ folder." << endl;
+		cerr << mayaFile << " isn't in a /scenes/ folder." << endl;
 		exit (-1);
 	}
 
@@ -64,7 +66,7 @@ int main (int argc, char * argv[]) {
 	cin >> endFrame;
 
 	stringstream cmd;
-	char maya[] = "c:\"\\program files\\autodesk\\maya2011\\bin\\render.exe\"";
+	char maya[] = "\"c:\\program files\\autodesk\\maya2011\\bin\\render.exe\"";
 
 	cmd << maya
 		<< " -proj " << project
