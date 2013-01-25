@@ -1,9 +1,29 @@
 import MySQLdb
-
+import ConfigParser
 from LoggingSetup import logger
 import Utils
 
-db = MySQLdb.connect ("hydra.cpc.local", user="root", db="hydraDB")
+# statuses for jobs/tasks
+READY = 'R'
+FINISHED = 'F'
+
+# statuses for render nodes
+IDLE = 'I'
+OFFLINE = 'O'
+
+# statuses for either jobs/tasks or render nodes
+STARTED = 'S'
+
+# open config file
+config = ConfigParser.RawConfigParser ()
+config.read ("C:/Hydra/hydraSettings.cfg")
+
+# get server & db names
+hostname = config.get (section="database", option="host")
+dbname = config.get (section="database", option="db")
+
+# open db connection
+db = MySQLdb.connect (hostname, user="root", db=dbname)
 cur = db.cursor ()
 cur.execute ("set autocommit = 1")
 

@@ -11,20 +11,20 @@ from LoggingSetup import logger
 import Utils
 from Answers import RenderAnswer
 
-from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction
+from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, IDLE, READY, STARTED, FINISHED
 
 def processRenderTasks( ):
 
     with transaction( ):
 
         [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
-        #RenderNode.objects.get( host = Utils.myHostName( ) )
 
-        if thisNode.status != 'I':
+        # If this node is idle, it shouldn't pick another job
+        if thisNode.status != IDLE:
             return
         
-        render_tasks = Hydra_rendertask.fetch ("where status = 'R'", limit=1)
-        # RenderTask.objects.filter( status = 'R' )
+        # otherwise, get a job that's ready to be run and has a high enough priority level for this particular node
+        render_tasks = Hydra_rendertask.fetch ("where status = '%s' and minPriority >= %s" % (READY, thisNode.minPriority), limit=1)
         if not render_tasks:
             return
         render_task = render_tasks[0]
@@ -32,9 +32,9 @@ def processRenderTasks( ):
         if not os.path.isdir( RENDERLOGDIR ):
             os.makedirs( RENDERLOGDIR )
         render_task.logFile = os.path.join( RENDERLOGDIR, '%010d.log.txt' % render_task.id )
-        render_task.status = 'S'
+        render_task.status = STARTED
         render_task.host = thisNode.host
-        thisNode.status = 'S'
+        thisNode.status = STARTED
         thisNode.task_id = render_task.id
         render_task.startTime = datetime.datetime.now( )
         render_task.update( )
@@ -56,9 +56,9 @@ def processRenderTasks( ):
         traceback.print_exc( e, log )
         raise
     finally:
-        render_task.status = 'D'
+        render_task.status = FINISHED
         render_task.endTime = datetime.datetime.now( )
-        thisNode.status = 'I'
+        thisNode.status = IDLE
         thisNode.task_id = None
         
         with transaction( ):

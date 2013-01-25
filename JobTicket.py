@@ -23,11 +23,12 @@ class JobTicket:
 
 class MayaTicket( JobTicket ):
 
-    def __init__( self, sceneFile, startFrame, endFrame, batchSize ):
+    def __init__( self, sceneFile, startFrame, endFrame, batchSize, priority ):
         self.sceneFile = sceneFile
         self.startFrame = startFrame
         self.endFrame = endFrame
         self.batchSize = batchSize
+        self.priority = priority
 
     def createTasks( self, job ):
         starts = range( self.startFrame, self.endFrame + 1, self.batchSize )
@@ -49,6 +50,6 @@ class MayaTicket( JobTicket ):
                 command[-1:-1] = ['-proj', project]
                                     
             logger.debug( command )
-            Hydra_rendertask( status = 'R',
+            Hydra_rendertask( status = READY,
                               command = repr( command ),
-                              job_id = job.id).insert( )
+                              job_id = job.id, priority = self.priority).insert( ) # the keys here represent columns in the database table
