@@ -1,6 +1,7 @@
 import sys
 import traceback
 import datetime
+import functools
 
 from LoggingSetup import logger
 
@@ -40,7 +41,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
             columns = [
                 labelAttr( 'host' ),
                 labelAttr( 'status' ),
-                labelAttr( 'task_id' )]
+                labelAttr( 'task_id' ),
+                getOffButton ("Get off!!!")]
             setup( Hydra_rendernode.fetch (), columns, self.renderNodesGrid)        
 
             columns = [
@@ -109,6 +111,16 @@ class textAttr( labelAttr ):
         w.setReadOnly( True )
         return w
             
+class getOffButton (labelAttr):
+
+    def dataWidget ( self, record ):
+        w = QPushButton( self.name )
+        QObject.connect (w, SIGNAL("clicked()"), functools.partial (self.doGetOff, record=record))
+        return w
+
+    def doGetOff (self, record):
+        logger.debug('clobber %s', record.host)
+
 if __name__ == '__main__':
     app = QApplication( sys.argv )
     window = FarmView( )
