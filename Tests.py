@@ -5,8 +5,7 @@ import exceptions
 import traceback
 import os
 
-import DjangoSetup
-from Hydra.models import RenderTask
+from MySQLSetup import Hydra_rendertask
 
 import Questions
 import Answers
@@ -82,18 +81,17 @@ class TestQuestionsLocal( unittest.TestCase, Clients.Client ):
                 '-mr:v', '5',
                 r'\\flex2\ProjectHydra\TestMayaFiles\Chair2.ma'
                   ]
-        render_task = RenderTask( )
+        render_task = Hydra_rendertask()
         render_task.status = 'R'
         render_task.command = repr( command )
-        render_task.save( )
+        render_task.insert()
 
         logger.debug(render_task)
 
         render_question = Questions.RenderQuestion( render_task.id )
         render_answer = self.getAnswer( render_question )
-        logger.debug( render_answer )
-        
-        
+        logger.debug( render_answer )        
+      
 class TestQuestionsSocket( TestQuestionsLocal ):
     """Class to represent a test socket connection to send Questions to."""
 

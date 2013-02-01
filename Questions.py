@@ -5,8 +5,8 @@ import exceptions
 import os
 import datetime
 
-import DjangoSetup
-from Hydra.models import RenderTask
+#import DjangoSetup
+#from Hydra.models import RenderTask
 
 from Answers import Answer, TimeAnswer, EchoAnswer, CMDAnswer, RenderAnswer
 
@@ -57,7 +57,8 @@ class RenderQuestion( Question ):
         self.render_task_id = render_task_id
 
     def computeAnswer( self, server ):
-        render_task = RenderTask.objects.get( id = self.render_task_id )
+        [render_tasks] = Hydra_rendertask.fetch("where ")
+        render_task = Hydra_rendertask.fetch()
         render_task.host = os.getenv( 'COMPUTERNAME' )
         if not os.path.isdir( RENDERLOGDIR ):
             os.makedirs( RENDERLOGDIR )
@@ -86,4 +87,7 @@ class RenderQuestion( Question ):
             render_task.save( )
 
             log.close( )
-            
+
+class KillCurrentJobQuestion (Question):
+    def computeAnswer(self, server):
+        server.killCurrentJob()

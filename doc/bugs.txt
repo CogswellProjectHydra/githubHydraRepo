@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------------
+This file is a repository for all known unresolved bugs in project hydra.
+Bug reports should be submitted in the following format:
+
+(date submitted)	(file)			(who reported it)		(priority [1-3])
+09/04/1984			example.py		Bob@winblows.com		3
+
+	<--INDENT (detailed issue description)
+	Yeah, so I think there's a problem with the system clock... it's probably
+	nothing. But if you get a chance, take a look at line 41 and let me know
+	what you think.
+
+	(date assigned)		(who's fixing it)		(progress)
+	12/31/1999			sucker@winblows.com		50%
+
+-------------------------------------------------------------------------------
+Notes: Bug reports should be entered at the top of the file, pushing the others
+down below it. Thus, the reports in this file will be listed in chronological
+order, starting with the most recent.
+-------------------------------------------------------------------------------

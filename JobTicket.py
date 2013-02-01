@@ -4,7 +4,7 @@ not strictly necessary to getting the jobs executed."""
 import pickle
 from LoggingSetup import logger
 
-from MySQLSetup import Hydra_job, Hydra_rendertask
+from MySQLSetup import Hydra_job, Hydra_rendertask, READY
 
 class JobTicket:
     """A generic job ticket"""
@@ -53,3 +53,15 @@ class MayaTicket( JobTicket ):
             Hydra_rendertask( status = READY,
                               command = repr( command ),
                               job_id = job.id, priority = self.priority).insert( ) # the keys here represent columns in the database table
+
+class CMDTicket(JobTicket):
+    """A job ticket for shoehorning arbitrary commands into the task list. You know, just in case you wanted to do something like that."""
+    
+    def __init__(self, cmd):
+        self.command = cmd
+        self.priority = 50
+        
+    def createTasks(self, job):
+        Hydra_rendertask( status = READY,
+                          command = repr( self.command ),
+                          job_id = job.id, priority = self.priority).insert( ) # the keys here represent columns in the database table

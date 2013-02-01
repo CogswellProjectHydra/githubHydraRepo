@@ -39,7 +39,7 @@ class TCPServer( Server ):
                   port = Constants.PORT,
                   ):
 
-        MyTCPHandler.server = self
+        MyTCPHandler.TCPserver = self
         logger.info( 'open socket %r %s', "", port )
         self.serverObject = MySocketServer( ( "", port),
                                             MyTCPHandler)
@@ -58,7 +58,7 @@ def runTheServer( serverObject ):
         
 class MyTCPHandler( SocketServer.StreamRequestHandler ):
 
-    server = None # the Hydra server object, NOT the SocketServer.
+    TCPserver = None # the Hydra server object, NOT the SocketServer.
 
     def handle( self ):
 
@@ -67,8 +67,9 @@ class MyTCPHandler( SocketServer.StreamRequestHandler ):
         try:        
             questionBytes = self.rfile.read( )
             question = pickle.loads( questionBytes )
+            logger.debug(question)
             
-            answer = question.computeAnswer( self.server )
+            answer = question.computeAnswer( self.TCPserver )
 
             answerBytes = pickle.dumps( answer )
             self.wfile.write( answerBytes )
@@ -76,5 +77,3 @@ class MyTCPHandler( SocketServer.StreamRequestHandler ):
             logger.error( """Exception caught:
 %s""", traceback.format_exc( ) )
             
-        
-        
