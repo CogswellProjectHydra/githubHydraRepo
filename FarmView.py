@@ -31,10 +31,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
 
         QObject.connect(self.fetchButton, SIGNAL("clicked()"), self.doFetch)
 
-    #@transaction.commit_on_success
-    # we WANT a different answer every time this is called,
-    # and if we leave django's implicit transaction open we'll
-    # always get a consistent, unchanging result.
+    # refresh the display, rebuilding every blessed widget.
     def doFetch( self ):
 
         with transaction ():
@@ -69,7 +66,8 @@ group by status
             msg = "%s as of %s" % (countString, time)
             self.statusLabel.setText (msg)
 
-
+# populate a data grid. The "columns"
+# are like widget factory objects.
 def setup( records, columns, grid):
     for (column, attr) in enumerate( columns ):
         item = grid.itemAtPosition( 0, column )
@@ -89,6 +87,14 @@ def setup( records, columns, grid):
                            column,
                            )
 
+# labelAttr: a widget factory object for making a label.
+# the object's name is the name of a database column.
+# to make a label widget, given a record, extract the
+# named attribute from the record and use that as the label
+# text.
+# the labelWidget method makes a widget suitable for the heading
+# (first) row of the display.
+# the dataWidget method makes a widget that displays actual data.
 class labelAttr:
 
     def __init__( self, name ):
@@ -103,6 +109,7 @@ class labelAttr:
     def dataWidget( self, record ):
         return QLabel( self.data( record ) )
 
+# like labelAttr, but makes a read-nly text field instead of a label.
 class textAttr( labelAttr ):
 
     def dataWidget( self, record ):
@@ -110,12 +117,18 @@ class textAttr( labelAttr ):
         w.setText( self.data( record ) )
         w.setReadOnly( True )
         return w
-            
+
+# as above, but makes a specialized button to implement the GetOff!!! functionality.            
 class getOffButton (labelAttr):
 
     def dataWidget ( self, record ):
         w = QPushButton( self.name )
-        QObject.connect (w, SIGNAL("clicked()"), functools.partial (self.doGetOff, record=record))
+
+        # the click handler is the doGetOff method, but with the record argument already supplied.
+        # it's called a "partial application".
+        handler = functools.partial (self.doGetOff, record=record)
+
+        QObject.connect (w, SIGNAL("clicked()"), handler)
         return w
 
     def doGetOff (self, record):
