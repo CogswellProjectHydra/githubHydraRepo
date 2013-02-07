@@ -25,7 +25,7 @@ class LocalConnection( Connection ):
                   localServer = Servers.Server( )
                   ):
         """Constructor. By default it creates a new local server
-if you don't supply one."""
+            if you don't supply one."""
         self.localServer = localServer
 
     def getAnswer( self, question ):
