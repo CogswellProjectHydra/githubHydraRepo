@@ -109,7 +109,7 @@ class labelAttr:
     def dataWidget( self, record ):
         return QLabel( self.data( record ) )
 
-# like labelAttr, but makes a read-nly text field instead of a label.
+# like labelAttr, but makes a read-only text field instead of a label.
 class textAttr( labelAttr ):
 
     def dataWidget( self, record ):

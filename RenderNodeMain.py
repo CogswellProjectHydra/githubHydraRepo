@@ -15,6 +15,10 @@ from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, IDLE, RE
 
 class RenderTCPServer(Servers.TCPServer):
     
+    def __init__(self, *arglist, **kwargs):
+        Servers.TCPServer.__init__(self, *arglist, **kwargs) 
+        self.childKilled = False
+        
     def processRenderTasks(self):
         with transaction( ):
             self.childProcess = None
@@ -63,9 +67,15 @@ class RenderTCPServer(Servers.TCPServer):
             traceback.print_exc( e, log )
             raise
         finally: # mark the task as finished in the database and set state to idle
-            render_task.status = FINISHED # what if the process didn't run for some reason? we should check the status code
-            render_task.endTime = datetime.datetime.now( )
-            thisNode.status = IDLE
+            if self.childKilled:
+                render_task.status = READY
+                render_task.startTime = None
+            else:
+                render_task.status = FINISHED # what if the process didn't run for some reason? we should check the status code
+                render_task.endTime = datetime.datetime.now( )
+                
+            if thisNode.status == STARTED:
+                thisNode.status = IDLE
             thisNode.task_id = None
             
             with transaction( ):
@@ -78,6 +88,8 @@ class RenderTCPServer(Servers.TCPServer):
         logger.debug("killing %r", self.childProcess)
         if self.childProcess:
             self.childProcess.kill()
+            self.childKilled = True
+        
 
 def main ():
     [thisNode] = Hydra_rendernode.fetch( "where host = '%s'" % Utils.myHostName( ) )
