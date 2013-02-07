@@ -17,15 +17,18 @@ class RenderTCPServer(Servers.TCPServer):
     
     def __init__(self, *arglist, **kwargs):
         Servers.TCPServer.__init__(self, *arglist, **kwargs) 
+        self.childProcess = None
         self.childKilled = False
         
     def processRenderTasks(self):
+        
         with transaction( ):
-            self.childProcess = None
             
             [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
-    
-            # If this node is not idle, it's doing something, so it shouldn't pick another job
+            
+            logger.debug("This render node is: %r\nrender node status: %r", thisNode.host, thisNode.status)
+            
+            # If this node is not idle, it must be OFFLINE, so don't try to find a new job
             if thisNode.status != IDLE:
                 return
             
@@ -54,30 +57,46 @@ class RenderTCPServer(Servers.TCPServer):
             log.write( 'Command: %s\n\n' % ( render_task.command ) )
             log.flush( )
             
-            # run the render job and keep track of the process
+            # run the job and keep track of the process
             self.childProcess = subprocess.Popen( eval( render_task.command ),
                                                   stdout = log,
                                                   stderr = subprocess.STDOUT )
-            render_task.exitCode = self.childProcess.wait()
-            self.childProcess = None
             
+            # wait until the job is finished or terminated
+            render_task.exitCode = self.childProcess.wait()
+            
+            # once the job has stopped running, stop keeping track of it
+            self.childProcess = None
             log.write( '\nProcess exited with code %d\n' % render_task.exitCode )
             return RenderAnswer( )
+        
         except Exception, e:
             traceback.print_exc( e, log )
             raise
-        finally: # mark the task as finished in the database and set state to idle
+        
+        finally:
+            # get the latest info about this render node
+            with transaction():
+                [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+            
+            # check if the job was killed, then update the job board accordingly
             if self.childKilled:
+                # reset the task in the job board so another render node can pick it up
                 render_task.status = READY
                 render_task.startTime = None
+                self.childKilled = False
             else:
-                render_task.status = FINISHED # what if the process didn't run for some reason? we should check the status code
+                # report that the job was finished
+                render_task.status = FINISHED # note: what if the process didn't run for some reason? maybe we should check the status code
                 render_task.endTime = datetime.datetime.now( )
-                
+            
+            # if i was doing a job a second ago, i'll want to look for new jobs    
             if thisNode.status == STARTED:
+                logger.debug("status: %r", thisNode.status)
                 thisNode.status = IDLE
             thisNode.task_id = None
             
+            # open a connection to the database and update the records
             with transaction( ):
                 render_task.update( )
                 thisNode.update( )
@@ -85,16 +104,16 @@ class RenderTCPServer(Servers.TCPServer):
             log.close( )
     
     def killCurrentJob(self):
+        """Kills the render node's current job if it's running one."""
         logger.debug("killing %r", self.childProcess)
         if self.childProcess:
             self.childProcess.kill()
             self.childKilled = True
+        else:
+            logger.debug("no process was running.")
         
 
 def main ():
-    [thisNode] = Hydra_rendernode.fetch( "where host = '%s'" % Utils.myHostName( ) )
-    thisNode.status = 'I'
-    thisNode.update( )
     socketServer = RenderTCPServer( )
 #    socketServer.serverThread.join( )
     socketServer.createIdleLoop (5, socketServer.processRenderTasks ) # this is probably where we'll set up the code to kill a job

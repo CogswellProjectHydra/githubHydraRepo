@@ -7,5 +7,5 @@ setup(
             "dll_excludes": ["MSVCP90.dll"] # py2exe keeps trying to include this dll even though it isn't needed to run the program
         }
     },
-    console=["getOff.py"]
+    console=["offline.py"]
 )

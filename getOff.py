@@ -22,7 +22,7 @@ class getOffWindow(QMainWindow, Ui_MainWindow, Client):
         self.getAnswer(KillCurrentJobQuestion())
         
 if __name__ == '__main__':
-    app = QApplication( sys.argv ) # argv should be theoretically empty
+    app = QApplication( sys.argv )
     
     window = getOffWindow( )
     

@@ -4,15 +4,15 @@ from LoggingSetup import logger
 import Utils
 
 # statuses for jobs/tasks
-READY = 'R'
-FINISHED = 'F'
+READY = 'R'                 # ready to be run by a render node
+FINISHED = 'F'              # job complete
 
 # statuses for render nodes
-IDLE = 'I'
-OFFLINE = 'O'
+IDLE = 'I'                  # ready to accept jobs
+OFFLINE = 'O'               # not ready to accept jobs
 
 # statuses for either jobs/tasks or render nodes
-STARTED = 'S'
+STARTED = 'S'               # working on a job
 
 # open config file
 config = ConfigParser.RawConfigParser ()
