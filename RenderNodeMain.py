@@ -84,6 +84,7 @@ class RenderTCPServer(Servers.TCPServer):
                 # reset the task in the job board so another render node can pick it up
                 render_task.status = READY
                 render_task.startTime = None
+                render_task.host = None
                 self.childKilled = False
             else:
                 # report that the job was finished

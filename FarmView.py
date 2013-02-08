@@ -20,7 +20,8 @@ codes = {'I': 'idle',
          'R': 'ready',
          'A': 'assigned',
          'O': 'offline',
-         'F': 'finished'}
+         'F': 'finished',
+         'S': 'started'}
 
 class FarmView( QMainWindow, Ui_FarmView ):
 
@@ -61,7 +62,7 @@ group by status
             counts = cur.fetchall ()
             logger.debug (counts)
             countString = ", ".join (["%d %s" % (count, codes[status])
-                                      for (count, status) in counts])
+                                      for (count, status) in counts]) # KeyError 'S'
             time = datetime.datetime.now().strftime ("%H:%M")
             msg = "%s as of %s" % (countString, time)
             self.statusLabel.setText (msg)
