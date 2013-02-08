@@ -18,7 +18,6 @@ from MySQLSetup import Hydra_rendernode, Hydra_rendertask, Hydra_job, transactio
 
 codes = {'I': 'idle',
          'R': 'ready',
-         'A': 'assigned',
          'O': 'offline',
          'F': 'finished',
          'S': 'started'}

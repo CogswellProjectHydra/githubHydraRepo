@@ -117,7 +117,7 @@ class RenderTCPServer(Servers.TCPServer):
 def main ():
     socketServer = RenderTCPServer( )
 #    socketServer.serverThread.join( )
-    socketServer.createIdleLoop (5, socketServer.processRenderTasks ) # this is probably where we'll set up the code to kill a job
+    socketServer.createIdleLoop (5, socketServer.processRenderTasks )
 
 if __name__ == '__main__':
     main ()
