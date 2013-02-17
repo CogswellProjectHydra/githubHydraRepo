@@ -5,6 +5,10 @@ Created on Feb 16, 2013
 '''
 from MySQLSetup import Hydra_job, Hydra_rendertask, transaction
 
+def sendKillQuestion(host):
+    '''not implemented yet'''
+    pass
+
 def killjob(job_id):
     # open transaction -- no race condition
     #    fetch all of the tasks with the corresponding job id
@@ -18,11 +22,19 @@ def killjob(job_id):
     #        mark the task Finished
     #        update
     #    close transaction
-    def finish(t):
-        t.status = 'F'
+    def finish(rendertask):
+        rendertask.status = 'F'
+        return rendertask
+    
+    def getHost(rendertask):
+        return rendertask.host
         
     with transaction():
         # mark all of the ready tasks complete
         readyTasks = [finish(task) for task in Hydra_rendertask.fetch("where status = 'R' and job_id = %s" % job_id)]
         for task in readyTasks:
             task.update()
+            
+    startedTasks = Hydra_rendertask.fetch("where status = 'S' and job_id = %s" % job_id)
+    for host in [getHost(task) for task in startedTasks]:
+        sendKillQuestion(host)
