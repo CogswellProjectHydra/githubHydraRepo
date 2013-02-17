@@ -1,1 +1,2 @@
-1)	Set up some code to kill a job and then put the job back up on the job board.
+- kill an entire job and all of its subtasks (even ones that are running)
+- display the jobs/tasks nicely in a GUI so that the user can select a job to kill

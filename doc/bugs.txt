@@ -17,4 +17,9 @@ Bug reports should be submitted in the following format:
 Notes: Bug reports should be entered at the top of the file, pushing the others
 down below it. Thus, the reports in this file will be listed in chronological
 order, starting with the most recent.
+
+priority levels:
+	1: It doesn't work right unless this is fixed
+	2: We'll live but we should fix it asap
+	3: Not an immediate issue
 -------------------------------------------------------------------------------
