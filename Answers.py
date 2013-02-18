@@ -1,10 +1,10 @@
-__doc__ = """The Answers module represents any answer that is given."""
-class Answer: pass
+class Answer: 
+    """Interface for Answer objects"""
+    pass
 
 
 class TimeAnswer( Answer ):
-    """An answer class that returns the time."""
-
+    """An Answer which stores the time."""
     def __init__( self, time ):
         self.time = time
 
@@ -12,18 +12,22 @@ class TimeAnswer( Answer ):
 
 
 class EchoAnswer( Answer ):
-    """An answer class that returns the original quesion from the Client
-    as an answer."""
-    
+    """An Answer which stores the object specified by a Question."""
     def __init__( self, object ):
         self.object = object
 
 class CMDAnswer( Answer ):
+    
     def __init__( self, output ):
         self.output = output
         
         
 class RenderAnswer( Answer ):
+    
     def __init__( self ):
         pass
-    
+
+class KillCurrentJobAnswer(Answer):
+    """An answer which tells whether or not child process was killed."""
+    def __init__(self, childKilled):
+        self.childKilled = childKilled

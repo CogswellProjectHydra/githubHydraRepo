@@ -8,31 +8,33 @@ import datetime
 #import DjangoSetup
 #from Hydra.models import RenderTask
 
-from Answers import Answer, TimeAnswer, EchoAnswer, CMDAnswer, RenderAnswer
+from Answers import Answer, TimeAnswer, EchoAnswer, CMDAnswer, RenderAnswer, KillCurrentJobAnswer
+from MySQLSetup import Hydra_rendertask
+from RenderNodeMain import RenderTCPServer
 
 from LoggingSetup import logger
 
 from Constants import RENDERLOGDIR
 
-__doc__ = """This class is the base class of both the TimeQuestion and
-EchoQuestion class. The Quesiton class represents of how any answer is
-returned."""
 class Question:
+    """Interface for Question objects."""
     
     def computeAnswer( self, server ):
-        return Answer( )
+        """
+        Override this method when creating a Question subclass 
+        code in this method will be run by the server
+        """
+        raise exceptions.NotImplementedError
 
 class TimeQuestion( Question ):
-    """TimeQuestion corresponds with TimeAnswer in the Answers module,
-    returning the answer."""
+    """A Question for getting the current time on the server."""
      
     def computeAnswer( self, server ):
         return TimeAnswer( time.localtime( ) )
 
 
 class EchoQuestion( Question ):
-    """EchoQuestion corresponds with EchoAnswer in the Answers module,
-    returning the answer."""
+    """A Question in which the specified object is to be returned as an Answer."""
 
     def __init__( self, object ):
         self.object = object
@@ -41,7 +43,7 @@ class EchoQuestion( Question ):
         return EchoAnswer( self.object )
 
 class CMDQuestion( Question ):
-    
+    """A Question for running arbitrary commands on a server."""
     def __init__( self, args ):
         self.args = args
 
@@ -90,4 +92,6 @@ class RenderQuestion( Question ):
 
 class KillCurrentJobQuestion (Question):
     def computeAnswer(self, server):
-        server.killCurrentJob()
+        if isinstance(server, RenderTCPServer):
+            server.killCurrentJob()
+            return KillCurrentJobAnswer(server.childKilled)

@@ -42,7 +42,9 @@ class getOffWindow(QMainWindow, Ui_MainWindow, Client):
         """Sends a message to the render node server running on localhost to kill its current task"""
         self.getOffline()
         self.connection = TCPConnection()
-        self.getAnswer(KillCurrentJobQuestion())
+        killed = self.getAnswer(KillCurrentJobQuestion())
+        if not killed:
+            logger.debug("There was a problem killing the task.")
         
     def getOnline(self):
         """Changes the local render node's status to  on-line if it wasn't on-line already"""

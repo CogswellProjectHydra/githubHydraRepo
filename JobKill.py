@@ -4,10 +4,15 @@ Created on Feb 16, 2013
 @author: Aaron Cohn
 '''
 from MySQLSetup import Hydra_job, Hydra_rendertask, transaction
+from Connections import TCPConnection
+from Questions import KillCurrentJobQuestion
+from LoggingSetup import logger
 
-def sendKillQuestion(host):
-    '''not implemented yet'''
-    pass
+def sendKillQuestion(renderhost):
+    connection = TCPConnection(host=renderhost)
+    killed = connection.getAnswer(KillCurrentJobQuestion())
+    if not killed:
+        logger.debug("There was a problem killing the task running on %r" % renderhost)
 
 def killjob(job_id):
     # open transaction -- no race condition

@@ -65,8 +65,6 @@ class RenderTCPServer(Servers.TCPServer):
             # wait until the job is finished or terminated
             render_task.exitCode = self.childProcess.wait()
             
-            # once the job has stopped running, stop keeping track of it
-            self.childProcess = None
             log.write( '\nProcess exited with code %d\n' % render_task.exitCode )
             return RenderAnswer( )
         
@@ -91,7 +89,7 @@ class RenderTCPServer(Servers.TCPServer):
                 render_task.status = FINISHED # note: what if the process didn't run for some reason? maybe we should check the status code
                 render_task.endTime = datetime.datetime.now( )
             
-            # if i was doing a job a second ago, i'll want to look for new jobs    
+            # if nobody set status to OFFLINE, return to IDLE and continue to look for new jobs    
             if thisNode.status == STARTED:
                 logger.debug("status: %r", thisNode.status)
                 thisNode.status = IDLE
@@ -103,13 +101,18 @@ class RenderTCPServer(Servers.TCPServer):
                 thisNode.update( )
     
             log.close( )
-    
+            
+            # discard info about the previous child process
+            self.childProcess = None
+            
     def killCurrentJob(self):
         """Kills the render node's current job if it's running one."""
         logger.debug("killing %r", self.childProcess)
         if self.childProcess:
             self.childProcess.kill()
-            self.childKilled = True
+            self.childProcess.poll()
+            if self.childProcess.returncode:
+                self.childKilled = True
         else:
             logger.debug("no process was running.")
         
