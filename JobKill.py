@@ -3,7 +3,7 @@ Created on Feb 16, 2013
 
 @author: Aaron Cohn
 '''
-from MySQLSetup import Hydra_job, Hydra_rendertask, transaction
+from MySQLSetup import Hydra_rendertask, transaction, KILLED
 from Connections import TCPConnection
 from Questions import KillCurrentJobQuestion
 from LoggingSetup import logger
@@ -28,7 +28,7 @@ def killjob(job_id):
     #        update
     #    close transaction
     def finish(rendertask):
-        rendertask.status = 'F'
+        rendertask.status = KILLED
         return rendertask
     
     def getHost(rendertask):

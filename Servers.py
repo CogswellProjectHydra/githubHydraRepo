@@ -3,7 +3,6 @@ import threading
 import pickle
 import traceback
 import time
-import Questions
 
 import Constants
 from LoggingSetup import logger
@@ -77,4 +76,5 @@ class MyTCPHandler( SocketServer.StreamRequestHandler ):
         except:
             logger.error( """Exception caught:
 %s""", traceback.format_exc( ) )
-            
+
+import Questions # this import is necessary for unpickling questions and was moved to the bottom negate a circular import problem

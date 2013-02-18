@@ -8,7 +8,7 @@ import Servers
 from Clients import Client
 from Connections import TCPConnection
 from Questions import KillCurrentJobQuestion
-from MySQLSetup import transaction, Hydra_rendernode, IDLE, OFFLINE
+from MySQLSetup import transaction, Hydra_rendernode, IDLE, OFFLINE, READY
 import Utils
 from LoggingSetup import logger
 
@@ -42,12 +42,12 @@ class getOffWindow(QMainWindow, Ui_MainWindow, Client):
         """Sends a message to the render node server running on localhost to kill its current task"""
         self.getOffline()
         self.connection = TCPConnection()
-        killed = self.getAnswer(KillCurrentJobQuestion())
+        killed = self.getAnswer(KillCurrentJobQuestion(statusAfterDeath=READY))
         if not killed:
             logger.debug("There was a problem killing the task.")
         
     def getOnline(self):
-        """Changes the local render node's status to  on-line if it wasn't on-line already"""
+        """Changes the local render node's status to on-line if it wasn't on-line already"""
         with transaction():
             [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
             if thisNode.status == OFFLINE:

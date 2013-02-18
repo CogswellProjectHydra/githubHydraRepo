@@ -7,7 +7,7 @@ import Constants
 import Answers
 from LoggingSetup import logger
 
-__doc__ = """A Connection allows a Client to ask a Server for
+"""A Connection allows a Client to ask a Server for
 an Answer to a Question."""
 
 class Connection:

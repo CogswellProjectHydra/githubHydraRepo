@@ -6,6 +6,7 @@ import Utils
 # statuses for jobs/tasks
 READY = 'R'                 # ready to be run by a render node
 FINISHED = 'F'              # job complete
+KILLED = 'K'                # job was killed
 
 # statuses for render nodes
 IDLE = 'I'                  # ready to accept jobs

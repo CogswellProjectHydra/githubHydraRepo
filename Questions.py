@@ -8,11 +8,9 @@ import datetime
 #import DjangoSetup
 #from Hydra.models import RenderTask
 
-from Answers import Answer, TimeAnswer, EchoAnswer, CMDAnswer, RenderAnswer, KillCurrentJobAnswer
+from Answers import TimeAnswer, EchoAnswer, CMDAnswer, RenderAnswer, KillCurrentJobAnswer
 from MySQLSetup import Hydra_rendertask
 from RenderNodeMain import RenderTCPServer
-
-from LoggingSetup import logger
 
 from Constants import RENDERLOGDIR
 
@@ -91,6 +89,10 @@ class RenderQuestion( Question ):
             log.close( )
 
 class KillCurrentJobQuestion (Question):
+    """A Question for killing a job on a RenderTCPServer"""
+    def __init__(self, statusAfterDeath):
+        self.status = statusAfterDeath
+        
     def computeAnswer(self, server):
         if isinstance(server, RenderTCPServer):
             server.killCurrentJob()

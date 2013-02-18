@@ -6,19 +6,20 @@ import datetime
 import traceback
 import subprocess
 
-import Servers
+from Servers import TCPServer
 from LoggingSetup import logger
 import Utils
 from Answers import RenderAnswer
 
 from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, IDLE, READY, STARTED, FINISHED
 
-class RenderTCPServer(Servers.TCPServer):
+class RenderTCPServer(TCPServer):
     
     def __init__(self, *arglist, **kwargs):
-        Servers.TCPServer.__init__(self, *arglist, **kwargs) 
+        TCPServer.__init__(self, *arglist, **kwargs) 
         self.childProcess = None
         self.childKilled = False
+        self.statusAfterDeath = None # must be a status from MySQLSetup
         
     def processRenderTasks(self):
         
@@ -79,14 +80,14 @@ class RenderTCPServer(Servers.TCPServer):
             
             # check if the job was killed, then update the job board accordingly
             if self.childKilled:
-                # reset the task in the job board so another render node can pick it up
-                render_task.status = READY
+                # reset the rendertask
+                render_task.status = self.statusAfterDeath
                 render_task.startTime = None
                 render_task.host = None
                 self.childKilled = False
             else:
                 # report that the job was finished
-                render_task.status = FINISHED # note: what if the process didn't run for some reason? maybe we should check the status code
+                render_task.status = FINISHED # note: what if the process didn't run for some reason? maybe we should check the return code
                 render_task.endTime = datetime.datetime.now( )
             
             # if nobody set status to OFFLINE, return to IDLE and continue to look for new jobs    
@@ -105,7 +106,7 @@ class RenderTCPServer(Servers.TCPServer):
             # discard info about the previous child process
             self.childProcess = None
             
-    def killCurrentJob(self):
+    def killCurrentJob(self, statusAfterDeath):
         """Kills the render node's current job if it's running one."""
         logger.debug("killing %r", self.childProcess)
         if self.childProcess:
@@ -113,6 +114,7 @@ class RenderTCPServer(Servers.TCPServer):
             self.childProcess.poll()
             if self.childProcess.returncode:
                 self.childKilled = True
+                self.statusAfterDeath = statusAfterDeath
         else:
             logger.debug("no process was running.")
         
