@@ -10,7 +10,7 @@ from LoggingSetup import logger
 
 def sendKillQuestion(renderhost):
     connection = TCPConnection(host=renderhost)
-    killed = connection.getAnswer(KillCurrentJobQuestion())
+    killed = connection.getAnswer(KillCurrentJobQuestion(statusAfterDeath=KILLED))
     if not killed:
         logger.debug("There was a problem killing the task running on %r" % renderhost)
 

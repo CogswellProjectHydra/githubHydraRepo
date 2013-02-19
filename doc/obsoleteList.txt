@@ -1,3 +1,6 @@
 This file lists any file in the hydra project which is known to be obsolete.
 ServerMain.py
 Hydra/models.py
+manage.py
+dbDemo.py
+dbTest.py
