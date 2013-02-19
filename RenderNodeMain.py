@@ -109,12 +109,13 @@ class RenderTCPServer(TCPServer):
     def killCurrentJob(self, statusAfterDeath):
         """Kills the render node's current job if it's running one."""
         logger.debug("killing %r", self.childProcess)
+        print "Status after death should be: {0:s}".format(statusAfterDeath)
         if self.childProcess:
             self.childProcess.kill()
-            self.childProcess.poll()
-            if self.childProcess.returncode:
-                self.childKilled = True
-                self.statusAfterDeath = statusAfterDeath
+            returncode = self.childProcess.poll()
+            print "Mayabatch returned {0:s}".format(returncode)
+            self.childKilled = True
+            self.statusAfterDeath = statusAfterDeath
         else:
             logger.debug("no process was running.")
         

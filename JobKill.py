@@ -3,13 +3,13 @@ Created on Feb 16, 2013
 
 @author: Aaron Cohn
 '''
-from MySQLSetup import Hydra_rendertask, transaction, KILLED
+from MySQLSetup import Hydra_rendertask, transaction, KILLED, READY
 from Connections import TCPConnection
 from Questions import KillCurrentJobQuestion
 from LoggingSetup import logger
 
 def sendKillQuestion(renderhost):
-    connection = TCPConnection(host=renderhost)
+    connection = TCPConnection(hostname=renderhost)
     killed = connection.getAnswer(KillCurrentJobQuestion(statusAfterDeath=KILLED))
     if not killed:
         logger.debug("There was a problem killing the task running on %r" % renderhost)
@@ -43,3 +43,10 @@ def killjob(job_id):
     startedTasks = Hydra_rendertask.fetch("where status = 'S' and job_id = %s" % job_id)
     for host in [getHost(task) for task in startedTasks]:
         sendKillQuestion(host)
+
+def resurrectJob(job_id):
+    with transaction():
+        killedTasks = Hydra_rendertask.fetch("where status = 'K' and job_id = %s" % job_id)
+        for task in killedTasks:
+            task.status = READY
+            task.update()

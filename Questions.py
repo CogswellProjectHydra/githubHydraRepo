@@ -91,9 +91,8 @@ class RenderQuestion( Question ):
 class KillCurrentJobQuestion (Question):
     """A Question for killing a job on a RenderTCPServer"""
     def __init__(self, statusAfterDeath):
-        self.status = statusAfterDeath
+        self.statusAfterDeath = statusAfterDeath
         
     def computeAnswer(self, server):
-        if isinstance(server, RenderTCPServer):
-            server.killCurrentJob()
+            server.killCurrentJob(self.statusAfterDeath)
             return KillCurrentJobAnswer(server.childKilled)
