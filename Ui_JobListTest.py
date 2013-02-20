@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'Ui_JobListTest.ui'
 #
-# Created: Fri Feb 15 16:18:06 2013
-#      by: PyQt4 UI code generator 4.9.6
+# Created: Wed Feb 20 08:23:41 2013
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,83 +12,79 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    def _fromUtf8(s):
-        return s
-
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+    _fromUtf8 = lambda s: s
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(941, 480)
+        MainWindow.resize(847, 305)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.label = QtGui.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(30, 20, 53, 16))
-        self.label.setObjectName(_fromUtf8("label"))
-        self.tableWidget = QtGui.QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(30, 40, 261, 192))
-        self.tableWidget.setObjectName(_fromUtf8("tableWidget"))
-        self.tableWidget.setColumnCount(2)
-        self.tableWidget.setRowCount(0)
+        self.jobTableLabel = QtGui.QLabel(self.centralwidget)
+        self.jobTableLabel.setGeometry(QtCore.QRect(30, 20, 53, 16))
+        self.jobTableLabel.setObjectName(_fromUtf8("jobTableLabel"))
+        self.jobTable = QtGui.QTableWidget(self.centralwidget)
+        self.jobTable.setGeometry(QtCore.QRect(30, 40, 261, 192))
+        self.jobTable.setObjectName(_fromUtf8("jobTable"))
+        self.jobTable.setColumnCount(2)
+        self.jobTable.setRowCount(0)
         item = QtGui.QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(0, item)
+        self.jobTable.setHorizontalHeaderItem(0, item)
         item = QtGui.QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(1, item)
-        self.tableWidget_2 = QtGui.QTableWidget(self.centralwidget)
-        self.tableWidget_2.setGeometry(QtCore.QRect(300, 40, 511, 192))
-        self.tableWidget_2.setObjectName(_fromUtf8("tableWidget_2"))
-        self.tableWidget_2.setColumnCount(5)
-        self.tableWidget_2.setRowCount(0)
+        self.jobTable.setHorizontalHeaderItem(1, item)
+        self.taskTable = QtGui.QTableWidget(self.centralwidget)
+        self.taskTable.setGeometry(QtCore.QRect(300, 40, 511, 192))
+        self.taskTable.setObjectName(_fromUtf8("taskTable"))
+        self.taskTable.setColumnCount(5)
+        self.taskTable.setRowCount(0)
         item = QtGui.QTableWidgetItem()
-        self.tableWidget_2.setHorizontalHeaderItem(0, item)
+        self.taskTable.setHorizontalHeaderItem(0, item)
         item = QtGui.QTableWidgetItem()
-        self.tableWidget_2.setHorizontalHeaderItem(1, item)
+        self.taskTable.setHorizontalHeaderItem(1, item)
         item = QtGui.QTableWidgetItem()
-        self.tableWidget_2.setHorizontalHeaderItem(2, item)
+        self.taskTable.setHorizontalHeaderItem(2, item)
         item = QtGui.QTableWidgetItem()
-        self.tableWidget_2.setHorizontalHeaderItem(3, item)
+        self.taskTable.setHorizontalHeaderItem(3, item)
         item = QtGui.QTableWidgetItem()
-        self.tableWidget_2.setHorizontalHeaderItem(4, item)
-        self.label_2 = QtGui.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(300, 20, 511, 16))
-        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.taskTable.setHorizontalHeaderItem(4, item)
+        self.taskTableLabel = QtGui.QLabel(self.centralwidget)
+        self.taskTableLabel.setGeometry(QtCore.QRect(300, 20, 511, 16))
+        self.taskTableLabel.setObjectName(_fromUtf8("taskTableLabel"))
+        self.killJobButton = QtGui.QPushButton(self.centralwidget)
+        self.killJobButton.setGeometry(QtCore.QRect(30, 240, 93, 28))
+        self.killJobButton.setObjectName(_fromUtf8("killJobButton"))
+        self.killTaskButton = QtGui.QPushButton(self.centralwidget)
+        self.killTaskButton.setGeometry(QtCore.QRect(300, 240, 93, 28))
+        self.killTaskButton.setObjectName(_fromUtf8("killTaskButton"))
+        self.refreshButton = QtGui.QPushButton(self.centralwidget)
+        self.refreshButton.setGeometry(QtCore.QRect(730, 240, 75, 31))
+        self.refreshButton.setObjectName(_fromUtf8("refreshButton"))
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 941, 26))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        MainWindow.setStatusBar(self.statusbar)
-        self.label.setBuddy(self.tableWidget)
-        self.label_2.setBuddy(self.tableWidget)
+        self.jobTableLabel.setBuddy(self.jobTable)
+        self.taskTableLabel.setBuddy(self.jobTable)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.label.setText(_translate("MainWindow", "Job List", None))
-        item = self.tableWidget.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "Job name", None))
-        item = self.tableWidget.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Job id", None))
-        item = self.tableWidget_2.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "Task ID", None))
-        item = self.tableWidget_2.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Host", None))
-        item = self.tableWidget_2.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "Status", None))
-        item = self.tableWidget_2.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "Start Time", None))
-        item = self.tableWidget_2.horizontalHeaderItem(4)
-        item.setText(_translate("MainWindow", "End Time", None))
-        self.label_2.setText(_translate("MainWindow", "Task List (job: none selected)", None))
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
+        self.jobTableLabel.setText(QtGui.QApplication.translate("MainWindow", "Job List", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.jobTable.horizontalHeaderItem(0)
+        item.setText(QtGui.QApplication.translate("MainWindow", "Job name", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.jobTable.horizontalHeaderItem(1)
+        item.setText(QtGui.QApplication.translate("MainWindow", "Job id", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.taskTable.horizontalHeaderItem(0)
+        item.setText(QtGui.QApplication.translate("MainWindow", "Task ID", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.taskTable.horizontalHeaderItem(1)
+        item.setText(QtGui.QApplication.translate("MainWindow", "Host", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.taskTable.horizontalHeaderItem(2)
+        item.setText(QtGui.QApplication.translate("MainWindow", "Status", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.taskTable.horizontalHeaderItem(3)
+        item.setText(QtGui.QApplication.translate("MainWindow", "Start Time", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.taskTable.horizontalHeaderItem(4)
+        item.setText(QtGui.QApplication.translate("MainWindow", "End Time", None, QtGui.QApplication.UnicodeUTF8))
+        self.taskTableLabel.setText(QtGui.QApplication.translate("MainWindow", "Task List (job: none selected)", None, QtGui.QApplication.UnicodeUTF8))
+        self.killJobButton.setText(QtGui.QApplication.translate("MainWindow", "Kill Job", None, QtGui.QApplication.UnicodeUTF8))
+        self.killTaskButton.setText(QtGui.QApplication.translate("MainWindow", "Kill Task", None, QtGui.QApplication.UnicodeUTF8))
+        self.refreshButton.setText(QtGui.QApplication.translate("MainWindow", "Refresh", None, QtGui.QApplication.UnicodeUTF8))
 
