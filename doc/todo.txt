@@ -1,2 +1,10 @@
 - kill an entire job and all of its subtasks (even ones that are running)
-- display the jobs/tasks nicely in a GUI so that the user can select a job to kill
+
+update: it works, sorta. it correctly kills all Ready tasks for a specified job,
+but has issues with killing jobs that are running. it can only talk to nodes if
+the hostnames are correct relative to the local machine. the other issue is that
+sometimes the nodes don't seem to get the message, or for some reason they're
+not responding.
+
+- display the jobs/tasks nicely in a GUI so that the user can select a job to
+kill
