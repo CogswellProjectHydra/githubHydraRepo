@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'getOff.ui'
+# Form implementation generated from reading ui file 'Ui_getOff.ui'
 #
-# Created: Fri Feb 08 00:02:05 2013
+# Created: Tue Feb 19 23:44:49 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -67,6 +67,9 @@ class Ui_MainWindow(object):
         self.nameLabel = QtGui.QLabel(self.centralwidget)
         self.nameLabel.setGeometry(QtCore.QRect(140, 20, 281, 16))
         self.nameLabel.setObjectName(_fromUtf8("nameLabel"))
+        self.refreshButton = QtGui.QPushButton(self.centralwidget)
+        self.refreshButton.setGeometry(QtCore.QRect(140, 90, 93, 28))
+        self.refreshButton.setObjectName(_fromUtf8("refreshButton"))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -83,4 +86,5 @@ class Ui_MainWindow(object):
         self.statusLabel.setText(_translate("MainWindow", "Status:", None))
         self.jobLabel.setText(_translate("MainWindow", "Job id:", None))
         self.nameLabel.setText(_translate("MainWindow", "Node name:", None))
+        self.refreshButton.setText(_translate("MainWindow", "Refresh Info", None))
 
