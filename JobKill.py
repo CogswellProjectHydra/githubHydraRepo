@@ -11,15 +11,11 @@ from LoggingSetup import logger
 from sys import argv
 
 def sendKillQuestion(renderhost):
-    try:
-        connection = TCPConnection(hostname=renderhost)
-        killed = connection.getAnswer(KillCurrentJobQuestion(statusAfterDeath=KILLED))
-        if not killed:
-            logger.debug("%r tried to kill its job but failed for some reason." % renderhost)
-        return killed
-    except socketerror:
-        print "There was a problem communicating with {0:s}".format(renderhost)
-        return False
+    connection = TCPConnection(hostname=renderhost)
+    killed = connection.getAnswer(KillCurrentJobQuestion(statusAfterDeath=KILLED))
+    if not killed:
+        logger.debug("%r tried to kill its job but failed for some reason." % renderhost)
+    return killed
     
 def kill(job_id):
     # open transaction -- no race condition
@@ -48,12 +44,14 @@ def kill(job_id):
             task.update()
             
     startedTasks = Hydra_rendertask.fetch("where status = 'S' and job_id = %s" % job_id)
-    errorFlag = False
+    error = False
     for host in [getHost(task) for task in startedTasks]:
-        wasSuccessful = sendKillQuestion(host)
-        errorFlag = errorFlag or wasSuccessful
-    
-    if errorFlag:
+        try:
+            error = error or sendKillQuestion(host)
+        except socketerror:
+            print "There was a problem communicating with {0:s}".format(host)
+            error = True
+    if error:
         print "Some jobs could not be killed."
 
 def resurrect(job_id):
