@@ -38,6 +38,42 @@ class FarmView( QMainWindow, Ui_FarmView ):
         QObject.connect(self.offlineButton, SIGNAL("clicked()"), self.offline)
         QObject.connect(self.getOffButton, SIGNAL("clicked()"), self.getOff)
 
+    def getOff(self):
+        """
+        Offlines the node and sends a message to the render node server running on localhost to
+        kill its current task
+        """
+        self.offline()
+        try:
+            self.connection = TCPConnection()
+            killed = self.getAnswer(KillCurrentJobQuestion(statusAfterDeath=READY))
+            if not killed:
+                logger.debug("There was a problem killing the task.")
+                QMessageBox.about(self, "Error", "There was a problem killing the task.")
+        except socketerror:
+            QMessageBox.about(self, "Error", "The render node software is not running or has become unresponsive.")
+            
+        self.updateRenderNodeInfo()
+        
+    def online(self):
+        """Changes the local render node's status to online if it wasn't on-line already"""
+        with transaction():
+            [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+            if thisNode.status == OFFLINE:
+                thisNode.status = IDLE
+                thisNode.update()
+            else:
+                logger.debug("Node is already online.")
+            self.updateRenderNodeInfo()
+            
+    def offline(self):
+        """Changes the local render node's status to offline"""
+        with transaction():
+            [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+            thisNode.status = OFFLINE
+            thisNode.update()
+        self.updateRenderNodeInfo()
+        
     # refresh the display, rebuilding every blessed widget.
     def doFetch( self ):
 
@@ -154,42 +190,6 @@ def updateRenderNodeInfo(self):
                 self.jobLabel.setText("Job id: None")
         else:
             QMessageBox.about(self, "Error", "This computer is not registered as a render node.")
-
-def getOff(self):
-    """
-    Offlines the node and sends a message to the render node server running on localhost to
-    kill its current task
-    """
-    self.offline()
-    try:
-        self.connection = TCPConnection()
-        killed = self.getAnswer(KillCurrentJobQuestion(statusAfterDeath=READY))
-        if not killed:
-            logger.debug("There was a problem killing the task.")
-            QMessageBox.about(self, "Error", "There was a problem killing the task.")
-    except socketerror:
-        QMessageBox.about(self, "Error", "The render node software is not running or has become unresponsive.")
-        
-    self.updateRenderNodeInfo()
-    
-def online(self):
-    """Changes the local render node's status to online if it wasn't on-line already"""
-    with transaction():
-        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
-        if thisNode.status == OFFLINE:
-            thisNode.status = IDLE
-            thisNode.update()
-        else:
-            logger.debug("Node is already online.")
-        self.updateRenderNodeInfo()
-        
-def offline(self):
-    """Changes the local render node's status to offline"""
-    with transaction():
-        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
-        thisNode.status = OFFLINE
-        thisNode.update()
-    self.updateRenderNodeInfo()
 
 if __name__ == '__main__':
     app = QApplication( sys.argv )

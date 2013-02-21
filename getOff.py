@@ -38,7 +38,7 @@ class getOffWindow(QMainWindow, Ui_MainWindow, Client):
             self.nameLabel.setText("Node name: " + thisNode.host)
             self.statusLabel.setText("Status: " + codes[thisNode.status])
             if thisNode.task_id:
-                self.jobLabel.setText("Job id: " + thisNode.task_id)
+                self.jobLabel.setText("Job id: {0:d}".format(thisNode.task_id))
             else:
                 self.jobLabel.setText("Job id: None")
         else:

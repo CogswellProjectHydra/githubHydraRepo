@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'Ui_FarmView.ui'
 #
-# Created: Tue Sep 18 19:54:39 2012
-#      by: PyQt4 UI code generator 4.9.1
+# Created: Wed Feb 20 19:36:43 2013
+#      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_FarmView(object):
     def setupUi(self, FarmView):
@@ -30,8 +39,54 @@ class Ui_FarmView(object):
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.gridLayout.addLayout(self.horizontalLayout, 2, 0, 1, 1)
+        self.statusLabel = QtGui.QLabel(self.centralwidget)
+        self.statusLabel.setText(_fromUtf8(""))
+        self.statusLabel.setObjectName(_fromUtf8("statusLabel"))
+        self.gridLayout.addWidget(self.statusLabel, 1, 0, 1, 1)
         self.tabWidget = QtGui.QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
+        self.thisNodeTab = QtGui.QWidget()
+        self.thisNodeTab.setObjectName(_fromUtf8("thisNodeTab"))
+        self.widget = QtGui.QWidget(self.thisNodeTab)
+        self.widget.setGeometry(QtCore.QRect(10, 20, 95, 100))
+        self.widget.setObjectName(_fromUtf8("widget"))
+        self.verticalLayout = QtGui.QVBoxLayout(self.widget)
+        self.verticalLayout.setMargin(0)
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.onlineButton = QtGui.QPushButton(self.widget)
+        self.onlineButton.setObjectName(_fromUtf8("onlineButton"))
+        self.verticalLayout.addWidget(self.onlineButton)
+        self.offlineButton = QtGui.QPushButton(self.widget)
+        self.offlineButton.setObjectName(_fromUtf8("offlineButton"))
+        self.verticalLayout.addWidget(self.offlineButton)
+        self.getOffButton = QtGui.QPushButton(self.widget)
+        self.getOffButton.setObjectName(_fromUtf8("getOffButton"))
+        self.verticalLayout.addWidget(self.getOffButton)
+        self.widget1 = QtGui.QWidget(self.thisNodeTab)
+        self.widget1.setGeometry(QtCore.QRect(120, 20, 126, 64))
+        self.widget1.setObjectName(_fromUtf8("widget1"))
+        self.formLayout = QtGui.QFormLayout(self.widget1)
+        self.formLayout.setMargin(0)
+        self.formLayout.setObjectName(_fromUtf8("formLayout"))
+        self.nodeNameLabelLabel = QtGui.QLabel(self.widget1)
+        self.nodeNameLabelLabel.setObjectName(_fromUtf8("nodeNameLabelLabel"))
+        self.formLayout.setWidget(0, QtGui.QFormLayout.LabelRole, self.nodeNameLabelLabel)
+        self.nodeNameLabel = QtGui.QLabel(self.widget1)
+        self.nodeNameLabel.setObjectName(_fromUtf8("nodeNameLabel"))
+        self.formLayout.setWidget(0, QtGui.QFormLayout.FieldRole, self.nodeNameLabel)
+        self.nodeStatusLabelLabel = QtGui.QLabel(self.widget1)
+        self.nodeStatusLabelLabel.setObjectName(_fromUtf8("nodeStatusLabelLabel"))
+        self.formLayout.setWidget(1, QtGui.QFormLayout.LabelRole, self.nodeStatusLabelLabel)
+        self.nodeStatusLabel = QtGui.QLabel(self.widget1)
+        self.nodeStatusLabel.setObjectName(_fromUtf8("nodeStatusLabel"))
+        self.formLayout.setWidget(1, QtGui.QFormLayout.FieldRole, self.nodeStatusLabel)
+        self.taskIDLabelLabel = QtGui.QLabel(self.widget1)
+        self.taskIDLabelLabel.setObjectName(_fromUtf8("taskIDLabelLabel"))
+        self.formLayout.setWidget(2, QtGui.QFormLayout.LabelRole, self.taskIDLabelLabel)
+        self.taskIDLabel = QtGui.QLabel(self.widget1)
+        self.taskIDLabel.setObjectName(_fromUtf8("taskIDLabel"))
+        self.formLayout.setWidget(2, QtGui.QFormLayout.FieldRole, self.taskIDLabel)
+        self.tabWidget.addTab(self.thisNodeTab, _fromUtf8(""))
         self.renderNodesTab = QtGui.QWidget()
         self.renderNodesTab.setObjectName(_fromUtf8("renderNodesTab"))
         self.gridLayout_4 = QtGui.QGridLayout(self.renderNodesTab)
@@ -41,7 +96,7 @@ class Ui_FarmView(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 739, 316))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 727, 285))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.gridLayout_3 = QtGui.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
@@ -61,7 +116,7 @@ class Ui_FarmView(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 756, 316))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 748, 285))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -79,13 +134,9 @@ class Ui_FarmView(object):
         self.gridLayout_5.addWidget(self.scrollArea_2, 0, 0, 1, 1)
         self.tabWidget.addTab(self.jobsTab, _fromUtf8(""))
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
-        self.statusLabel = QtGui.QLabel(self.centralwidget)
-        self.statusLabel.setText(_fromUtf8(""))
-        self.statusLabel.setObjectName(_fromUtf8("statusLabel"))
-        self.gridLayout.addWidget(self.statusLabel, 1, 0, 1, 1)
         FarmView.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(FarmView)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 26))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         FarmView.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(FarmView)
@@ -93,12 +144,22 @@ class Ui_FarmView(object):
         FarmView.setStatusBar(self.statusbar)
 
         self.retranslateUi(FarmView)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(FarmView)
 
     def retranslateUi(self, FarmView):
-        FarmView.setWindowTitle(QtGui.QApplication.translate("FarmView", "FarmView", None, QtGui.QApplication.UnicodeUTF8))
-        self.fetchButton.setText(QtGui.QApplication.translate("FarmView", "Fetch", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.renderNodesTab), QtGui.QApplication.translate("FarmView", "Render Nodes", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.jobsTab), QtGui.QApplication.translate("FarmView", "Jobs", None, QtGui.QApplication.UnicodeUTF8))
+        FarmView.setWindowTitle(_translate("FarmView", "FarmView", None))
+        self.fetchButton.setText(_translate("FarmView", "Fetch", None))
+        self.onlineButton.setText(_translate("FarmView", "Online", None))
+        self.offlineButton.setText(_translate("FarmView", "Offline", None))
+        self.getOffButton.setText(_translate("FarmView", "Get Off!", None))
+        self.nodeNameLabelLabel.setText(_translate("FarmView", "Node name:", None))
+        self.nodeNameLabel.setText(_translate("FarmView", "(empty)", None))
+        self.nodeStatusLabelLabel.setText(_translate("FarmView", "Node status:", None))
+        self.nodeStatusLabel.setText(_translate("FarmView", "(empty)", None))
+        self.taskIDLabelLabel.setText(_translate("FarmView", "Task ID:", None))
+        self.taskIDLabel.setText(_translate("FarmView", "(empty)", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.thisNodeTab), _translate("FarmView", "This Node", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.renderNodesTab), _translate("FarmView", "Render Nodes", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.jobsTab), _translate("FarmView", "Jobs", None))
 
