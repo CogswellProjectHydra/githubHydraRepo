@@ -53,7 +53,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         except socketerror:
             QMessageBox.about(self, "Error", "The render node software is not running or has become unresponsive.")
             
-        self.updateRenderNodeInfo()
+        self.updateThisNodeInfo()
         
     def online(self):
         """Changes the local render node's status to online if it wasn't on-line already"""
@@ -64,7 +64,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
                 thisNode.update()
             else:
                 logger.debug("Node is already online.")
-            self.updateRenderNodeInfo()
+            self.updateThisNodeInfo()
             
     def offline(self):
         """Changes the local render node's status to offline"""
@@ -72,19 +72,44 @@ class FarmView( QMainWindow, Ui_FarmView ):
             [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
             thisNode.status = OFFLINE
             thisNode.update()
-        self.updateRenderNodeInfo()
+        self.updateThisNodeInfo()
         
     # refresh the display, rebuilding every blessed widget.
     def doFetch( self ):
+        
+        self.updateThisNodeInfo()
+        self.updateRenderNodeGrid()
+        self.updateRenderTaskGrid()
+        self.updateStatusBar()
 
-        with transaction ():
+    def updateThisNodeInfo(self):
+        
+        with transaction():
+            [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        
+        if thisNode:
+            self.nodeNameLabel.setText(thisNode.host)
+            self.nodeStatusLabel.setText(codes[thisNode.status])
+            if thisNode.task_id:
+                self.taskIDLabel.setText(str(thisNode.task_id))
+            else:
+                self.taskIDLabel.setText("None")
+        else:
+            QMessageBox.about(self, "Error", "This computer is not registered as a render node.")
+            
+    def updateRenderNodeGrid(self):
+        
+        with transaction():
             columns = [
                 labelAttr( 'host' ),
                 labelAttr( 'status' ),
                 labelAttr( 'task_id' ),
                 getOffButton ("Get off!!!")]
-            setup( Hydra_rendernode.fetch (), columns, self.renderNodesGrid)        
+            setup( Hydra_rendernode.fetch (), columns, self.renderNodesGrid)
 
+    def updateRenderTaskGrid(self):
+        
+        with transaction ():        
             columns = [
                 labelAttr( 'id' ),
                 labelAttr( 'status' ),
@@ -97,14 +122,16 @@ class FarmView( QMainWindow, Ui_FarmView ):
             setup( Hydra_rendertask.fetch (order = "order by id desc",
                                            limit = self.limitSpinBox.value ()), columns, self.jobsGrid)
 
-            cur.execute ("""
-select count(status), status from Hydra_rendernode
-group by status
-""")
+    def updateStatusBar(self):
+        
+        with transaction():
+            cur.execute ("""select count(status), status from Hydra_rendernode
+                            group by status
+                        """)
             counts = cur.fetchall ()
             logger.debug (counts)
             countString = ", ".join (["%d %s" % (count, codes[status])
-                                      for (count, status) in counts]) # KeyError 'S'
+                                      for (count, status) in counts])
             time = datetime.datetime.now().strftime ("%H:%M")
             msg = "%s as of %s" % (countString, time)
             self.statusLabel.setText (msg)
@@ -176,20 +203,6 @@ class getOffButton (labelAttr):
 
     def doGetOff (self, record):
         logger.debug('clobber %s', record.host)
-
-def updateRenderNodeInfo(self):
-        with transaction():
-            [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
-        
-        if thisNode.host:
-            self.nameLabel.setText("Node name: " + thisNode.host)
-            self.statusLabel.setText("Status: " + codes[thisNode.status])
-            if thisNode.task_id:
-                self.jobLabel.setText("Job id: " + thisNode.task_id)
-            else:
-                self.jobLabel.setText("Job id: None")
-        else:
-            QMessageBox.about(self, "Error", "This computer is not registered as a render node.")
 
 if __name__ == '__main__':
     app = QApplication( sys.argv )
