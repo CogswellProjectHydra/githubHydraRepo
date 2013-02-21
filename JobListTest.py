@@ -28,6 +28,7 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setupUi(self)
+        self.refreshHandler()
 
         QObject.connect (self.refreshButton, SIGNAL("clicked()"), self.refreshHandler)
         # register buttons
@@ -38,9 +39,9 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
         self.jobTable.setRowCount (len (jobs))
         for pos, job in enumerate (jobs):
             ticket = pickle.loads(job.pickledTicket)
-            self.jobTable.setItem (pos, 0, QTableWidgetItem(ticket.sceneFile))
+            self.jobTable.setItem (pos, 1, QTableWidgetItem(ticket.name ()))
 
-            self.jobTable.setItem (pos, 1, QTableWidgetItem(str(job.id)))
+            self.jobTable.setItem (pos, 0, QTableWidgetItem(str(job.id)))
         
 if __name__ == '__main__':
     app = QApplication( sys.argv )
