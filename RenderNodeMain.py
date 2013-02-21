@@ -121,6 +121,7 @@ class RenderTCPServer(TCPServer):
         
 
 def main ():
+    logger.info ('starting in %s', os.getcwd())
     socketServer = RenderTCPServer( )
 #    socketServer.serverThread.join( )
     socketServer.createIdleLoop (5, socketServer.processRenderTasks )
