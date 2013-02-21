@@ -47,6 +47,9 @@
         </item>
         <item row="1" column="0" colspan="3">
          <widget class="QTableWidget" name="jobTable">
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
           <column>
            <property name="text">
             <string>Job id</string>
