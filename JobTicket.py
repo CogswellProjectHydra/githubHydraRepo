@@ -21,14 +21,21 @@ class JobTicket:
     def createTasks( self, job ):
         raise NotImplemented
 
+    def name (self):
+        return 'unnamed generic'
+
 class MayaTicket( JobTicket ):
 
     def __init__( self, sceneFile, startFrame, endFrame, batchSize, priority ):
+        print ('initializing', self)
         self.sceneFile = sceneFile
         self.startFrame = startFrame
         self.endFrame = endFrame
         self.batchSize = batchSize
         self.priority = priority
+
+    def name (self):
+        return self.sceneFile
 
     def createTasks( self, job ):
         starts = range( self.startFrame, self.endFrame + 1, self.batchSize )
@@ -60,6 +67,9 @@ class CMDTicket(JobTicket):
     def __init__(self, cmd):
         self.command = cmd
         self.priority = 50
+
+    def name (self):
+        return str (self.command)
         
     def createTasks(self, job):
         Hydra_rendertask( status = READY,

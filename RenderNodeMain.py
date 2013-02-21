@@ -112,8 +112,6 @@ class RenderTCPServer(TCPServer):
         print "Status after death should be: {0:s}".format(statusAfterDeath)
         if self.childProcess:
             self.childProcess.kill()
-            returncode = self.childProcess.poll()
-            print "Mayabatch returned {0:s}".format(returncode)
             self.childKilled = True
             self.statusAfterDeath = statusAfterDeath
         else:
