@@ -7,4 +7,7 @@ sometimes the nodes don't seem to get the message, or for some reason they're
 not responding.
 
 - display the jobs/tasks nicely in a GUI so that the user can select a job to
-kill
+kill [it works]
+
+-make a render calculator that, given an estimate in minutes-per-frame, can 
+tell user roughly how long it should take given the batch size they're using

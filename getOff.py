@@ -81,6 +81,7 @@ class getOffWindow(QMainWindow, Ui_MainWindow, Client):
         self.updateRenderNodeInfo()
         
 if __name__ == '__main__':
+    
     app = QApplication( sys.argv )
     
     window = getOffWindow( )
