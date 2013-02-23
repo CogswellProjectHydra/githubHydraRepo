@@ -3,7 +3,7 @@ import os
 import LoggingSetup
 import Utils
 
-from MySQLSetup import Hydra_rendernode, OFFLINE
+from MySQLSetup import Hydra_rendernode, OFFLINE, transaction
 
 import ConfigParser
 
@@ -15,4 +15,6 @@ minJobPriority = config.get(section="rendernode", option="minJobPriority")
 
 if Hydra_rendernode.fetch( "where host = '%s'" % me ):
     raise Exception( 'already registered' )
-Hydra_rendernode ( host = me, status = OFFLINE, minPriority = minJobPriority).insert( )
+
+with transaction() as t:
+    Hydra_rendernode ( host = me, status = OFFLINE, minPriority = minJobPriority).insert(t)

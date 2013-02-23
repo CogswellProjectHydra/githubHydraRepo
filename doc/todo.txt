@@ -1,21 +1,15 @@
-- kill an entire job and all of its subtasks (even ones that are running)
-
-update: it works, sorta. it correctly kills all Ready tasks for a specified job,
-but has issues with killing jobs that are running. it can only talk to nodes if
-the hostnames are correct relative to the local machine. the other issue is that
-sometimes the nodes don't seem to get the message, or for some reason they're
-not responding.
-
-- display the jobs/tasks nicely in a GUI so that the user can select a job to
-kill [it works]
-
+-find out what the problem is with the Questions import and fix it
 -make a render calculator that, given an estimate in minutes-per-frame, can
 tell user roughly how long it should take given the batch size they're using
 
--Make it so everybody gets their own logger. The way it works is you do
-"from logging import logger" and you get this global logger object for your
-whole application. the trick is, you have to set it up with a file path that
-belongs to your program. but i guess it can do that for you! [DONE]
+- kill an entire job and all of its subtasks (even ones that are running) 
+  [DONE]
+	Problems: 
+		1. It can only talk to nodes if the hostnames are correct relative to 
+	   	   the local machine. 
+		2. Sometimes the nodes don't seem to get the message.
 
--Database objects have a db attribute and a cur attribute... make sure those
-don't try to get written into the database! (in MySQLSetup.update)
+- display the jobs/tasks nicely in a GUI so that the user can select a job to
+kill [DONE]
+
+-Make it so every app gets its own log file [DONE]
