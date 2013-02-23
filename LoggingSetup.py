@@ -17,13 +17,16 @@ logger.setLevel(logging.DEBUG)
 """Sets the logger to log all messages of level DEBUG and greater (e.g., all log messages.)"""
 
 if argv[0]:
-    # get the path of the currently running process, throw away everything except its name, append .txt at the end
-    appname = argv[0].split('\\')[-1].replace('.exe', '.txt')
+    # get the full path of the currently running process, split it into pieces, and get the last piece (the file name of the process)
+    appname = argv[0].split('\\')[-1]
+    
+    # discard the file extension
+    appname = os.path.splitext(appname)[0]
 else:
-    appname = "default.txt"
+    appname = "interpreter_output"
 
-# log file goes in %TEMP%\HydraLog.txt
-logfileName = os.path.join( 'C:/Hydra/Logs/', appname )
+# set the log file path to C:\Hydra\Logs\appname.txt
+logfileName = os.path.join( 'C:\\Hydra\\Logs\\', appname + '.txt')
 """Specifies where the log file will be saved. For now, the log file is saved in the OS's temp directory (essentially for junk files)
 in a file named 'HydraLog.txt'. This behavior can later be changed to change how and where log messages are saved."""
 

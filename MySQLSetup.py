@@ -23,13 +23,8 @@ config.read ("C:/Hydra/hydraSettings.cfg")
 hostname = config.get (section="database", option="host")
 dbname = config.get (section="database", option="db")
 
-# open db connection
-db = MySQLdb.connect (hostname, user="root", db=dbname)
-cur = db.cursor ()
-cur.execute ("set autocommit = 1")
-
-def execute (queryString):
-    return cur.execute (queryString)
+#def execute (queryString):
+#    return cur.execute (queryString)
 
 class AUTOINCREMENT: pass
 
@@ -45,7 +40,16 @@ class tupleObject:
         self.__dict__['__dirty__'] = set ()
         for k, v in kwargs.iteritems ():
             self.__dict__[k] = v
-
+        
+        # open transaction on self
+        self.db = MySQLdb.connect (hostname, user="root", db=dbname)
+        self.cur = self.db.cursor ()
+        self.cur.execute ("set autocommit = 1")
+    
+    def __del__(self):
+        self.cur.execute("commit")
+        self.db.close()
+    
     def __setattr__ (self, k, v):
         self.__dict__[k] = v
         if Utils.nonFlanged (k):
@@ -61,10 +65,11 @@ class tupleObject:
                                                 orderClause,
                                              limitClause)
         logger.debug (select)
-        cur.execute (select)
-        names = [desc[0] for desc in cur.description]
-        return [cls (**dict (zip (names, tuple)))
-                for tuple in cur.fetchall ()]
+        with transaction() as t:
+            t.cur.execute (select)
+            names = [desc[0] for desc in t.cur.description]
+            return [cls (**dict (zip (names, tuple)))
+                    for tuple in t.cur.fetchall ()]
 
     def attributes (self):
         return filter (Utils.nonFlanged, self.__dict__.keys ())
@@ -80,16 +85,18 @@ class tupleObject:
                                                      nameString,
                                                      valueString)
         logger.debug (query)
-        cur.executemany (query, [values])
+        self.cur.executemany (query, [values])
         if self.autoColumn:
-            cur.execute ("select last_insert_id()")
-            [id] = cur.fetchone ()
+            self.cur.execute ("select last_insert_id()")
+            [id] = self.cur.fetchone ()
             self.__dict__[self.autoColumn] = id
         
     def update (self):
         names = list (self.__dirty__)
         if not names:
             return
+        names.remove('db')
+        names.remove('cur')
         values = ([getattr (self, name)
                   for name in names]
                      +
@@ -100,7 +107,7 @@ class tupleObject:
                                                       assignments,
                                                       self.primaryKey)
         logger.debug ((query, values))
-        cur.executemany (query, [values])
+        self.cur.executemany (query, [values])
 
 class Hydra_rendernode (tupleObject): 
     primaryKey = 'host'
@@ -119,18 +126,24 @@ class Hydra_test (tupleObject):
 
 class transaction:
 
+    def __init__(self):
+        # open db connection
+        self.db = MySQLdb.connect (hostname, user="root", db=dbname)
+        self.cur = self.db.cursor ()
+        self.cur.execute ("set autocommit = 1")
+        
     def __enter__ (self):
         logger.debug ("enter transaction")
-        cur.execute ("set autocommit = 0")
+        self.cur.execute ("set autocommit = 0")
+        return self
 
     def __exit__ (self, errorType, value, traceback):
         if errorType is None:
             logger.debug ("commit")
-            cur.execute ("commit")
+            self.cur.execute ("commit")
         else:
             logger.debug ("rollback")
-            cur.execute ("rollback")
+            self.cur.execute ("rollback")
         logger.debug ("exit transaction")
-        cur.execute ("set autocommit = 1")
-        
-        
+        self.cur.execute ("set autocommit = 1")
+        self.db.close()

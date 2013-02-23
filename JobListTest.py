@@ -14,7 +14,7 @@ from LoggingSetup import logger
 import pickle
 import JobTicket
 
-from MySQLSetup import Hydra_rendernode, Hydra_rendertask, Hydra_job, transaction, cur
+from MySQLSetup import Hydra_rendernode, Hydra_rendertask, Hydra_job, transaction#, cur
 
 
 codes = {'I': 'idle',
