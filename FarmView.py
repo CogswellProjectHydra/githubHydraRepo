@@ -57,22 +57,23 @@ class FarmView( QMainWindow, Ui_FarmView ):
         
     def online(self):
         """Changes the local render node's status to online if it wasn't on-line already"""
-        #with transaction():
+        
         [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
         if thisNode.status == OFFLINE:
             thisNode.status = IDLE
-            thisNode.update()
+            with transaction() as t:
+                thisNode.update(t)
         else:
             logger.debug("Node is already online.")
+            
         self.updateThisNodeInfo()
             
     def offline(self):
         """Changes the local render node's status to offline"""
-        #with transaction():
         [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
-        logger.debug(str(thisNode))
         thisNode.status = OFFLINE
-        thisNode.update()
+        with transaction() as t:
+            thisNode.update(t)
         self.updateThisNodeInfo()
         
     # refresh the display, rebuilding every blessed widget.
@@ -85,7 +86,6 @@ class FarmView( QMainWindow, Ui_FarmView ):
 
     def updateThisNodeInfo(self):
         
-        #with transaction():
         [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
         
         if thisNode:
@@ -100,7 +100,6 @@ class FarmView( QMainWindow, Ui_FarmView ):
             
     def updateRenderNodeGrid(self):
         
-        #with transaction():
         columns = [
             labelAttr( 'host' ),
             labelAttr( 'status' ),
@@ -110,7 +109,6 @@ class FarmView( QMainWindow, Ui_FarmView ):
 
     def updateRenderTaskGrid(self):
         
-        #with transaction ():        
         columns = [
             labelAttr( 'id' ),
             labelAttr( 'status' ),

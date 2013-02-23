@@ -40,15 +40,6 @@ class tupleObject:
         self.__dict__['__dirty__'] = set ()
         for k, v in kwargs.iteritems ():
             self.__dict__[k] = v
-        
-        # open transaction on self
-        self.db = MySQLdb.connect (hostname, user="root", db=dbname)
-        self.cur = self.db.cursor ()
-        self.cur.execute ("set autocommit = 1")
-    
-    def __del__(self):
-        self.cur.execute("commit")
-        self.db.close()
     
     def __setattr__ (self, k, v):
         self.__dict__[k] = v
@@ -74,7 +65,7 @@ class tupleObject:
     def attributes (self):
         return filter (Utils.nonFlanged, self.__dict__.keys ())
                        
-    def insert (self):
+    def insert (self, transaction):
             
         names = self.attributes ()
         values = [getattr (self, name)
@@ -85,18 +76,18 @@ class tupleObject:
                                                      nameString,
                                                      valueString)
         logger.debug (query)
-        self.cur.executemany (query, [values])
+        transaction.cur.executemany (query, [values])
         if self.autoColumn:
-            self.cur.execute ("select last_insert_id()")
-            [id] = self.cur.fetchone ()
+            transaction.cur.execute ("select last_insert_id()")
+            [id] = transaction.cur.fetchone ()
             self.__dict__[self.autoColumn] = id
         
-    def update (self):
+    def update (self, transaction):
+        
         names = list (self.__dirty__)
         if not names:
             return
-        names.remove('db')
-        names.remove('cur')
+        
         values = ([getattr (self, name)
                   for name in names]
                      +
@@ -107,7 +98,7 @@ class tupleObject:
                                                       assignments,
                                                       self.primaryKey)
         logger.debug ((query, values))
-        self.cur.executemany (query, [values])
+        transaction.cur.executemany (query, [values])
 
 class Hydra_rendernode (tupleObject): 
     primaryKey = 'host'

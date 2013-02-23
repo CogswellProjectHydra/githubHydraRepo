@@ -22,8 +22,6 @@ class RenderTCPServer(TCPServer):
         self.statusAfterDeath = None # must be a status from MySQLSetup
         
     def processRenderTasks(self):
-        
-        #with transaction( ):
             
         [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
         
@@ -48,8 +46,9 @@ class RenderTCPServer(TCPServer):
         thisNode.status = STARTED
         thisNode.task_id = render_task.id
         render_task.startTime = datetime.datetime.now( )
-        render_task.update( )
-        thisNode.update( )
+        with transaction() as t:
+            render_task.update(t)
+            thisNode.update(t)
             
         log = file( render_task.logFile, 'w' )
             
@@ -75,7 +74,6 @@ class RenderTCPServer(TCPServer):
         
         finally:
             # get the latest info about this render node
-            #with transaction():
             [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
             
             # check if the job was killed, then update the job board accordingly
@@ -97,9 +95,9 @@ class RenderTCPServer(TCPServer):
             thisNode.task_id = None
             
             # open a connection to the database and update the records
-            #with transaction( ):
-            render_task.update( )
-            thisNode.update( )
+            with transaction() as t:
+                render_task.update(t)
+                thisNode.update(t)
     
             log.close( )
             

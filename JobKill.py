@@ -36,12 +36,12 @@ def kill(job_id):
     
     def getHost(rendertask):
         return rendertask.host
-        
-    #with transaction():
+    
     # mark all of the ready tasks complete
     readyTasks = [finish(task) for task in Hydra_rendertask.fetch("where status = 'R' and job_id = %s" % job_id)]
-    for task in readyTasks:
-        task.update()
+    with transaction() as t:
+        for task in readyTasks:
+            task.update(t)
             
     startedTasks = Hydra_rendertask.fetch("where status = 'S' and job_id = %s" % job_id)
     error = False
@@ -55,11 +55,12 @@ def kill(job_id):
         print "Some jobs could not be killed."
 
 def resurrect(job_id):
-    #with transaction():
+    
     killedTasks = Hydra_rendertask.fetch("where status = 'K' and job_id = %s" % job_id)
-    for task in killedTasks:
-        task.status = READY
-        task.update()
+    with transaction() as t:
+        for task in killedTasks:
+            task.status = READY
+            task.update(t)
 
 def main(args):
     if len(args) == 3:
