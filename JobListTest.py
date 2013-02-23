@@ -8,14 +8,11 @@ import Servers
 from Clients import Client
 from Connections import TCPConnection
 from Questions import KillCurrentJobQuestion
-from MySQLSetup import transaction, Hydra_rendernode, IDLE, OFFLINE
+from MySQLSetup import transaction, Hydra_job, Hydra_rendertask, Hydra_rendernode, IDLE, OFFLINE
 import Utils
 from LoggingSetup import logger
 import pickle
 import JobTicket
-
-from MySQLSetup import Hydra_rendernode, Hydra_rendertask, Hydra_job, transaction, cur
-
 
 codes = {'I': 'idle',
          'R': 'ready',

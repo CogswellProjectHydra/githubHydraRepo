@@ -15,7 +15,7 @@ from Ui_FarmView import Ui_FarmView
 #from Hydra.models import RenderNode, RenderTask
 #from django.db import transaction
 
-from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, cur, READY, OFFLINE, IDLE
+from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, READY, OFFLINE, IDLE#, cur
 from Questions import KillCurrentJobQuestion
 import Utils
 from Connections import TCPConnection
@@ -57,21 +57,23 @@ class FarmView( QMainWindow, Ui_FarmView ):
         
     def online(self):
         """Changes the local render node's status to online if it wasn't on-line already"""
-        with transaction():
-            [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
-            if thisNode.status == OFFLINE:
-                thisNode.status = IDLE
-                thisNode.update()
-            else:
-                logger.debug("Node is already online.")
-            self.updateThisNodeInfo()
+        
+        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        if thisNode.status == OFFLINE:
+            thisNode.status = IDLE
+            with transaction() as t:
+                thisNode.update(t)
+        else:
+            logger.debug("Node is already online.")
+            
+        self.updateThisNodeInfo()
             
     def offline(self):
         """Changes the local render node's status to offline"""
-        with transaction():
-            [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
-            thisNode.status = OFFLINE
-            thisNode.update()
+        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        thisNode.status = OFFLINE
+        with transaction() as t:
+            thisNode.update(t)
         self.updateThisNodeInfo()
         
     # refresh the display, rebuilding every blessed widget.
@@ -84,8 +86,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
 
     def updateThisNodeInfo(self):
         
-        with transaction():
-            [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
         
         if thisNode:
             self.nodeNameLabel.setText(thisNode.host)
@@ -99,36 +100,34 @@ class FarmView( QMainWindow, Ui_FarmView ):
             
     def updateRenderNodeGrid(self):
         
-        with transaction():
-            columns = [
-                labelAttr( 'host' ),
-                labelAttr( 'status' ),
-                labelAttr( 'task_id' ),
-                getOffButton ("Get off!!!")]
-            setup( Hydra_rendernode.fetch (), columns, self.renderNodesGrid)
+        columns = [
+            labelAttr( 'host' ),
+            labelAttr( 'status' ),
+            labelAttr( 'task_id' ),
+            getOffButton ("Get off!!!")]
+        setup( Hydra_rendernode.fetch (), columns, self.renderNodesGrid)
 
     def updateRenderTaskGrid(self):
         
-        with transaction ():        
-            columns = [
-                labelAttr( 'id' ),
-                labelAttr( 'status' ),
-                textAttr( 'logFile' ),
-                labelAttr( 'host' ),
-                labelAttr( 'command' ),
-                labelAttr( 'startTime' ),
-                labelAttr( 'endTime' ),
-                labelAttr( 'exitCode' )]
-            setup( Hydra_rendertask.fetch (order = "order by id desc",
-                                           limit = self.limitSpinBox.value ()), columns, self.jobsGrid)
+        columns = [
+            labelAttr( 'id' ),
+            labelAttr( 'status' ),
+            textAttr( 'logFile' ),
+            labelAttr( 'host' ),
+            labelAttr( 'command' ),
+            labelAttr( 'startTime' ),
+            labelAttr( 'endTime' ),
+            labelAttr( 'exitCode' )]
+        setup( Hydra_rendertask.fetch (order = "order by id desc",
+                                        limit = self.limitSpinBox.value ()), columns, self.jobsGrid)
 
     def updateStatusBar(self):
         
-        with transaction():
-            cur.execute ("""select count(status), status from Hydra_rendernode
+        with transaction() as t:
+            t.cur.execute ("""select count(status), status from Hydra_rendernode
                             group by status
                         """)
-            counts = cur.fetchall ()
+            counts = t.cur.fetchall ()
             logger.debug (counts)
             countString = ", ".join (["%d %s" % (count, codes[status])
                                       for (count, status) in counts])

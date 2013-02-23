@@ -22,34 +22,33 @@ class RenderTCPServer(TCPServer):
         self.statusAfterDeath = None # must be a status from MySQLSetup
         
     def processRenderTasks(self):
+            
+        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
         
-        with transaction( ):
-            
-            [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
-            
-            logger.debug("This render node is: %r\nrender node status: %r", thisNode.host, thisNode.status)
-            
-            # If this node is not idle, it must be OFFLINE, so don't try to find a new job
-            if thisNode.status != IDLE:
-                return
-            
-            # otherwise, get a job that's ready to be run and has a high enough priority level for this particular node
-            render_tasks = Hydra_rendertask.fetch ("where status = '%s' and priority >= %s" % (READY, thisNode.minPriority), limit=1, order="order by priority desc")
-            if not render_tasks:
-                return
-            render_task = render_tasks[0]
-            
-            # create a log for this task and update the task entry in the database
-            if not os.path.isdir( RENDERLOGDIR ):
-                os.makedirs( RENDERLOGDIR )
-            render_task.logFile = os.path.join( RENDERLOGDIR, '%010d.log.txt' % render_task.id )
-            render_task.status = STARTED
-            render_task.host = thisNode.host
-            thisNode.status = STARTED
-            thisNode.task_id = render_task.id
-            render_task.startTime = datetime.datetime.now( )
-            render_task.update( )
-            thisNode.update( )
+        logger.debug("This render node is: %r\nrender node status: %r", thisNode.host, thisNode.status)
+        
+        # If this node is not idle, it must be OFFLINE, so don't try to find a new job
+        if thisNode.status != IDLE:
+            return
+        
+        # otherwise, get a job that's ready to be run and has a high enough priority level for this particular node
+        render_tasks = Hydra_rendertask.fetch ("where status = '%s' and priority >= %s" % (READY, thisNode.minPriority), limit=1, order="order by priority desc")
+        if not render_tasks:
+            return
+        render_task = render_tasks[0]
+        
+        # create a log for this task and update the task entry in the database
+        if not os.path.isdir( RENDERLOGDIR ):
+            os.makedirs( RENDERLOGDIR )
+        render_task.logFile = os.path.join( RENDERLOGDIR, '%010d.log.txt' % render_task.id )
+        render_task.status = STARTED
+        render_task.host = thisNode.host
+        thisNode.status = STARTED
+        thisNode.task_id = render_task.id
+        render_task.startTime = datetime.datetime.now( )
+        with transaction() as t:
+            render_task.update(t)
+            thisNode.update(t)
             
         log = file( render_task.logFile, 'w' )
             
@@ -75,8 +74,7 @@ class RenderTCPServer(TCPServer):
         
         finally:
             # get the latest info about this render node
-            with transaction():
-                [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+            [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
             
             # check if the job was killed, then update the job board accordingly
             if self.childKilled:
@@ -97,9 +95,9 @@ class RenderTCPServer(TCPServer):
             thisNode.task_id = None
             
             # open a connection to the database and update the records
-            with transaction( ):
-                render_task.update( )
-                thisNode.update( )
+            with transaction() as t:
+                render_task.update(t)
+                thisNode.update(t)
     
             log.close( )
             
