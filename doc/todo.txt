@@ -11,3 +11,8 @@ kill [it works]
 
 -make a render calculator that, given an estimate in minutes-per-frame, can 
 tell user roughly how long it should take given the batch size they're using
+
+-Make it so everybody gets their own logger. The way it works is you do 
+"from logging import logger" and you get this global logger object for your 
+whole application. the trick is, you have to set it up with a file path that
+belongs to your program. but i guess it can do that for you!

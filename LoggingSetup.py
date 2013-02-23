@@ -1,22 +1,29 @@
 import logging
 import logging.handlers
 import os
+from sys import argv
 
-__doc__ = """Sets up the logging instances with formatters and handlers,
+"""Sets up the logging instances with formatters and handlers,
 for use in other modules, to make logging and debugging simple, easy and standardized."""
 
 # create logger
 logger = logging.getLogger()
 # to use:
 
-from LoggingSetup import logger
+#from LoggingSetup import logger
 
 # set logger level to DEBUG
 logger.setLevel(logging.DEBUG)
 """Sets the logger to log all messages of level DEBUG and greater (e.g., all log messages.)"""
 
+if argv[0]:
+    # get the path of the currently running process, throw away everything except its name, append .txt at the end
+    appname = argv[0].split('\\')[-1].replace('.exe', '.txt')
+else:
+    appname = "default.txt"
+
 # log file goes in %TEMP%\HydraLog.txt
-logfileName = os.path.join( os.getenv( 'TEMP' ), 'HydraLog.txt' )
+logfileName = os.path.join( 'C:/Hydra/Logs/', appname )
 """Specifies where the log file will be saved. For now, the log file is saved in the OS's temp directory (essentially for junk files)
 in a file named 'HydraLog.txt'. This behavior can later be changed to change how and where log messages are saved."""
 
