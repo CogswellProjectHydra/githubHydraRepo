@@ -27,9 +27,9 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         if 'scenes' not in scene.split ('/'):
             self.errorLabel.setText ('<B>File not in a scene folder.</B>')
             self.submitButton.setEnabled (False)
-        if ':' in scene:
-            self.errorLabel.setText ('<B>Use UNC paths, not mapped drives.</B>')
-            self.submitButton.setEnabled (False)
+##        if ':' in scene:
+##            self.errorLabel.setText ('<B>Use UNC paths, not mapped drives.</B>')
+##            self.submitButton.setEnabled (False)
 
         self.startSpinBox.setValue( eval (start ) )
         self.endSpinBox.setValue( eval( end ) )
