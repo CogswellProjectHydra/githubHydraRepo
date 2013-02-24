@@ -1,26 +1,24 @@
-1) [DONE] remove batch size spinner in favor of number of machines spinner, make
-corresponding fix in MayaJobTicket (or wherever the render tasks are created.)
-Fix the tab order of the number entry boxes.
+1) Introduce a "projects" table into the database and add a "project" column
+to the other Hydra tables, which must be a foreign key into the "projects"
+table.
+	a)	Add a drop-down menu to FarmView->ThisNode with a list of projects that
+		are available to choose from. On selection, spawn a YesNo dialog which
+		asks if the user would like to switch the node to the new project
+		selection. If Yes, update the project entry for that node in the
+		database. After the choice has been made, spawn an information dialog
+		which informs the user of the effects of their decision.
 
-2) [DONE] recompile submitterMain version 004, relaxing the restriction on
-mapped drives.
+	b)	Add a drop-down menu to SubmitterMain which allows the user to choose
+		which project their render job will be part of. (machines should have
+		a default project stored in their local config file)
 
-3) [DONE] instead of insisting that the scene file live in a scenes folder to
-deduce the project path, instead walk up the tree until the workspace.mel file
-is found. That folder is the project path.
+2) find out what the problem is with the Questions import and fix it
 
-4) find out what the problem is with the Questions import and fix it
-
-5) make a render calculator that, given an estimate in minutes-per-frame, can
+3) make a render calculator that, given an estimate in minutes-per-frame, can
 tell user roughly how long it should take given the batch size they're using
 
-[DONE] kill an entire job and all of its subtasks (even ones that are running)
+[DONE?] kill an entire job and all of its subtasks (even ones that are running)
 	Problems:
 		1. It can only talk to nodes if the hostnames are correct relative to
 	   	   the local machine.
 		2. Sometimes the nodes don't seem to get the message.
-
-[DONE] display the jobs/tasks nicely in a GUI so that the user can select a job
-to kill
-
-[DONE] Make it so every app gets its own log file
