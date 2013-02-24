@@ -1,15 +1,26 @@
--find out what the problem is with the Questions import and fix it
--make a render calculator that, given an estimate in minutes-per-frame, can
+1) [DONE] remove batch size spinner in favor of number of machines spinner, make
+corresponding fix in MayaJobTicket (or wherever the render tasks are created.)
+Fix the tab order of the number entry boxes.
+
+2) [DONE] recompile submitterMain version 004, relaxing the restriction on
+mapped drives.
+
+3) [DONE] instead of insisting that the scene file live in a scenes folder to
+deduce the project path, instead walk up the tree until the workspace.mel file
+is found. That folder is the project path.
+
+4) find out what the problem is with the Questions import and fix it
+
+5) make a render calculator that, given an estimate in minutes-per-frame, can
 tell user roughly how long it should take given the batch size they're using
 
-- kill an entire job and all of its subtasks (even ones that are running) 
-  [DONE]
-	Problems: 
-		1. It can only talk to nodes if the hostnames are correct relative to 
-	   	   the local machine. 
+[DONE] kill an entire job and all of its subtasks (even ones that are running)
+	Problems:
+		1. It can only talk to nodes if the hostnames are correct relative to
+	   	   the local machine.
 		2. Sometimes the nodes don't seem to get the message.
 
-- display the jobs/tasks nicely in a GUI so that the user can select a job to
-kill [DONE]
+[DONE] display the jobs/tasks nicely in a GUI so that the user can select a job
+to kill
 
--Make it so every app gets its own log file [DONE]
+[DONE] Make it so every app gets its own log file

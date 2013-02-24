@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'submitter.ui'
+# Form implementation generated from reading ui file 'Ui_submitter.ui'
 #
-# Created: Wed Jan 23 18:11:36 2013
+# Created: Sat Feb 23 22:24:57 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(901, 215)
+        MainWindow.resize(930, 254)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
@@ -58,11 +58,11 @@ class Ui_MainWindow(object):
         self.label = QtGui.QLabel(self.centralwidget)
         self.label.setObjectName(_fromUtf8("label"))
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
-        self.batchSizeSpinBox = QtGui.QSpinBox(self.centralwidget)
-        self.batchSizeSpinBox.setMaximum(999)
-        self.batchSizeSpinBox.setProperty("value", 10)
-        self.batchSizeSpinBox.setObjectName(_fromUtf8("batchSizeSpinBox"))
-        self.gridLayout.addWidget(self.batchSizeSpinBox, 4, 1, 1, 1)
+        self.numJobsSpinBox = QtGui.QSpinBox(self.centralwidget)
+        self.numJobsSpinBox.setMaximum(999)
+        self.numJobsSpinBox.setProperty("value", 1)
+        self.numJobsSpinBox.setObjectName(_fromUtf8("numJobsSpinBox"))
+        self.gridLayout.addWidget(self.numJobsSpinBox, 4, 1, 1, 1)
         spacerItem2 = QtGui.QSpacerItem(652, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem2, 4, 2, 1, 1)
         self.submitButton = QtGui.QPushButton(self.centralwidget)
@@ -83,16 +83,20 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.prioritySpinBox, 5, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 901, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 930, 26))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        MainWindow.setTabOrder(self.startSpinBox, self.endSpinBox)
+        MainWindow.setTabOrder(self.endSpinBox, self.numJobsSpinBox)
+        MainWindow.setTabOrder(self.numJobsSpinBox, self.prioritySpinBox)
+        MainWindow.setTabOrder(self.prioritySpinBox, self.submitButton)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "Submitter", None))
-        self.label_4.setText(_translate("MainWindow", "batch size:", None))
+        self.label_4.setText(_translate("MainWindow", "<html><head/><body><p># of render<br/>nodes to use:</p></body></html>", None))
         self.label_3.setText(_translate("MainWindow", "end frame:", None))
         self.label_2.setText(_translate("MainWindow", "start frame:", None))
         self.sceneLabel.setText(_translate("MainWindow", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbccccccccccccccccccccccc", None))

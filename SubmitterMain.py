@@ -1,5 +1,7 @@
 import sys
 import traceback
+import math
+import os
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -24,9 +26,9 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         scene, start, end, by = sys.argv[1:5] # proper command line args would be nice
         scene = scene.replace ('\\', '/')
         self.sceneLabel.setText( scene )
-        if 'scenes' not in scene.split ('/'):
-            self.errorLabel.setText ('<B>File not in a scene folder.</B>')
-            self.submitButton.setEnabled (False)
+##        if 'scenes' not in scene.split ('/'):
+##            self.errorLabel.setText ('<B>File not in a scene folder.</B>')
+##            self.submitButton.setEnabled (False)
 ##        if ':' in scene:
 ##            self.errorLabel.setText ('<B>Use UNC paths, not mapped drives.</B>')
 ##            self.submitButton.setEnabled (False)
@@ -43,13 +45,39 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         sceneFile = str( self.sceneLabel.text( ) )
         startFrame = self.startSpinBox.value( )
         endFrame = self.endSpinBox.value( )
-        batchSize = self.batchSizeSpinBox.value( )
+        numJobs = self.numJobsSpinBox.value( )
+        batchSize = int(math.ceil((endFrame - startFrame + 1) / numJobs))
         priority = self.prioritySpinBox.value( )
-        if 'scenes' in sceneFile.split ('/'):
-            MayaTicket( sceneFile, startFrame, endFrame, batchSize, priority ).submit( )
-            self.errorLabel.setText ('Done. Close the window.')
+        projectPath = self.getProjectPath(sceneFile)
+        
+        if projectPath:
+            MayaTicket( sceneFile, projectPath, startFrame, endFrame, batchSize, priority ).submit( )
+            QMessageBox.about(self, "Success", "Job submitted. Please close the submitter window.")
+        else:
+            logger.debug("workspace.mel not found")
+            QMessageBox.about(self, "Error", "The project path cannot be set because workspace.mel could not be located.")
 
-
+    def getProjectPath(self, scenePath):
+        """Walks up the file tree looking for workspace.mel"""
+        dirList = scenePath.split('/')
+        dirList.pop()
+        wrkspc = "workspace.mel"
+        
+        found = False; numDirs = len(dirList); i = 0
+        while i < numDirs:
+            if found:
+                break
+            projectPath = '/'.join(dirList) + '/'
+            if os.path.exists(projectPath + wrkspc):
+                found = True
+            dirList.pop()
+            i += 1
+        
+        if found:
+            return projectPath
+        
+        return None
+    
 if __name__ == '__main__':
     try:
         logger.debug(sys.argv) # prints out argv

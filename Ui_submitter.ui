@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>901</width>
-    <height>215</height>
+    <width>930</width>
+    <height>254</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <item row="4" column="0">
      <widget class="QLabel" name="label_4">
       <property name="text">
-       <string>batch size:</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;# of render&lt;br/&gt;nodes to use:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
@@ -91,12 +91,12 @@
      </widget>
     </item>
     <item row="4" column="1">
-     <widget class="QSpinBox" name="batchSizeSpinBox">
+     <widget class="QSpinBox" name="numJobsSpinBox">
       <property name="maximum">
        <number>999</number>
       </property>
       <property name="value">
-       <number>10</number>
+       <number>1</number>
       </property>
      </widget>
     </item>
@@ -161,12 +161,19 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>901</width>
+     <width>930</width>
      <height>26</height>
     </rect>
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>startSpinBox</tabstop>
+  <tabstop>endSpinBox</tabstop>
+  <tabstop>numJobsSpinBox</tabstop>
+  <tabstop>prioritySpinBox</tabstop>
+  <tabstop>submitButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

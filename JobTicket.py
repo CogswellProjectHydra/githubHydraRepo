@@ -26,7 +26,7 @@ class JobTicket:
 
 class MayaTicket( JobTicket ):
 
-    def __init__( self, sceneFile, startFrame, endFrame, batchSize, priority ):
+    def __init__( self, sceneFile, project, startFrame, endFrame, batchSize, priority ):
         print ('initializing', self)
         self.sceneFile = sceneFile
         self.startFrame = startFrame
