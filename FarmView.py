@@ -3,6 +3,7 @@ import sys
 import datetime
 import functools
 from socket import error as socketerror
+from MySQLdb import Error as sqlerror
 
 from LoggingSetup import logger
 
@@ -15,7 +16,7 @@ from Ui_FarmView import Ui_FarmView
 #from Hydra.models import RenderNode, RenderTask
 #from django.db import transaction
 
-from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, READY, OFFLINE, IDLE#, cur
+from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, READY, OFFLINE, IDLE
 from Questions import KillCurrentJobQuestion
 import Utils
 from Connections import TCPConnection
@@ -37,66 +38,136 @@ class FarmView( QMainWindow, Ui_FarmView ):
         QObject.connect(self.onlineButton, SIGNAL("clicked()"), self.online)
         QObject.connect(self.offlineButton, SIGNAL("clicked()"), self.offline)
         QObject.connect(self.getOffButton, SIGNAL("clicked()"), self.getOff)
+        QObject.connect(self.projectComboBox, SIGNAL("activated(int)"), self.detectProjectChange)
+        
+        self.thisNode = None
+        self.lastProjectIndex = -1
 
     def getOff(self):
         """
         Offlines the node and sends a message to the render node server running on localhost to
         kill its current task
         """
+        if not self.thisNode:
+            msgBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            return
+        
         self.offline()
         try:
             self.connection = TCPConnection()
             killed = self.getAnswer(KillCurrentJobQuestion(statusAfterDeath=READY))
             if not killed:
                 logger.debug("There was a problem killing the task.")
-                QMessageBox.about(self, "Error", "There was a problem killing the task.")
+                msgBox(self, "Error", "There was a problem killing the task.")
         except socketerror:
-            QMessageBox.about(self, "Error", "The render node software is not running or has become unresponsive.")
+            logger.debug(socketerror.message)
+            msgBox(self, "Error", "The render node software is not running or has become unresponsive.")
             
         self.updateThisNodeInfo()
         
     def online(self):
         """Changes the local render node's status to online if it wasn't on-line already"""
         
-        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
-        if thisNode.status == OFFLINE:
-            thisNode.status = IDLE
+        if not self.thisNode:
+            msgBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            return
+        
+        if self.thisNode.status == OFFLINE:
+            self.thisNode.status = IDLE
             with transaction() as t:
-                thisNode.update(t)
+                self.thisNode.update(t)
         else:
-            logger.debug("Node is already online.")
-            
+            msgBox(self, "Notice", "Node is already online.")
+                
         self.updateThisNodeInfo()
             
     def offline(self):
         """Changes the local render node's status to offline"""
-        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
-        thisNode.status = OFFLINE
-        with transaction() as t:
-            thisNode.update(t)
-        self.updateThisNodeInfo()
         
+        if not self.thisNode:
+            msgBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            return
+        
+        self.thisNode.status = OFFLINE
+        with transaction() as t:
+            self.thisNode.update(t)
+        self.updateThisNodeInfo()
+    
+    def detectProjectChange(self, index):
+        
+        if index != self.lastProjectIndex:
+            self.projectChanged(index)
+        
+    def projectChanged(self, index):
+        """Event handler for projectComboBox.currentIndexChanged"""
+       
+        if not self.thisNode:
+            msgBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            return
+        
+        selectedProject = self.projectComboBox.itemText(index)
+        choice = yesNoMsgBox(self, "Change project", "Reassign this node to " + selectedProject + "? (will avoid jobs from other projects)")
+        if choice == QMessageBox.Yes:
+            self.thisNode.project = self.projectComboBox.currentText()
+            with transaction() as t:
+                self.thisNode.update(t)
+            self.lastProjectIndex = self.projectComboBox.currentIndex()
+            msgBox(self, "Success", "Node reassigned to " + selectedProject)
+        else:
+            msgBox(self, "No changes", "This node will remain assigned to " + self.thisNode.project + ".")
+            self.projectComboBox.setCurrentIndex(self.lastProjectIndex)
+
     # refresh the display, rebuilding every blessed widget.
     def doFetch( self ):
+        try:
+            self.updateThisNodeInfo()
+            self.updateRenderNodeGrid()
+            self.updateRenderTaskGrid()
+            self.updateStatusBar()
+        except sqlerror:
+            msgBox(self, "Database Error", "There was a problem while trying to fetch info from the database.")
         
-        self.updateThisNodeInfo()
-        self.updateRenderNodeGrid()
-        self.updateRenderTaskGrid()
-        self.updateStatusBar()
-
     def updateThisNodeInfo(self):
+        """Updates the labels on the "This Node" tab with the most recent information available."""
         
-        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        [self.thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        self.updateProjectComboBox()
         
-        if thisNode:
-            self.nodeNameLabel.setText(thisNode.host)
-            self.nodeStatusLabel.setText(codes[thisNode.status])
-            if thisNode.task_id:
-                self.taskIDLabel.setText(str(thisNode.task_id))
+        if self.thisNode:
+            self.nodeNameLabel.setText(self.thisNode.host)
+            self.nodeStatusLabel.setText(codes[self.thisNode.status])
+            if self.thisNode.task_id:
+                self.taskIDLabel.setText(str(self.thisNode.task_id))
             else:
                 self.taskIDLabel.setText("None")
+            idx = self.projectComboBox.findText(self.thisNode.project, flags=Qt.MatchExactly|Qt.MatchCaseSensitive)
+            self.projectComboBox.setCurrentIndex(idx)
+            self.lastProjectIndex = idx
         else:
             QMessageBox.about(self, "Error", "This computer is not registered as a render node.")
+            
+    def updateProjectComboBox(self):
+        """Clears and refreshes the contents of the projects dropdown box."""
+        
+        # remove all items from the dropdown
+        count = self.projectComboBox.count()
+        while count:
+            self.projectComboBox.removeItem(0)
+            count = self.projectComboBox.count()
+        
+        # get current list of projects from the database
+        rows = None
+        with transaction() as t:
+            t.cur.execute("select * from Hydra_projects")
+            rows = t.cur.fetchall()
+        
+        # convert from ((project1,), (project2,), ...,(projectN,)) to [project1, project2, ...,projectN]
+        f = lambda t: t
+        projectsList = [f(*tuple) for tuple in rows]
+        
+        # refresh the dropdown
+        for project in projectsList:
+            self.projectComboBox.addItem(project)
             
     def updateRenderNodeGrid(self):
         
@@ -105,7 +176,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             labelAttr( 'status' ),
             labelAttr( 'task_id' ),
             getOffButton ("Get off!!!")]
-        setup( Hydra_rendernode.fetch (), columns, self.renderNodesGrid)
+        setup( Hydra_rendernode.fetch(order="order by host"), columns, self.renderNodesGrid)
 
     def updateRenderTaskGrid(self):
         
@@ -128,12 +199,18 @@ class FarmView( QMainWindow, Ui_FarmView ):
                             group by status
                         """)
             counts = t.cur.fetchall ()
-            logger.debug (counts)
-            countString = ", ".join (["%d %s" % (count, codes[status])
-                                      for (count, status) in counts])
-            time = datetime.datetime.now().strftime ("%H:%M")
-            msg = "%s as of %s" % (countString, time)
-            self.statusLabel.setText (msg)
+        logger.debug (counts)
+        countString = ", ".join (["%d %s" % (count, codes[status])
+                                  for (count, status) in counts])
+        time = datetime.datetime.now().strftime ("%H:%M")
+        msg = "%s as of %s" % (countString, time)
+        self.statusLabel.setText (msg)
+
+def msgBox(qwidget, title, msg):
+    QMessageBox.about(qwidget, title, msg)
+
+def yesNoMsgBox(qwidget, title, msg):
+    return QMessageBox.question(qwidget, title, msg, buttons=(QMessageBox.Yes | QMessageBox.No), defaultButton=QMessageBox.Yes)
 
 # populate a data grid. The "columns"
 # are like widget factory objects.
@@ -208,5 +285,6 @@ if __name__ == '__main__':
     window = FarmView( )
 
     window.show( )
+    window.doFetch()
     retcode = app.exec_( )
     sys.exit( retcode )
