@@ -1,10 +1,10 @@
 1) Introduce a "projects" table into the database and add a "project" column
 to the other Hydra tables, which must be a foreign key into the "projects"
 table.
-	a)	Add a drop-down menu to FarmView->ThisNode with a list of projects that
-		are available to choose from. On selection, spawn a YesNo dialog which
-		asks if the user would like to switch the node to the new project
-		selection. If Yes, update the project entry for that node in the
+	a)	[DONE] Add a drop-down menu to FarmView->ThisNode with a list of
+		projects that are available to choose from. On selection, spawn a YesNo
+		dialog which asks if the user would like to switch the node to the new
+		project selection. If Yes, update the project entry for that node in the
 		database. After the choice has been made, spawn an information dialog
 		which informs the user of the effects of their decision.
 
