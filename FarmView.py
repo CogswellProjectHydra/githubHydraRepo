@@ -156,14 +156,14 @@ class FarmView( QMainWindow, Ui_FarmView ):
             count = self.projectComboBox.count()
         
         # get current list of projects from the database
-        rows = None
+        tuples = None
         with transaction() as t:
             t.cur.execute("select * from Hydra_projects")
-            rows = t.cur.fetchall()
+            tuples = t.cur.fetchall()
         
-        # convert from ((project1,), (project2,), ...,(projectN,)) to [project1, project2, ...,projectN]
-        f = lambda t: t
-        projectsList = [f(*tuple) for tuple in rows]
+        # make a flat list out of the single-element tuples fetched from the database
+        untuple = lambda t: t # needed for func(*tuple) syntax to work
+        projectsList = [untuple(*tuple) for tuple in tuples]
         
         # refresh the dropdown
         for project in projectsList:

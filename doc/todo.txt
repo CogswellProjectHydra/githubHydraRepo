@@ -1,6 +1,7 @@
-1) Introduce a "projects" table into the database and add a "project" column
-to the other Hydra tables, which must be a foreign key into the "projects"
-table.
+1) [DONE] Introduce a "projects" table into the database and add a "project"
+column to the other Hydra tables, which must be a foreign key into the
+"projects" table.
+
 	a)	[DONE] Add a drop-down menu to FarmView->ThisNode with a list of
 		projects that are available to choose from. On selection, spawn a YesNo
 		dialog which asks if the user would like to switch the node to the new
@@ -8,9 +9,9 @@ table.
 		database. After the choice has been made, spawn an information dialog
 		which informs the user of the effects of their decision.
 
-	b)	Add a drop-down menu to SubmitterMain which allows the user to choose
-		which project their render job will be part of. (machines should have
-		a default project stored in their local config file)
+	b)	[DONE] Add a drop-down menu to SubmitterMain which allows the user to
+		choose which project their render job will be part of. The drop-down
+		selection defaults to their render node's current project setting.
 
 2) find out what the problem is with the Questions import and fix it
 
