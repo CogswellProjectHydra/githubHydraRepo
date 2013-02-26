@@ -31,8 +31,15 @@ class RenderTCPServer(TCPServer):
         if thisNode.status != IDLE:
             return
         
-        # otherwise, get a job that's ready to be run and has a high enough priority level for this particular node
-        render_tasks = Hydra_rendertask.fetch ("where status = '%s' and priority >= %s" % (READY, thisNode.minPriority), limit=1, order="order by priority desc")
+        # otherwise, get a job that's:
+        ## ready to be run and
+        ## has a high enough priority level for this particular node and
+        ## is on the this node's assigned project 
+        queryString = ("where status = '%s' and priority >= %s and project = '%s'" %
+                       (READY, thisNode.minPriority, thisNode.project))
+        render_tasks = Hydra_rendertask.fetch (queryString,
+                                               limit=1,
+                                               order="order by priority desc")
         if not render_tasks:
             return
         render_task = render_tasks[0]

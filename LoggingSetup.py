@@ -26,7 +26,10 @@ else:
     appname = "interpreter_output"
 
 # set the log file path to C:\Hydra\Logs\appname.txt
-logfileName = os.path.join( 'C:\\Hydra\\Logs\\', appname + '.txt')
+
+if not os.path.isdir (BASELOGDIR):
+    os.path.makedirs (BASELOGDIR)
+logfileName = os.path.join( BASELOGDIR, appname + '.txt')
 """Specifies where the log file will be saved. For now, the log file is saved in the OS's temp directory (essentially for junk files)
 in a file named 'HydraLog.txt'. This behavior can later be changed to change how and where log messages are saved."""
 
