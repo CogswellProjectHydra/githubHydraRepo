@@ -12,6 +12,7 @@ from LoggingSetup import logger #Logging is a library for creating log files. Lo
 from JobTicket import MayaTicket
 from MySQLSetup import transaction, Hydra_rendernode
 import Utils
+from MessageBoxes import msgBox
 
 class SubmitterWindow( QMainWindow, Ui_MainWindow ):
 
@@ -22,6 +23,7 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         self.setupUi( self ) #self, self
 
         QObject.connect(self.submitButton, SIGNAL("clicked()"), self.doSubmit)
+        QObject.connect(self.projectDirLineEdit, SIGNAL("selectionChanged()"), self.setProjectPath)
 
         sys.argv.extend (['1', '1', '1'])
         scene, start, end, by = sys.argv[1:5] # proper command line args would be nice
@@ -74,10 +76,12 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         priority = self.prioritySpinBox.value( )
         project = self.projectComboBox.currentText()
         
-        projectPath = self.getProjectPath(sceneFile)
+        projectPath = self.projectDirLineEdit.text()
+        if os.path.exists(projectPath + "workspace.mel"):
+            projectPath = self.getProjectPath(sceneFile)
         
         if projectPath:
-            MayaTicket( sceneFile, projectPath, startFrame, endFrame, batchSize, priority, project).submit( )
+            MayaTicket( sceneFile, startFrame, endFrame, batchSize, priority, project).submit(projectPath=projectPath)
             QMessageBox.about(self, "Success", "Job submitted. Please close the submitter window.")
         else:
             logger.debug("workspace.mel not found")
@@ -104,6 +108,27 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         
         return None
     
+    def setProjectPath(self):
+        
+        def getDirString(filePath):
+            filePath = str(filePath).split('/')
+            filePath.pop()
+            filePath = '/'.join(filePath) + '/'
+            return filePath
+            
+        if "workspace.mel" in self.projectDirLineEdit.text():
+            projectDir = getDirString(self.projectDirLineEdit.text())
+        else:
+            projectDir = os.getcwd()
+            
+        projectPath = QFileDialog.getOpenFileName(parent=self, caption="Find workspace.mel", directory=projectDir, filter="workspace.mel")
+        print projectPath
+        if projectPath:
+            projectPath = str(projectPath).split('/')
+            projectPath.pop()
+            projectPath = '/'.join(projectPath)
+            self.projectDirLineEdit.setText(projectPath)
+        
 if __name__ == '__main__':
     try:
         logger.debug(sys.argv) # prints out argv

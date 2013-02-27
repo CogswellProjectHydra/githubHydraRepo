@@ -2,6 +2,7 @@ import logging
 import logging.handlers
 import os
 from sys import argv
+from Constants import BASELOGDIR
 
 """Sets up the logging instances with formatters and handlers,
 for use in other modules, to make logging and debugging simple, easy and standardized."""
@@ -28,7 +29,7 @@ else:
 # set the log file path to C:\Hydra\Logs\appname.txt
 
 if not os.path.isdir (BASELOGDIR):
-    os.path.makedirs (BASELOGDIR)
+    os.makedirs (BASELOGDIR)
 logfileName = os.path.join( BASELOGDIR, appname + '.txt')
 """Specifies where the log file will be saved. For now, the log file is saved in the OS's temp directory (essentially for junk files)
 in a file named 'HydraLog.txt'. This behavior can later be changed to change how and where log messages are saved."""

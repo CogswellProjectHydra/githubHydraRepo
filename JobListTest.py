@@ -13,6 +13,8 @@ import Utils
 from LoggingSetup import logger
 import pickle
 import JobTicket
+from JobKill import kill
+from MessageBoxes import msgBox, yesNoMsgBox
 
 codes = {'I': 'idle',
          'R': 'ready',
@@ -58,14 +60,23 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
         if item and item.isSelected ():
             row = self.jobTable.currentRow ()
             id = int (self.jobTable.item (row, 0).text ())
-            print ('kill job', id)
+            choice = yesNoMsgBox(self, "Confirm", "Are you sure you want to kill job " + str(id) + "?")
+            if choice == QMessageBox.Yes:
+                kill(id)
+                self.refreshHandler()
+            else:
+                msgBox(self, "Abort", "Job " + str(id) + " remains on the farm.")
 
     def killTaskButtonHandler (self):
         item = self.taskTable.currentItem ()
         if item and item.isSelected ():
             row = self.taskTable.currentRow ()
             id = int (self.taskTable.item (row, 0).text ())
-            print ('kill task', id)
+            choice = yesNoMsgBox(self, "Confirm", "Are you sure you want to kill task " + str(id) + "?")
+            if choice == QMessageBox.Yes:
+                print ('kill task', id)
+            else:
+                print ('don\'t kill task', id)
 
                        
 if __name__ == '__main__':

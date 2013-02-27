@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_submitter.ui'
 #
-# Created: Tue Feb 26 00:42:59 2013
+# Created: Wed Feb 27 01:12:40 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(280, 248)
+        MainWindow.resize(280, 273)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -42,6 +42,13 @@ class Ui_MainWindow(object):
         self.sceneText.setReadOnly(True)
         self.sceneText.setObjectName(_fromUtf8("sceneText"))
         self.formLayout_2.setWidget(0, QtGui.QFormLayout.FieldRole, self.sceneText)
+        self.projectDirLabel = QtGui.QLabel(self.centralwidget)
+        self.projectDirLabel.setObjectName(_fromUtf8("projectDirLabel"))
+        self.formLayout_2.setWidget(1, QtGui.QFormLayout.LabelRole, self.projectDirLabel)
+        self.projectDirLineEdit = QtGui.QLineEdit(self.centralwidget)
+        self.projectDirLineEdit.setReadOnly(True)
+        self.projectDirLineEdit.setObjectName(_fromUtf8("projectDirLineEdit"))
+        self.formLayout_2.setWidget(1, QtGui.QFormLayout.FieldRole, self.projectDirLineEdit)
         self.verticalLayout.addLayout(self.formLayout_2)
         self.formLayout = QtGui.QFormLayout()
         self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.AllNonFixedFieldsGrow)
@@ -103,6 +110,9 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Submitter", None))
         self.sceneLabel.setText(_translate("MainWindow", "scene:", None))
         self.sceneText.setPlaceholderText(_translate("MainWindow", "scene name here", None))
+        self.projectDirLabel.setText(_translate("MainWindow", "project dir:", None))
+        self.projectDirLineEdit.setToolTip(_translate("MainWindow", "If Submitter failed to locate your project directory automatically, double-click in the text box to set it manually.", None))
+        self.projectDirLineEdit.setPlaceholderText(_translate("MainWindow", "click to set project directory", None))
         self.startFrameLabel.setText(_translate("MainWindow", "start frame:", None))
         self.endFrameLabel.setText(_translate("MainWindow", "end frame:", None))
         self.renderNodesLabel.setText(_translate("MainWindow", "<html><head/><body><p># of render<br/>nodes to use:</p></body></html>", None))

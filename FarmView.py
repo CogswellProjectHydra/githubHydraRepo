@@ -20,6 +20,7 @@ from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, READY, O
 from Questions import KillCurrentJobQuestion
 import Utils
 from Connections import TCPConnection
+from MessageBoxes import msgBox, yesNoMsgBox
 
 codes = {'I': 'idle',
          'R': 'ready',
@@ -205,12 +206,6 @@ class FarmView( QMainWindow, Ui_FarmView ):
         time = datetime.datetime.now().strftime ("%H:%M")
         msg = "%s as of %s" % (countString, time)
         self.statusLabel.setText (msg)
-
-def msgBox(qwidget, title, msg):
-    QMessageBox.about(qwidget, title, msg)
-
-def yesNoMsgBox(qwidget, title, msg):
-    return QMessageBox.question(qwidget, title, msg, buttons=(QMessageBox.Yes | QMessageBox.No), defaultButton=QMessageBox.Yes)
 
 # populate a data grid. The "columns"
 # are like widget factory objects.

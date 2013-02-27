@@ -25,9 +25,11 @@ class RenderTCPServer(TCPServer):
             
         [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
         
-        logger.debug("This render node is: %r\nrender node status: %r", thisNode.host, thisNode.status)
+        logger.debug("""Host: %r
+        Status: %r
+        Project: %r""", thisNode.host, thisNode.status, thisNode.project)
         
-        # If this node is not idle, it must be OFFLINE, so don't try to find a new job
+        # If this node is not idle, don't try to find a new job
         if thisNode.status != IDLE:
             return
         

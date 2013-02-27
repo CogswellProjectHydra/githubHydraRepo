@@ -11,11 +11,14 @@ from LoggingSetup import logger
 from sys import argv
 
 def sendKillQuestion(renderhost):
+    
     connection = TCPConnection(hostname=renderhost)
-    killed = connection.getAnswer(KillCurrentJobQuestion(statusAfterDeath=KILLED))
-    if not killed:
+    answer = connection.getAnswer(KillCurrentJobQuestion(statusAfterDeath=KILLED))
+    
+    if not answer.childKilled:
         logger.debug("%r tried to kill its job but failed for some reason." % renderhost)
-    return killed
+    
+    return not answer.childKilled
     
 def kill(job_id):
     # open transaction -- no race condition
@@ -62,15 +65,12 @@ def resurrect(job_id):
             task.status = READY
             task.update(t)
 
-def main(args):
-    if len(args) == 3:
-        cmd, job_id = args[1], int(args[2])
+if __name__ == '__main__':
+    if len(argv) == 3:
+        cmd, job_id = argv[1], int(argv[2])
         if cmd == 'kill':
             kill(job_id)
         elif cmd == 'resurrect':
             resurrect(job_id)
     else:
         print "Command line args: ['kill' or 'resurrect'] ['job_id']"
-
-if __name__ == '__main__':
-    main(argv)
