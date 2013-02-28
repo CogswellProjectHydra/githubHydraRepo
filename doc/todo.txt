@@ -29,3 +29,6 @@ tell user roughly how long it should take given the batch size they're using
 Tasks without details:
 -Jobs should have user names so that we know who submitted them.
 -Users should be able to read the log files remotely
+-add a "heartbeat" column to Hydra_rendernode
+-column in farmview/joblisttest that shows how long it's been since it started
+-farmview only runs on machines that have been registered (we should fix that)
