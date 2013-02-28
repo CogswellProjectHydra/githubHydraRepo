@@ -23,7 +23,7 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         self.setupUi( self ) #self, self
 
         QObject.connect(self.submitButton, SIGNAL("clicked()"), self.doSubmit)
-        QObject.connect(self.projectDirLineEdit, SIGNAL("selectionChanged()"), self.setProjectPath)
+        QObject.connect(self.projectDirLineEdit, SIGNAL("selectionChanged()"), self.setmayaProjectPath)
 
         sys.argv.extend (['1', '1', '1'])
         scene, start, end, by = sys.argv[1:5] # proper command line args would be nice
@@ -74,20 +74,20 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         numJobs = self.numJobsSpinBox.value( )
         batchSize = int(math.ceil((endFrame - startFrame + 1) / numJobs))
         priority = self.prioritySpinBox.value( )
-        project = self.projectComboBox.currentText()
+        project = str(self.projectComboBox.currentText())
         
-        projectPath = self.projectDirLineEdit.text()
-        if os.path.exists(projectPath + "workspace.mel"):
-            projectPath = self.getProjectPath(sceneFile)
+        mayaProjectPath = str(self.projectDirLineEdit.text())
+        if os.path.exists(mayaProjectPath + "workspace.mel"):
+            mayaProjectPath = self.getMayaProjectPath(sceneFile)
         
-        if projectPath:
-            MayaTicket( sceneFile, startFrame, endFrame, batchSize, priority, project).submit(projectPath=projectPath)
+        if mayaProjectPath:
+            MayaTicket(sceneFile, mayaProjectPath, startFrame, endFrame, batchSize, priority, project).submit()
             QMessageBox.about(self, "Success", "Job submitted. Please close the submitter window.")
         else:
             logger.debug("workspace.mel not found")
             QMessageBox.about(self, "Error", "The project path cannot be set because workspace.mel could not be located.")
 
-    def getProjectPath(self, scenePath):
+    def getMayaProjectPath(self, scenePath):
         """Walks up the file tree looking for workspace.mel"""
         dirList = scenePath.split('/')
         dirList.pop()
@@ -97,18 +97,18 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         while i < numDirs:
             if found:
                 break
-            projectPath = '/'.join(dirList) + '/'
-            if os.path.exists(projectPath + wrkspc):
+            mayaProjectPath = '/'.join(dirList) + '/'
+            if os.path.exists(mayaProjectPath + wrkspc):
                 found = True
             dirList.pop()
             i += 1
         
         if found:
-            return projectPath
+            return mayaProjectPath
         
         return None
     
-    def setProjectPath(self):
+    def setmayaProjectPath(self):
         
         def getDirString(filePath):
             filePath = str(filePath).split('/')
@@ -121,13 +121,13 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         else:
             projectDir = os.getcwd()
             
-        projectPath = QFileDialog.getOpenFileName(parent=self, caption="Find workspace.mel", directory=projectDir, filter="workspace.mel")
-        print projectPath
-        if projectPath:
-            projectPath = str(projectPath).split('/')
-            projectPath.pop()
-            projectPath = '/'.join(projectPath)
-            self.projectDirLineEdit.setText(projectPath)
+        mayaProjectPath = QFileDialog.getOpenFileName(parent=self, caption="Find workspace.mel", directory=projectDir, filter="workspace.mel")
+        print mayaProjectPath
+        if mayaProjectPath:
+            mayaProjectPath = str(mayaProjectPath).split('/')
+            mayaProjectPath.pop()
+            mayaProjectPath = '/'.join(mayaProjectPath)
+            self.projectDirLineEdit.setText(mayaProjectPath)
         
 if __name__ == '__main__':
     try:

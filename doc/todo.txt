@@ -23,3 +23,9 @@ tell user roughly how long it should take given the batch size they're using
 		1. It can only talk to nodes if the hostnames are correct relative to
 	   	   the local machine.
 		2. Sometimes the nodes don't seem to get the message.
+
+
+
+Tasks without details:
+-Jobs should have user names so that we know who submitted them.
+-Users should be able to read the log files remotely

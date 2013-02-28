@@ -9,18 +9,22 @@ from MySQLSetup import Hydra_job, Hydra_rendertask, READY, transaction
 class JobTicket:
     """A generic job ticket"""
 
-    def submit( self, **kwargs ):
-        job = self.createJob( )
-        self.createTasks( job, **kwargs )
+    def __init__(self, project, priority):
+        self.project = project
+        self.priority = priority
+    
+    def submit( self ):
+        job = self.createJob()
+        self.createTasks( job )
 
     def createJob( self ):
-        job = Hydra_job( pickledTicket = pickle.dumps( self ) )
+        job = Hydra_job( pickledTicket = pickle.dumps( self ), priority = self.priority, project = self.project )
         with transaction() as t:
             job.insert(transaction=t)
             
         return job
 
-    def createTasks( self, job, **kwargs ):
+    def createTasks( self, job ):
         raise NotImplemented
 
     def name (self):
@@ -28,19 +32,19 @@ class JobTicket:
 
 class MayaTicket( JobTicket ):
 
-    def __init__( self, sceneFile, startFrame, endFrame, batchSize, priority, project ):
+    def __init__( self, sceneFile, mayaProjectPath, startFrame, endFrame, batchSize, priority, project ):
         print ('initializing', self)
+        JobTicket.__init__(self, project, priority)
         self.sceneFile = sceneFile
+        self.mayaProjectPath = mayaProjectPath
         self.startFrame = startFrame
         self.endFrame = endFrame
         self.batchSize = batchSize
-        self.priority = priority
-        self.project = project
 
     def name (self):
         return self.sceneFile
 
-    def createTasks( self, job, **kwargs ):
+    def createTasks( self, job ):
         starts = range( self.startFrame, self.endFrame + 1, self.batchSize )
         ends = [min( start + self.batchSize - 1,
                      self.endFrame )
@@ -52,15 +56,14 @@ class MayaTicket( JobTicket ):
                         '-mr:v', '5',
                         '-s', str( start ),
                         '-e', str( end ),
+                        '-p', self.mayaProjectPath,
                         self.sceneFile
                       ]
-            project = kwargs["projectPath"]
-            command[-1:-1] = ['-proj', project]
                                     
             logger.debug( command )
             task = Hydra_rendertask( status = READY,
                               command = repr( command ),
-                              job_id = job.id, priority = self.priority)
+                              job_id = job.id, priority = self.priority, project = self.project)
             with transaction() as t:
                 task.insert(transaction=t)
 
