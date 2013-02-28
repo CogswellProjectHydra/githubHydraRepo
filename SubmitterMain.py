@@ -12,7 +12,7 @@ from LoggingSetup import logger #Logging is a library for creating log files. Lo
 from JobTicket import MayaTicket
 from MySQLSetup import transaction, Hydra_rendernode
 import Utils
-from MessageBoxes import msgBox
+from MessageBoxes import msgBox, yesNoMsgBox
 
 class SubmitterWindow( QMainWindow, Ui_MainWindow ):
 
@@ -23,7 +23,7 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         self.setupUi( self ) #self, self
 
         QObject.connect(self.submitButton, SIGNAL("clicked()"), self.doSubmit)
-        QObject.connect(self.projectDirLineEdit, SIGNAL("selectionChanged()"), self.setmayaProjectPath)
+        QObject.connect(self.browseButton, SIGNAL("clicked()"), self.setMayaProjectPath)
 
         sys.argv.extend (['1', '1', '1'])
         scene, start, end, by = sys.argv[1:5] # proper command line args would be nice
@@ -79,20 +79,30 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         mayaProjectPath = str(self.projectDirLineEdit.text())
         if os.path.exists(mayaProjectPath + "workspace.mel"):
             mayaProjectPath = self.getMayaProjectPath(sceneFile)
+            choice = yesNoMsgBox(self, "Confirm", "Maya project path set to:<br>" + mayaProjectPath + "<br>Is this correct?")
+            if choice == QMessageBox.No:
+                msgBox(self, "Abort", "Submission aborted. Please set the Maya project path manually.")
+                return
+            else:
+                self.projectDirLineEdit.setText(mayaProjectPath)
+                return
         
         if mayaProjectPath:
             MayaTicket(sceneFile, mayaProjectPath, startFrame, endFrame, batchSize, priority, project).submit()
-            QMessageBox.about(self, "Success", "Job submitted. Please close the submitter window.")
+            msgBox(self, "Success", "Job submitted. Please close the submitter window.")
         else:
             logger.debug("workspace.mel not found")
-            QMessageBox.about(self, "Error", "The project path cannot be set because workspace.mel could not be located.")
+            msgBox(self, "Error", "The project path cannot be set because workspace.mel could not be located. Please set the project path manually.")
 
     def getMayaProjectPath(self, scenePath):
-        """Walks up the file tree looking for workspace.mel"""
-        dirList = scenePath.split('/')
-        dirList.pop()
-        wrkspc = "workspace.mel"
+        """Walks up the file tree looking for workspace.mel, returns the path if found"""
         
+        dirList = scenePath.split('/')
+        
+        # remove "workspace.mel" from the end of the path
+        dirList.pop()
+        
+        wrkspc = "workspace.mel"
         found = False; numDirs = len(dirList); i = 0
         while i < numDirs:
             if found:
@@ -108,25 +118,25 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         
         return None
     
-    def setmayaProjectPath(self):
+    def setMayaProjectPath(self):
+        """Opens a file browser dialog for finding workspace.mel, tries to start the user somewhere sensible"""
         
-        def getDirString(filePath):
-            filePath = str(filePath).split('/')
-            filePath.pop()
-            filePath = '/'.join(filePath) + '/'
-            return filePath
-            
-        if "workspace.mel" in self.projectDirLineEdit.text():
-            projectDir = getDirString(self.projectDirLineEdit.text())
+        currentDir = str( self.projectDirLineEdit.text() )
+        projectDir = None
+        if len(currentDir) == 0:
+            sceneFile = str( self.sceneText.text() )
+            projectDir = self.getMayaProjectPath(sceneFile)
+            if not projectDir:
+                projectDir = os.getcwd()
         else:
-            projectDir = os.getcwd()
+            projectDir = currentDir
             
         mayaProjectPath = QFileDialog.getOpenFileName(parent=self, caption="Find workspace.mel", directory=projectDir, filter="workspace.mel")
-        print mayaProjectPath
         if mayaProjectPath:
+            # remove "workspace.mel" from the end of the path
             mayaProjectPath = str(mayaProjectPath).split('/')
             mayaProjectPath.pop()
-            mayaProjectPath = '/'.join(mayaProjectPath)
+            mayaProjectPath = '/'.join(mayaProjectPath) + '/'
             self.projectDirLineEdit.setText(mayaProjectPath)
         
 if __name__ == '__main__':
