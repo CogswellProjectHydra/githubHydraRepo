@@ -39,7 +39,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         QObject.connect(self.onlineButton, SIGNAL("clicked()"), self.online)
         QObject.connect(self.offlineButton, SIGNAL("clicked()"), self.offline)
         QObject.connect(self.getOffButton, SIGNAL("clicked()"), self.getOff)
-        QObject.connect(self.projectComboBox, SIGNAL("activated(int)"), self.detectProjectChange)
+        QObject.connect(self.projectComboBox, SIGNAL("activated(int)"), self.projectSelectionHandler)
         
         self.thisNode = None
         self.lastProjectIndex = -1
@@ -94,13 +94,14 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.thisNode.update(t)
         self.updateThisNodeInfo()
     
-    def detectProjectChange(self, index):
+    def projectSelectionHandler(self, currentProjectIndex):
+        """Checks to see if project selection has changed. If so, handles the change. Else, does nothing."""
         
-        if index != self.lastProjectIndex:
-            self.projectChanged(index)
+        if currentProjectIndex != self.lastProjectIndex:
+            self.projectChangeHandler(currentProjectIndex)
         
-    def projectChanged(self, index):
-        """Event handler for projectComboBox.currentIndexChanged"""
+    def projectChangeHandler(self, index):
+        """Handler for the event where the project selection changed."""
        
         if not self.thisNode:
             msgBox(self, "Error", "Node information not initialized. Do a fetch first.")
@@ -120,6 +121,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
 
     # refresh the display, rebuilding every blessed widget.
     def doFetch( self ):
+        """Aggregate method for updating all of the widgets."""
+        
         try:
             self.updateThisNodeInfo()
             self.updateRenderNodeGrid()
@@ -129,23 +132,32 @@ class FarmView( QMainWindow, Ui_FarmView ):
             msgBox(self, "Database Error", "There was a problem while trying to fetch info from the database.")
         
     def updateThisNodeInfo(self):
-        """Updates the labels on the "This Node" tab with the most recent information available."""
+        """Updates widgets on the "This Node" tab with the most recent information available."""
         
-        [self.thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        # get the most current info from the database
+        node = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        if node:
+            [self.thisNode] = node
+            
         self.updateProjectComboBox()
         
         if self.thisNode:
+            # update host/status labels
             self.nodeNameLabel.setText(self.thisNode.host)
             self.nodeStatusLabel.setText(codes[self.thisNode.status])
+            
+            # set task id, if one is available
             if self.thisNode.task_id:
                 self.taskIDLabel.setText(str(self.thisNode.task_id))
             else:
                 self.taskIDLabel.setText("None")
+            
+            # set current project selection
             idx = self.projectComboBox.findText(self.thisNode.project, flags=Qt.MatchExactly|Qt.MatchCaseSensitive)
             self.projectComboBox.setCurrentIndex(idx)
             self.lastProjectIndex = idx
         else:
-            QMessageBox.about(self, "Error", "This computer is not registered as a render node.")
+            QMessageBox.about(self, "Error", "This Node tab cannot be populated because this computer is not registered as a render node.")
             
     def updateProjectComboBox(self):
         """Clears and refreshes the contents of the projects dropdown box."""

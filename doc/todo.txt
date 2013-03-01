@@ -1,22 +1,17 @@
-1) [DONE] Introduce a "projects" table into the database and add a "project"
+[DONE] Introduce a "projects" table into the database and add a "project"
 column to the other Hydra tables, which must be a foreign key into the
 "projects" table.
 
-	a)	[DONE] Add a drop-down menu to FarmView->ThisNode with a list of
+	-	[DONE] Add a drop-down menu to FarmView->ThisNode with a list of
 		projects that are available to choose from. On selection, spawn a YesNo
 		dialog which asks if the user would like to switch the node to the new
 		project selection. If Yes, update the project entry for that node in the
 		database. After the choice has been made, spawn an information dialog
 		which informs the user of the effects of their decision.
 
-	b)	[DONE] Add a drop-down menu to SubmitterMain which allows the user to
+	-	[DONE] Add a drop-down menu to SubmitterMain which allows the user to
 		choose which project their render job will be part of. The drop-down
 		selection defaults to their render node's current project setting.
-
-2) find out what the problem is with the Questions import and fix it
-
-3) make a render calculator that, given an estimate in minutes-per-frame, can
-tell user roughly how long it should take given the batch size they're using
 
 [DONE?] kill an entire job and all of its subtasks (even ones that are running)
 	Problems:
@@ -27,8 +22,40 @@ tell user roughly how long it should take given the batch size they're using
 
 
 Tasks without details:
+
+-find out what the problem is with the Questions import and fix it
+
 -Jobs should have user names so that we know who submitted them.
+
 -Users should be able to read the log files remotely
+
 -add a "heartbeat" column to Hydra_rendernode
+
 -column in farmview/joblisttest that shows how long it's been since it started
+
 -farmview only runs on machines that have been registered (we should fix that)
+
+-drop the tables in hydraDB and make an exact copy of hydraTest's tables under
+hydraDB
+	-update hydraSettings.cfg on all render nodes to use hydraDB instead of
+	hydraTest.
+
+-update 211-10A and 211-14A to have .cpc.local on their hostnames and in their
+config files
+
+-------------------------------------------------------------------------------
+DO SOONER
+-------------------------------------------------------------------------------
+-we wish we had a button where, when a TASK is selected, it will resurrect the
+task
+
+-we might want something where you can select a job, give a condition, and
+resurrect the ones that meet that condition
+
+-be able to sort tasks by column
+
+-be able to select tasks by check box
+
+-be able to do an operation on selected tasks
+
+-operations would be resubmit, kill
