@@ -67,6 +67,9 @@
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <widget class="QPushButton" name="onlineButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allow this node to accept render tasks&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>Online</string>
            </property>
@@ -74,6 +77,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="offlineButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Don't allow this node to accept any new jobs (it will still finish what it's working on)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>Offline</string>
            </property>
@@ -81,6 +87,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="getOffButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tell this node to stop the current job, put it back on the job board, and don't accept any more.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>Get Off!</string>
            </property>
@@ -111,7 +120,7 @@
          <item row="0" column="1">
           <widget class="QLabel" name="nodeNameLabel">
            <property name="text">
-            <string>Press Fetch Button</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -125,7 +134,7 @@
          <item row="1" column="1">
           <widget class="QLabel" name="nodeStatusLabel">
            <property name="text">
-            <string>Press Fetch Button</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -139,13 +148,13 @@
          <item row="2" column="1">
           <widget class="QLabel" name="taskIDLabel">
            <property name="text">
-            <string>Press Fetch Button</string>
+            <string/>
            </property>
           </widget>
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>120</x>
@@ -167,21 +176,9 @@
          </item>
          <item row="0" column="1">
           <widget class="QComboBox" name="projectComboBox">
-           <item>
-            <property name="text">
-             <string>Press Fetch Button</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Project X</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Ericsson</string>
-            </property>
-           </item>
+           <property name="whatsThis">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
           </widget>
          </item>
         </layout>

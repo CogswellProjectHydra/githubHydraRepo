@@ -43,6 +43,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         
         self.thisNode = None
         self.lastProjectIndex = -1
+        self.buttonsEnabled = True
 
     def getOff(self):
         """
@@ -134,11 +135,15 @@ class FarmView( QMainWindow, Ui_FarmView ):
     def updateThisNodeInfo(self):
         """Updates widgets on the "This Node" tab with the most recent information available."""
         
+        # if the buttons are disabled, don't bother
+        if not self.buttonsEnabled:
+            return
+        
         # get the most current info from the database
         node = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
         if node:
             [self.thisNode] = node
-            
+        
         self.updateProjectComboBox()
         
         if self.thisNode:
@@ -157,8 +162,21 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.projectComboBox.setCurrentIndex(idx)
             self.lastProjectIndex = idx
         else:
-            QMessageBox.about(self, "Error", "This Node tab cannot be populated because this computer is not registered as a render node.")
-            
+            QMessageBox.about(self, "Notice", "Information about this node cannot be displayed because it is " +
+                              "not registered on the render farm. You may continue to use this application, but " +
+                              "the application must be restarted after this node is registered if you wish to see " +
+                              "its information")
+            self.setButtonsEnabled(False)
+    
+    def setButtonsEnabled(self, choice):
+        """Enables or disables buttons on the This Node tab"""
+        
+        self.onlineButton.setEnabled(choice)
+        self.offlineButton.setEnabled(choice)
+        self.getOffButton.setEnabled(choice)
+        self.projectComboBox.setEnabled(choice)
+        self.buttonsEnabled = choice
+        
     def updateProjectComboBox(self):
         """Clears and refreshes the contents of the projects dropdown box."""
         
