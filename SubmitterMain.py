@@ -12,7 +12,7 @@ from LoggingSetup import logger #Logging is a library for creating log files. Lo
 from JobTicket import MayaTicket
 from MySQLSetup import transaction, Hydra_rendernode
 import Utils
-from MessageBoxes import msgBox, yesNoMsgBox
+from MessageBoxes import aboutBox, yesNoBox
 
 class SubmitterWindow( QMainWindow, Ui_MainWindow ):
 
@@ -79,9 +79,9 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         mayaProjectPath = str(self.projectDirLineEdit.text())
         if os.path.exists(mayaProjectPath + "workspace.mel"):
             mayaProjectPath = self.getMayaProjectPath(sceneFile)
-            choice = yesNoMsgBox(self, "Confirm", "Maya project path set to:<br>" + mayaProjectPath + "<br>Is this correct?")
+            choice = yesNoBox(self, "Confirm", "Maya project path set to:<br>" + mayaProjectPath + "<br>Is this correct?")
             if choice == QMessageBox.No:
-                msgBox(self, "Abort", "Submission aborted. Please set the Maya project path manually.")
+                aboutBox(self, "Abort", "Submission aborted. Please set the Maya project path manually.")
                 return
             else:
                 self.projectDirLineEdit.setText(mayaProjectPath)
@@ -89,10 +89,10 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         
         if mayaProjectPath:
             MayaTicket(sceneFile, mayaProjectPath, startFrame, endFrame, batchSize, priority, project).submit()
-            msgBox(self, "Success", "Job submitted. Please close the submitter window.")
+            aboutBox(self, "Success", "Job submitted. Please close the submitter window.")
         else:
             logger.debug("workspace.mel not found")
-            msgBox(self, "Error", "The project path cannot be set because workspace.mel could not be located. Please set the project path manually.")
+            aboutBox(self, "Error", "The project path cannot be set because workspace.mel could not be located. Please set the project path manually.")
 
     def getMayaProjectPath(self, scenePath):
         """Walks up the file tree looking for workspace.mel, returns the path if found"""

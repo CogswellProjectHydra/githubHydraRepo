@@ -5,8 +5,8 @@ Created on Feb 26, 2013
 '''
 from PyQt4.QtGui import QMessageBox
 
-def msgBox(qwidget, title, msg):
+def aboutBox(qwidget, title, msg):
     QMessageBox.about(qwidget, title, msg)
 
-def yesNoMsgBox(qwidget, title, msg):
+def yesNoBox(qwidget, title, msg):
     return QMessageBox.question(qwidget, title, msg, buttons=(QMessageBox.Yes | QMessageBox.No), defaultButton=QMessageBox.Yes)

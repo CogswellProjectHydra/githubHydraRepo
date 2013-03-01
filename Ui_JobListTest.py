@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Ui_joblisttest.ui'
+# Form implementation generated from reading ui file 'Ui_JobListTest.ui'
 #
-# Created: Wed Feb 27 00:03:29 2013
+# Created: Thu Feb 28 23:35:50 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -75,7 +75,7 @@ class Ui_MainWindow(object):
         self.taskTable.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.taskTable.setGridStyle(QtCore.Qt.SolidLine)
         self.taskTable.setObjectName(_fromUtf8("taskTable"))
-        self.taskTable.setColumnCount(5)
+        self.taskTable.setColumnCount(6)
         self.taskTable.setRowCount(0)
         item = QtGui.QTableWidgetItem()
         self.taskTable.setHorizontalHeaderItem(0, item)
@@ -87,6 +87,8 @@ class Ui_MainWindow(object):
         self.taskTable.setHorizontalHeaderItem(3, item)
         item = QtGui.QTableWidgetItem()
         self.taskTable.setHorizontalHeaderItem(4, item)
+        item = QtGui.QTableWidgetItem()
+        self.taskTable.setHorizontalHeaderItem(5, item)
         self.gridLayout_2.addWidget(self.taskTable, 1, 0, 1, 4)
         self.killTaskButton = QtGui.QPushButton(self.layoutWidget1)
         self.killTaskButton.setEnabled(False)
@@ -108,12 +110,14 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.jobTableLabel.setText(_translate("MainWindow", "Job List", None))
+        self.jobTable.setSortingEnabled(True)
         item = self.jobTable.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Job id", None))
         item = self.jobTable.horizontalHeaderItem(1)
         item.setText(_translate("MainWindow", "Job name", None))
         self.killJobButton.setText(_translate("MainWindow", "Kill Job", None))
         self.taskTableLabel.setText(_translate("MainWindow", "Task List (job: none selected)", None))
+        self.taskTable.setSortingEnabled(True)
         item = self.taskTable.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Task ID", None))
         item = self.taskTable.horizontalHeaderItem(1)
@@ -124,6 +128,8 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Start Time", None))
         item = self.taskTable.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "End Time", None))
+        item = self.taskTable.horizontalHeaderItem(5)
+        item.setText(_translate("MainWindow", "Duration", None))
         self.killTaskButton.setText(_translate("MainWindow", "Kill Task", None))
         self.refreshButton.setText(_translate("MainWindow", "Refresh", None))
 

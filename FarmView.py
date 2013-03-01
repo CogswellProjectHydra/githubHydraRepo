@@ -20,7 +20,7 @@ from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, READY, O
 from Questions import KillCurrentJobQuestion
 import Utils
 from Connections import TCPConnection
-from MessageBoxes import msgBox, yesNoMsgBox
+from MessageBoxes import aboutBox, yesNoBox
 
 codes = {'I': 'idle',
          'R': 'ready',
@@ -51,7 +51,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         kill its current task
         """
         if not self.thisNode:
-            msgBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            aboutBox(self, "Error", "Node information not initialized. Do a fetch first.")
             return
         
         self.offline()
@@ -60,10 +60,10 @@ class FarmView( QMainWindow, Ui_FarmView ):
             killed = self.getAnswer(KillCurrentJobQuestion(statusAfterDeath=READY))
             if not killed:
                 logger.debug("There was a problem killing the task.")
-                msgBox(self, "Error", "There was a problem killing the task.")
+                aboutBox(self, "Error", "There was a problem killing the task.")
         except socketerror:
             logger.debug(socketerror.message)
-            msgBox(self, "Error", "The render node software is not running or has become unresponsive.")
+            aboutBox(self, "Error", "The render node software is not running or has become unresponsive.")
             
         self.updateThisNodeInfo()
         
@@ -71,7 +71,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         """Changes the local render node's status to online if it wasn't on-line already"""
         
         if not self.thisNode:
-            msgBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            aboutBox(self, "Error", "Node information not initialized. Do a fetch first.")
             return
         
         if self.thisNode.status == OFFLINE:
@@ -79,7 +79,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             with transaction() as t:
                 self.thisNode.update(t)
         else:
-            msgBox(self, "Notice", "Node is already online.")
+            aboutBox(self, "Notice", "Node is already online.")
                 
         self.updateThisNodeInfo()
             
@@ -87,7 +87,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         """Changes the local render node's status to offline"""
         
         if not self.thisNode:
-            msgBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            aboutBox(self, "Error", "Node information not initialized. Do a fetch first.")
             return
         
         self.thisNode.status = OFFLINE
@@ -105,19 +105,19 @@ class FarmView( QMainWindow, Ui_FarmView ):
         """Handler for the event where the project selection changed."""
        
         if not self.thisNode:
-            msgBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            aboutBox(self, "Error", "Node information not initialized. Do a fetch first.")
             return
         
         selectedProject = self.projectComboBox.itemText(index)
-        choice = yesNoMsgBox(self, "Change project", "Reassign this node to " + selectedProject + "? (will avoid jobs from other projects)")
+        choice = yesNoBox(self, "Change project", "Reassign this node to " + selectedProject + "? (will avoid jobs from other projects)")
         if choice == QMessageBox.Yes:
             self.thisNode.project = self.projectComboBox.currentText()
             with transaction() as t:
                 self.thisNode.update(t)
             self.lastProjectIndex = self.projectComboBox.currentIndex()
-            msgBox(self, "Success", "Node reassigned to " + selectedProject)
+            aboutBox(self, "Success", "Node reassigned to " + selectedProject)
         else:
-            msgBox(self, "No changes", "This node will remain assigned to " + self.thisNode.project + ".")
+            aboutBox(self, "No changes", "This node will remain assigned to " + self.thisNode.project + ".")
             self.projectComboBox.setCurrentIndex(self.lastProjectIndex)
 
     # refresh the display, rebuilding every blessed widget.
@@ -130,7 +130,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.updateRenderTaskGrid()
             self.updateStatusBar()
         except sqlerror:
-            msgBox(self, "Database Error", "There was a problem while trying to fetch info from the database.")
+            aboutBox(self, "Database Error", "There was a problem while trying to fetch info from the database.")
         
     def updateThisNodeInfo(self):
         """Updates widgets on the "This Node" tab with the most recent information available."""

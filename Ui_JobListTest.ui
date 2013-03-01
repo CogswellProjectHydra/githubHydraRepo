@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1138</width>
-    <height>305</height>
+    <width>1217</width>
+    <height>328</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,33 +22,13 @@
       </property>
       <widget class="QWidget" name="layoutWidget">
        <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="jobTableLabel">
-          <property name="text">
-           <string>Job List</string>
-          </property>
-          <property name="buddy">
-           <cstring>jobTable</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" colspan="2">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="1" column="0" colspan="3">
          <widget class="QTableWidget" name="jobTable">
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
           </property>
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
@@ -65,13 +45,6 @@
           </column>
          </widget>
         </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QPushButton" name="killJobButton">
-          <property name="text">
-           <string>Kill Job</string>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="2">
          <spacer name="horizontalSpacer_2">
           <property name="orientation">
@@ -84,6 +57,58 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Job Options</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="killJobButton">
+             <property name="text">
+              <string>Kill</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="refreshButton">
+             <property name="text">
+              <string>Refresh</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="jobTableLabel">
+          <property name="text">
+           <string>Job List</string>
+          </property>
+          <property name="buddy">
+           <cstring>jobTable</cstring>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -123,6 +148,9 @@
           <property name="gridStyle">
            <enum>Qt::SolidLine</enum>
           </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
           <column>
            <property name="text">
             <string>Task ID</string>
@@ -148,19 +176,14 @@
             <string>End Time</string>
            </property>
           </column>
+          <column>
+           <property name="text">
+            <string>Duration</string>
+           </property>
+          </column>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="killTaskButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Kill Task</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
+        <item row="2" column="2">
          <spacer name="horizontalSpacer_4">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -173,11 +196,33 @@
           </property>
          </spacer>
         </item>
-        <item row="2" column="3">
-         <widget class="QPushButton" name="refreshButton">
-          <property name="text">
-           <string>Refresh</string>
+        <item row="2" column="0" colspan="2">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>28</height>
+           </size>
           </property>
+          <property name="title">
+           <string>Subtask Options</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="1" column="0">
+            <widget class="QPushButton" name="killTaskButton">
+             <property name="text">
+              <string>Kill</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="resurrectTaskButton">
+             <property name="text">
+              <string>Resurrect</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>

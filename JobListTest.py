@@ -7,14 +7,15 @@ from Ui_JobListTest import Ui_MainWindow
 import Servers
 from Clients import Client
 from Connections import TCPConnection
-from Questions import KillCurrentJobQuestion
 from MySQLSetup import transaction, Hydra_job, Hydra_rendertask, Hydra_rendernode, IDLE, OFFLINE
 import Utils
 from LoggingSetup import logger
 import pickle
 import JobTicket
 from JobKill import kill
-from MessageBoxes import msgBox, yesNoMsgBox
+from MessageBoxes import aboutBox, yesNoBox
+from datetime import datetime as dt
+
 
 codes = {'I': 'idle',
          'R': 'ready',
@@ -39,45 +40,72 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
         self.jobTable.setRowCount (len (jobs))
         for pos, job in enumerate (jobs):
             ticket = pickle.loads(job.pickledTicket)
-            self.jobTable.setItem (pos, 0, QTableWidgetItem(str(job.id)))
+            self.jobTable.setItem (pos, 0, QTableWidgetItem_int(str(job.id)))
             self.jobTable.setItem (pos, 1, QTableWidgetItem(ticket.name ()))
 
     def jobCellClickedHandler (self, row, column):
         # populate the task table widget
         item = self.jobTable.item (row, 0)
-        taskId = int (item.text ())
-        tasks = Hydra_rendertask.fetch ("where job_id = %d" % taskId)
+        job_id = int (item.text ())
+        tasks = Hydra_rendertask.fetch ("where job_id = %d" % job_id)
         self.taskTable.setRowCount (len (tasks))
         for pos, task in enumerate (tasks):
-            self.taskTable.setItem (pos, 0, QTableWidgetItem (str (task.id)))
+            # calcuate time difference
+            tdiff = None
+            if task.endTime:
+                tdiff = task.endTime - task.startTime
+            elif task.startTime:
+                tdiff = dt.now().replace(microsecond=0) - task.startTime
+            
+            # populate table
+            self.taskTable.setItem (pos, 0, QTableWidgetItem_int (str (task.id)))
             self.taskTable.setItem (pos, 1, QTableWidgetItem (str (task.host)))
             self.taskTable.setItem (pos, 2, QTableWidgetItem (str (task.status)))
-            self.taskTable.setItem (pos, 3, QTableWidgetItem (str (task.startTime)))
-            self.taskTable.setItem (pos, 4, QTableWidgetItem (str (task.endTime)))
+            self.taskTable.setItem (pos, 3, QTableWidgetItem_dt (task.startTime))
+            self.taskTable.setItem (pos, 4, QTableWidgetItem_dt (task.endTime))
+            self.taskTable.setItem (pos, 5, QTableWidgetItem (str (tdiff)))
 
     def killJobButtonHandler (self):
         item = self.jobTable.currentItem ()
         if item and item.isSelected ():
             row = self.jobTable.currentRow ()
             id = int (self.jobTable.item (row, 0).text ())
-            choice = yesNoMsgBox(self, "Confirm", "Are you sure you want to kill job " + str(id) + "?")
+            choice = yesNoBox(self, "Confirm", "Are you sure you want to kill job " + str(id) + "?")
             if choice == QMessageBox.Yes:
                 kill(id)
                 self.refreshHandler()
             else:
-                msgBox(self, "Abort", "Job " + str(id) + " remains on the farm.")
+                aboutBox(self, "Abort", "Job " + str(id) + " remains on the farm.")
 
     def killTaskButtonHandler (self):
         item = self.taskTable.currentItem ()
         if item and item.isSelected ():
             row = self.taskTable.currentRow ()
             id = int (self.taskTable.item (row, 0).text ())
-            choice = yesNoMsgBox(self, "Confirm", "Are you sure you want to kill task " + str(id) + "?")
+            choice = yesNoBox(self, "Confirm", "Are you sure you want to kill task " + str(id) + "?")
             if choice == QMessageBox.Yes:
                 print ('kill task', id)
             else:
                 print ('don\'t kill task', id)
 
+class QTableWidgetItem_int(QTableWidgetItem):
+    """A QTableWidgetItem which holds integer data and sorts it properly."""
+    
+    def __init__(self, stringValue):
+        QTableWidgetItem.__init__(self, stringValue)
+    
+    def __lt__(self, other):
+        return int(self.text()) < int(other.text())
+
+class QTableWidgetItem_dt(QTableWidgetItem):
+    """A QTableWidgetItem which holds datetime data and sorts it properly."""
+
+    def __init__(self, dtValue):
+        QTableWidgetItem.__init__(self, str(dtValue))
+        self.dtValue = dtValue
+    
+    def __lt__(self, other):
+        return self.dtValue - other.dtValue
                        
 if __name__ == '__main__':
     app = QApplication( sys.argv )

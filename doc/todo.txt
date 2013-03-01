@@ -20,9 +20,6 @@ column to the other Hydra tables, which must be a foreign key into the
 		2. Sometimes the nodes don't seem to get the message.
 
 
-
-Tasks without details:
-
 -find out what the problem is with the Questions import and fix it
 
 -Jobs should have user names so that we know who submitted them.
@@ -31,9 +28,11 @@ Tasks without details:
 
 -add a "heartbeat" column to Hydra_rendernode
 
--column in farmview/joblisttest that shows how long it's been since it started
+[DONE] farmview only runs on machines that have been registered (we should fix
+that)
 
--farmview only runs on machines that have been registered (we should fix that)
+[DONE] column in farmview/joblisttest that shows how long it's been since it
+started
 
 -drop the tables in hydraDB and make an exact copy of hydraTest's tables under
 hydraDB
@@ -44,15 +43,15 @@ hydraDB
 config files
 
 -------------------------------------------------------------------------------
-DO SOONER
+JobList Tasks
 -------------------------------------------------------------------------------
 -we wish we had a button where, when a TASK is selected, it will resurrect the
 task
 
 -we might want something where you can select a job, give a condition, and
-resurrect the ones that meet that condition
+resurrect the tasks that meet that condition
 
--be able to sort tasks by column
+[DONE] be able to sort tasks by column
 
 -be able to select tasks by check box
 
