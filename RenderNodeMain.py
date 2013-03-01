@@ -122,6 +122,7 @@ class RenderTCPServer(TCPServer):
             
     def killCurrentJob(self, statusAfterDeath):
         """Kills the render node's current job if it's running one."""
+        
         logger.debug("killing %r", self.childProcess)
         print "Status after death should be: {0:s}".format(statusAfterDeath)
         if self.childProcess:
