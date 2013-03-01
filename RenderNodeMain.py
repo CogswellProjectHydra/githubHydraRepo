@@ -13,6 +13,8 @@ from Answers import RenderAnswer
 
 from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, IDLE, READY, STARTED, FINISHED
 
+from UnstickTask import unstick
+
 class RenderTCPServer(TCPServer):
     
     def __init__(self, *arglist, **kwargs):
@@ -20,6 +22,11 @@ class RenderTCPServer(TCPServer):
         self.childProcess = None
         self.childKilled = False
         self.statusAfterDeath = None # must be a status from MySQLSetup
+
+        # clean up in case we had an unexpected termination last time around
+        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        if thisNode.status == STARTED:
+            unstick (thisNode.task_id)
         
     def processRenderTasks(self):
             
