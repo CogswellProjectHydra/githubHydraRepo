@@ -56,7 +56,7 @@ class MayaTicket( JobTicket ):
                         '-mr:v', '5',
                         '-s', str( start ),
                         '-e', str( end ),
-                        '-p', self.mayaProjectPath,
+                        '-proj', self.mayaProjectPath,
                         self.sceneFile
                       ]
                                     

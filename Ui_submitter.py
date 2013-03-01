@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_submitter.ui'
 #
-# Created: Wed Feb 27 01:12:40 2013
+# Created: Thu Feb 28 01:46:27 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(280, 273)
+        MainWindow.resize(280, 308)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -49,6 +49,12 @@ class Ui_MainWindow(object):
         self.projectDirLineEdit.setReadOnly(True)
         self.projectDirLineEdit.setObjectName(_fromUtf8("projectDirLineEdit"))
         self.formLayout_2.setWidget(1, QtGui.QFormLayout.FieldRole, self.projectDirLineEdit)
+        self.gridLayout = QtGui.QGridLayout()
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        self.formLayout_2.setLayout(2, QtGui.QFormLayout.LabelRole, self.gridLayout)
+        self.browseButton = QtGui.QPushButton(self.centralwidget)
+        self.browseButton.setObjectName(_fromUtf8("browseButton"))
+        self.formLayout_2.setWidget(2, QtGui.QFormLayout.FieldRole, self.browseButton)
         self.verticalLayout.addLayout(self.formLayout_2)
         self.formLayout = QtGui.QFormLayout()
         self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.AllNonFixedFieldsGrow)
@@ -57,6 +63,8 @@ class Ui_MainWindow(object):
         self.startFrameLabel.setObjectName(_fromUtf8("startFrameLabel"))
         self.formLayout.setWidget(0, QtGui.QFormLayout.LabelRole, self.startFrameLabel)
         self.startSpinBox = QtGui.QSpinBox(self.centralwidget)
+        self.startSpinBox.setAccelerated(True)
+        self.startSpinBox.setMinimum(1)
         self.startSpinBox.setMaximum(99999)
         self.startSpinBox.setObjectName(_fromUtf8("startSpinBox"))
         self.formLayout.setWidget(0, QtGui.QFormLayout.FieldRole, self.startSpinBox)
@@ -64,6 +72,8 @@ class Ui_MainWindow(object):
         self.endFrameLabel.setObjectName(_fromUtf8("endFrameLabel"))
         self.formLayout.setWidget(1, QtGui.QFormLayout.LabelRole, self.endFrameLabel)
         self.endSpinBox = QtGui.QSpinBox(self.centralwidget)
+        self.endSpinBox.setAccelerated(True)
+        self.endSpinBox.setMinimum(1)
         self.endSpinBox.setMaximum(99999)
         self.endSpinBox.setObjectName(_fromUtf8("endSpinBox"))
         self.formLayout.setWidget(1, QtGui.QFormLayout.FieldRole, self.endSpinBox)
@@ -71,6 +81,7 @@ class Ui_MainWindow(object):
         self.renderNodesLabel.setObjectName(_fromUtf8("renderNodesLabel"))
         self.formLayout.setWidget(2, QtGui.QFormLayout.LabelRole, self.renderNodesLabel)
         self.numJobsSpinBox = QtGui.QSpinBox(self.centralwidget)
+        self.numJobsSpinBox.setMinimum(1)
         self.numJobsSpinBox.setMaximum(999)
         self.numJobsSpinBox.setProperty("value", 1)
         self.numJobsSpinBox.setObjectName(_fromUtf8("numJobsSpinBox"))
@@ -79,6 +90,7 @@ class Ui_MainWindow(object):
         self.priorityLabel.setObjectName(_fromUtf8("priorityLabel"))
         self.formLayout.setWidget(3, QtGui.QFormLayout.LabelRole, self.priorityLabel)
         self.prioritySpinBox = QtGui.QSpinBox(self.centralwidget)
+        self.prioritySpinBox.setMaximum(99999)
         self.prioritySpinBox.setProperty("value", 50)
         self.prioritySpinBox.setObjectName(_fromUtf8("prioritySpinBox"))
         self.formLayout.setWidget(3, QtGui.QFormLayout.FieldRole, self.prioritySpinBox)
@@ -111,8 +123,8 @@ class Ui_MainWindow(object):
         self.sceneLabel.setText(_translate("MainWindow", "scene:", None))
         self.sceneText.setPlaceholderText(_translate("MainWindow", "scene name here", None))
         self.projectDirLabel.setText(_translate("MainWindow", "project dir:", None))
-        self.projectDirLineEdit.setToolTip(_translate("MainWindow", "If Submitter failed to locate your project directory automatically, double-click in the text box to set it manually.", None))
-        self.projectDirLineEdit.setPlaceholderText(_translate("MainWindow", "click to set project directory", None))
+        self.projectDirLineEdit.setPlaceholderText(_translate("MainWindow", "browse to set project directory", None))
+        self.browseButton.setText(_translate("MainWindow", "Browse", None))
         self.startFrameLabel.setText(_translate("MainWindow", "start frame:", None))
         self.endFrameLabel.setText(_translate("MainWindow", "end frame:", None))
         self.renderNodesLabel.setText(_translate("MainWindow", "<html><head/><body><p># of render<br/>nodes to use:</p></body></html>", None))
