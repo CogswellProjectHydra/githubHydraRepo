@@ -49,12 +49,11 @@ JobList Tasks
 task
 
 -we might want something where you can select a job, give a condition, and
-resurrect the tasks that meet that condition
+resurrect the tasks that meet that condition [IN PROGRESS] 
+(developing a search dialog which finds tasks meeting certain conditions)
 
 [DONE] be able to sort tasks by column
 
--be able to select tasks by check box
+-be able to select tasks by check box (insert checkboxes into QItemWidgets?)
 
--be able to do an operation on selected tasks
-
--operations would be resubmit, kill
+-be able to do resubmit/kill operation on selected tasks

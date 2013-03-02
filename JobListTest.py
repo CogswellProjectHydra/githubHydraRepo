@@ -7,12 +7,13 @@ from Ui_JobListTest import Ui_MainWindow
 import Servers
 from Clients import Client
 from Connections import TCPConnection
-from MySQLSetup import transaction, Hydra_job, Hydra_rendertask, Hydra_rendernode, IDLE, OFFLINE
+from MySQLSetup import (transaction, Hydra_job, Hydra_rendertask, 
+                        Hydra_rendernode, IDLE, OFFLINE)
 import Utils
 from LoggingSetup import logger
 import pickle
 import JobTicket
-from JobKill import kill
+from JobKill import killJob, killTask
 from MessageBoxes import aboutBox, yesNoBox
 from datetime import datetime as dt
 
@@ -30,10 +31,14 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
         self.setupUi(self)
         self.refreshHandler()
 
-        QObject.connect (self.refreshButton, SIGNAL("clicked()"), self.refreshHandler)
-        QObject.connect (self.jobTable, SIGNAL ("cellClicked(int,int)"), self.jobCellClickedHandler)
-        QObject.connect (self.killJobButton, SIGNAL ("clicked()"), self.killJobButtonHandler)
-        QObject.connect (self.killTaskButton, SIGNAL ("clicked()"), self.killTaskButtonHandler)
+        QObject.connect (self.refreshButton, SIGNAL("clicked()"), 
+                         self.refreshHandler)
+        QObject.connect (self.jobTable, SIGNAL ("cellClicked(int,int)"), 
+                         self.jobCellClickedHandler)
+        QObject.connect (self.killJobButton, SIGNAL ("clicked()"), 
+                         self.killJobButtonHandler)
+        QObject.connect (self.killTaskButton, SIGNAL ("clicked()"), 
+                         self.killTaskButtonHandler)
         
     def refreshHandler (self, *args):
         jobs = Hydra_job.fetch ()
@@ -47,6 +52,7 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
         # populate the task table widget
         item = self.jobTable.item (row, 0)
         job_id = int (item.text ())
+        self.taskTableLabel.setText("Task List (job: " + item.text() + ")")
         tasks = Hydra_rendertask.fetch ("where job_id = %d" % job_id)
         self.taskTable.setRowCount (len (tasks))
         for pos, task in enumerate (tasks):
@@ -58,35 +64,36 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
                 tdiff = dt.now().replace(microsecond=0) - task.startTime
             
             # populate table
-            self.taskTable.setItem (pos, 0, QTableWidgetItem_int (str (task.id)))
-            self.taskTable.setItem (pos, 1, QTableWidgetItem (str (task.host)))
-            self.taskTable.setItem (pos, 2, QTableWidgetItem (str (task.status)))
-            self.taskTable.setItem (pos, 3, QTableWidgetItem_dt (task.startTime))
-            self.taskTable.setItem (pos, 4, QTableWidgetItem_dt (task.endTime))
-            self.taskTable.setItem (pos, 5, QTableWidgetItem (str (tdiff)))
+            self.taskTable.setItem(pos, 0, QTableWidgetItem_int(str(task.id)))
+            self.taskTable.setItem(pos, 1, QTableWidgetItem(str(task.host)))
+            self.taskTable.setItem(pos, 2, QTableWidgetItem(str(task.status)))
+            self.taskTable.setItem(pos, 3, QTableWidgetItem_dt(task.startTime))
+            self.taskTable.setItem(pos, 4, QTableWidgetItem_dt(task.endTime))
+            self.taskTable.setItem(pos, 5, QTableWidgetItem(str(tdiff)))
 
     def killJobButtonHandler (self):
         item = self.jobTable.currentItem ()
         if item and item.isSelected ():
             row = self.jobTable.currentRow ()
             id = int (self.jobTable.item (row, 0).text ())
-            choice = yesNoBox(self, "Confirm", "Are you sure you want to kill job " + str(id) + "?")
+            choice = yesNoBox(self, "Confirm", "Really kill job {:d}?"
+                              .format(id))
             if choice == QMessageBox.Yes:
-                kill(id)
-                self.refreshHandler()
-            else:
-                aboutBox(self, "Abort", "Job " + str(id) + " remains on the farm.")
+                if killJob(id):
+                    aboutBox(self, "Error", "Some nodes couldn't kill their "
+                             + "tasks.")
+                self.jobCellClickedHandler(self.taskTable.currentRow(), 0)
 
     def killTaskButtonHandler (self):
         item = self.taskTable.currentItem ()
         if item and item.isSelected ():
             row = self.taskTable.currentRow ()
             id = int (self.taskTable.item (row, 0).text ())
-            choice = yesNoBox(self, "Confirm", "Are you sure you want to kill task " + str(id) + "?")
+            choice = yesNoBox(self, "Confirm", "Really kill task {:d}?"
+                              .format(id))
             if choice == QMessageBox.Yes:
-                print ('kill task', id)
-            else:
-                print ('don\'t kill task', id)
+                if killTask(id):
+                    aboutBox(self, "Error", "Task couldn't be killed.")
 
 class QTableWidgetItem_int(QTableWidgetItem):
     """A QTableWidgetItem which holds integer data and sorts it properly."""

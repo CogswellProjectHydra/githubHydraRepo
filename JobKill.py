@@ -50,14 +50,15 @@ def killJob(job_id):
         try:
             error = error or sendKillQuestion(host)
         except socketerror:
-            print "There was a problem communicating with {0:s}".format(host)
+            logger.debug("There was a problem communicating with {:s}"
+                         .format(host))
             error = True
     
     return error
 
 def resurrectJob(job_id):
-    """Resurrects job with the given id. Tasks marked 'K' or 'F' will have their 
-    data cleared and their statuses set to 'R'"""
+    """Resurrects job with the given id. Tasks marked 'K' or 'F' will have 
+    their data cleared and their statuses set to 'R'"""
     
     with transaction() as t:
         t.cur.execute("""update Hydra_rendertask 
@@ -79,7 +80,7 @@ def killTask(task_id):
         try:
             error = sendKillQuestion(task.host)
         except socketerror:
-            print ("There was a problem communicating with {0:s}"
+            logger.debug("There was a problem communicating with {:s}"
                    .format(task.host))
             error = True
     

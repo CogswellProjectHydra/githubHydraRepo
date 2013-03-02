@@ -1,1 +1,0 @@
-mysql -h hydra.cpc.local -u root
