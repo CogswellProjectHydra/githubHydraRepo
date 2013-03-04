@@ -1,6 +1,8 @@
 """Miscellaneous pieces of useful code."""
 import ConfigParser
 import os
+import Constants
+import itertools
 
 def myHostName( ):
     "this computer's host name in the RenderHost table"
@@ -17,3 +19,12 @@ def flanged (name):
 
 def nonFlanged (name):
     return not flanged (name)
+
+# receive all bytes from a socket, with no buffer size limit jive
+def sockRecvAll (sock):
+    # generator to recieve strings from socket, will return
+    # empty strings (forever) upon EOF
+    receivedStrings  = (sock.recv (Constants.MANYBYTES)
+                        for i in itertools.count (0))
+    # concatenate the nonempty ones
+    return ''.join (itertools.takewhile (len, receivedStrings))
