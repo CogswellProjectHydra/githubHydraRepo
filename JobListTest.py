@@ -3,12 +3,14 @@ import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from Ui_JobListTest import Ui_MainWindow
+from TaskSearchDialog import TaskSearchDialog
 
 import Servers
 from Clients import Client
 from Connections import TCPConnection
 from MySQLSetup import (transaction, Hydra_job, Hydra_rendertask, 
                         Hydra_rendernode, IDLE, OFFLINE)
+from MySQLdb import Error as sqlerror
 import Utils
 from LoggingSetup import logger
 import pickle
@@ -39,37 +41,56 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
                          self.killJobButtonHandler)
         QObject.connect (self.killTaskButton, SIGNAL ("clicked()"), 
                          self.killTaskButtonHandler)
+        QObject.connect (self.advancedSearchButton, SIGNAL ("clicked()"),
+                         self.advancedSearchButtonClicked)
         
     def refreshHandler (self, *args):
-        jobs = Hydra_job.fetch ()
-        self.jobTable.setRowCount (len (jobs))
-        for pos, job in enumerate (jobs):
-            ticket = pickle.loads(job.pickledTicket)
-            self.jobTable.setItem (pos, 0, QTableWidgetItem_int(str(job.id)))
-            self.jobTable.setItem (pos, 1, QTableWidgetItem(ticket.name ()))
+        try:
+            jobs = Hydra_job.fetch ()
+            self.jobTable.setRowCount (len (jobs))
+            for pos, job in enumerate (jobs):
+                ticket = pickle.loads(job.pickledTicket)
+                self.jobTable.setItem (pos, 0, 
+                                       QTableWidgetItem_int(str(job.id)))
+                self.jobTable.setItem (pos, 1, 
+                                       QTableWidgetItem(ticket.name ()))
+        except sqlerror as err:
+            logger.debug(str(err))
+            aboutBox(self, "SQL error", str(err))
 
     def jobCellClickedHandler (self, row, column):
         # populate the task table widget
         item = self.jobTable.item (row, 0)
         job_id = int (item.text ())
         self.taskTableLabel.setText("Task List (job: " + item.text() + ")")
-        tasks = Hydra_rendertask.fetch ("where job_id = %d" % job_id)
-        self.taskTable.setRowCount (len (tasks))
-        for pos, task in enumerate (tasks):
-            # calcuate time difference
-            tdiff = None
-            if task.endTime:
-                tdiff = task.endTime - task.startTime
-            elif task.startTime:
-                tdiff = dt.now().replace(microsecond=0) - task.startTime
+        try:
+            tasks = Hydra_rendertask.fetch ("where job_id = %d" % job_id)
+            self.taskTable.setRowCount (len (tasks))
+            for pos, task in enumerate (tasks):
+                # calcuate time difference
+                tdiff = None
+                if task.endTime:
+                    tdiff = task.endTime - task.startTime
+                elif task.startTime:
+                    tdiff = dt.now().replace(microsecond=0) - task.startTime
+                
+                # populate table
+                self.taskTable.setItem(pos, 0, 
+                                       QTableWidgetItem_int(str(task.id)))
+                self.taskTable.setItem(pos, 1, 
+                                       QTableWidgetItem(str(task.host)))
+                self.taskTable.setItem(pos, 2, 
+                                       QTableWidgetItem(str(task.status)))
+                self.taskTable.setItem(pos, 3, 
+                                       QTableWidgetItem_dt(task.startTime))
+                self.taskTable.setItem(pos, 4, 
+                                       QTableWidgetItem_dt(task.endTime))
+                self.taskTable.setItem(pos, 5, QTableWidgetItem(str(tdiff)))
+        except sqlerror as err:
+            aboutBox(self, "SQL Error", str(err))
             
-            # populate table
-            self.taskTable.setItem(pos, 0, QTableWidgetItem_int(str(task.id)))
-            self.taskTable.setItem(pos, 1, QTableWidgetItem(str(task.host)))
-            self.taskTable.setItem(pos, 2, QTableWidgetItem(str(task.status)))
-            self.taskTable.setItem(pos, 3, QTableWidgetItem_dt(task.startTime))
-            self.taskTable.setItem(pos, 4, QTableWidgetItem_dt(task.endTime))
-            self.taskTable.setItem(pos, 5, QTableWidgetItem(str(tdiff)))
+    def advancedSearchButtonClicked(self):
+        TaskSearchDialog.create()
 
     def killJobButtonHandler (self):
         item = self.jobTable.currentItem ()
@@ -79,10 +100,14 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
             choice = yesNoBox(self, "Confirm", "Really kill job {:d}?"
                               .format(id))
             if choice == QMessageBox.Yes:
-                if killJob(id):
-                    aboutBox(self, "Error", "Some nodes couldn't kill their "
-                             + "tasks.")
-                self.jobCellClickedHandler(self.taskTable.currentRow(), 0)
+                try:
+                    if killJob(id):
+                        aboutBox(self, "Error", "Some nodes couldn't kill their"
+                                 + " tasks.")
+                    self.jobCellClickedHandler(self.taskTable.currentRow(), 0)
+                except sqlerror as err:
+                    logger.debug(str(err))
+                    aboutBox(self, "SQL Error", str(err))
 
     def killTaskButtonHandler (self):
         item = self.taskTable.currentItem ()

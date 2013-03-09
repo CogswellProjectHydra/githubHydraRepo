@@ -116,4 +116,4 @@ if __name__ == '__main__':
         elif cmd == 'resurrect':
             resurrectJob(job_id)
     else:
-        print "Command line args: ['kill' or 'resurrect'] ['job_id']"
+        print "Command line args: ['kill' or 'resurrect'] [job_id]"
