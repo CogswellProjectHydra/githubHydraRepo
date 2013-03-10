@@ -44,6 +44,15 @@ class MayaTicket( JobTicket ):
     def name (self):
         return self.sceneFile
 
+    def renderCommand(self, start, end):
+        return [r'c:\program files\autodesk\maya2011\bin\render.exe',
+                '-mr:v', '5',
+                '-s', str( start ),
+                '-e', str( end ),
+                '-proj', self.mayaProjectPath,
+                self.sceneFile
+                ]
+
     def createTasks( self, job ):
         starts = range( self.startFrame, self.endFrame + 1, self.batchSize )
         ends = [min( start + self.batchSize - 1,
@@ -51,15 +60,7 @@ class MayaTicket( JobTicket ):
                 for start in starts
                 ]
         for start, end in zip( starts, ends ):
-            command = [
-                        r'c:\program files\autodesk\maya2011\bin\render.exe',
-                        '-mr:v', '5',
-                        '-s', str( start ),
-                        '-e', str( end ),
-                        '-proj', self.mayaProjectPath,
-                        self.sceneFile
-                      ]
-                                    
+            command = self.renderCommand(start, end)
             logger.debug( command )
             task = Hydra_rendertask( status = READY,
                               command = repr( command ),
