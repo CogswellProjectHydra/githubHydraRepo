@@ -1,6 +1,7 @@
 #import functools
 #import itertools
 import os
+import sys
 from Constants import *
 import datetime
 import traceback
@@ -144,6 +145,7 @@ class RenderTCPServer(TCPServer):
 
 def main ():
     logger.info ('starting in %s', os.getcwd())
+    logger.info ('arglist %s', sys.argv)
     socketServer = RenderTCPServer( )
 #    socketServer.serverThread.join( )
     socketServer.createIdleLoop (5, socketServer.processRenderTasks )
