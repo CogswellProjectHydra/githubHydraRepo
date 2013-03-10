@@ -206,6 +206,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             labelAttr( 'host' ),
             labelAttr( 'status' ),
             labelAttr( 'task_id' ),
+            labelAttr ( 'project' ),
             getOffButton ("Get off!!!")]
         setup( Hydra_rendernode.fetch(order="order by host"), columns, self.renderNodesGrid)
 
@@ -216,6 +217,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             labelAttr( 'status' ),
             textAttr( 'logFile' ),
             labelAttr( 'host' ),
+            labelAttr( 'project' ),
             labelAttr( 'command' ),
             labelAttr( 'startTime' ),
             labelAttr( 'endTime' ),
