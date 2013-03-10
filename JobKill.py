@@ -40,9 +40,9 @@ def killJob(job_id):
         t.cur.execute("""select host from Hydra_rendertask 
                         where job_id = '%d' and status = 'S'""" % job_id)
         tuples = t.cur.fetchall()
-    
-    untuple = lambda h: h
-    hosts = [untuple(*t) for t in tuples]
+        
+    # make flat list out of single-element tuples fetched from db
+    hosts = [t for (t,) in tuples]
     
     # send a kill request to each host, note if any failures occurred
     error = False
