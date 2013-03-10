@@ -90,7 +90,8 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
             aboutBox(self, "SQL Error", str(err))
             
     def advancedSearchButtonClicked(self):
-        TaskSearchDialog.create()
+        results = TaskSearchDialog.create()
+        print results
 
     def killJobButtonHandler (self):
         item = self.jobTable.currentItem ()
