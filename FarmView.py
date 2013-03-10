@@ -192,9 +192,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
             t.cur.execute("select * from Hydra_projects")
             tuples = t.cur.fetchall()
         
-        # make a flat list out of the single-element tuples fetched from the database
-        untuple = lambda t: t # needed for func(*tuple) syntax to work
-        projectsList = [untuple(*tuple) for tuple in tuples]
+        # make flat list out of single-element tuples fetched from db
+        projectsList = [t for (t,) in tuples]
         
         # refresh the dropdown
         for project in projectsList:
