@@ -70,6 +70,10 @@ class RenderTCPServer(TCPServer):
             
         try:
             log.write( 'Hydra log file %s on %s\n' % ( render_task.logFile, render_task.host ) )
+            log.write("Check drive mappings (net use):\n\n")
+            log.flush()
+            subprocess.call ("net use", stdout = log, stderr = subprocess.STDOUT)
+            log.flush()
             log.write( 'Command: %s\n\n' % ( render_task.command ) )
             log.flush( )
             
