@@ -28,3 +28,8 @@ def sockRecvAll (sock):
                         for i in itertools.count (0))
     # concatenate the nonempty ones
     return ''.join (itertools.takewhile (len, receivedStrings))
+
+def flushOut (f):
+    "flush and sync a file to disk"
+    f.flush()
+    os.fsync(f.fileno())

@@ -67,7 +67,7 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
 
         logger.debug ('doSubmit')
 
-        sceneFile = str( self.sceneText.text() )
+        sceneFile = str( self.sceneText.text() ).replace ('\\', '/')
         startFrame = self.startSpinBox.value( )
         endFrame = self.endSpinBox.value( )
         numJobs = self.numJobsSpinBox.value( )
@@ -76,7 +76,7 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         project = str(self.projectComboBox.currentText())
         
         mayaProjectPath = str(self.projectDirLineEdit.text())
-        if not os.path.exists(mayaProjectPath + "workspace.mel"):
+        if not os.path.exists(os.path.join (mayaProjectPath, "workspace.mel")):
             # try to find workspace.mel
             mayaProjectPath = self.getMayaProjectPath(sceneFile)
             if not mayaProjectPath:
@@ -110,9 +110,9 @@ returns the path if found"""
         
         wrkspc = "workspace.mel"
         while dirList:
-            mayaProjectPath = '/'.join(dirList) + '/'
-            if os.path.exists(mayaProjectPath + wrkspc):
-                return mayaProjectPath
+            mayaProjectPath = os.path.join(*dirList)
+            if os.path.exists(os.path.join(mayaProjectPath, wrkspc)):
+                return mayaProjectPath.replace ('\\', '/')
             dirList.pop()
         
         return ""
