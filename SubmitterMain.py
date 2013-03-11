@@ -71,7 +71,8 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         startFrame = self.startSpinBox.value( )
         endFrame = self.endSpinBox.value( )
         numJobs = self.numJobsSpinBox.value( )
-        batchSize = int(math.ceil((endFrame - startFrame + 1) / numJobs))
+        batchSize = int(math.ceil((endFrame - startFrame + 1.0) / numJobs))
+        logger.debug ("numJobs %s batchSize %s", numJobs, batchSize)
         priority = self.prioritySpinBox.value( )
         project = str(self.projectComboBox.currentText())
         
