@@ -13,7 +13,8 @@ import Utils
 from Utils import flushOut
 from Answers import RenderAnswer
 
-from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, IDLE, READY, STARTED, FINISHED
+from MySQLSetup import (Hydra_rendernode, Hydra_rendertask, transaction, IDLE, 
+                        READY, STARTED, FINISHED)
 
 from UnstickTask import unstick
 
@@ -28,13 +29,15 @@ class RenderTCPServer(TCPServer):
         self.statusAfterDeath = None # must be a status from MySQLSetup
 
         # clean up in case we had an unexpected termination last time around
-        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" 
+                                             % Utils.myHostName( ))
         if thisNode.status == STARTED:
             unstick (thisNode.task_id)
         
     def processRenderTasks(self):
             
-        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" 
+                                             % Utils.myHostName( ))
         
         logger.debug("""Host: %r
         Status: %r
@@ -48,59 +51,67 @@ class RenderTCPServer(TCPServer):
         ## ready to be run and
         ## has a high enough priority level for this particular node and
         ## is on the this node's assigned project 
-        queryString = ("where status = '%s' and priority >= %s and project = '%s'" %
-                       (READY, thisNode.minPriority, thisNode.project))
+        queryString = ("""where status = '%s' and priority >= %s 
+                            and project = '%s'""" 
+                        % (READY, thisNode.minPriority, thisNode.project))
+        
         with transaction() as t:
-            render_tasks = Hydra_rendertask.fetch (queryString,
-                                                   limit=1,
-                                                   order="order by priority desc",
-                                                   explicitTransaction=t)
+            render_tasks = Hydra_rendertask.fetch (
+                                queryString,
+                                limit=1,
+                                order="order by priority desc",
+                                explicitTransaction=t)
             if not render_tasks:
                 return
             render_task = render_tasks[0]
             
-            # create a log for this task and update the task entry in the database
+            # create log for this task and update task entry in the database
             if not os.path.isdir( RENDERLOGDIR ):
                 os.makedirs( RENDERLOGDIR )
-            render_task.logFile = os.path.join( RENDERLOGDIR, '%010d.log.txt' % render_task.id )
+            render_task.logFile = os.path.join(RENDERLOGDIR, '%010d.log.txt' 
+                                               % render_task.id )
             render_task.status = STARTED
             render_task.host = thisNode.host
             thisNode.status = STARTED
             thisNode.task_id = render_task.id
-            render_task.startTime = datetime.datetime.now( )
+            render_task.startTime = datetime.datetime.now()
             render_task.update(t)
             thisNode.update(t)
 
         logger.debug ('working on render task %s', render_task.id)
             
-        log = file( render_task.logFile, 'w' )
+        log = file(render_task.logFile, 'w')
             
         try:
-            log.write( 'Hydra log file %s on %s\n' % ( render_task.logFile, render_task.host ) )
+            log.write('Hydra log file %s on %s\n' 
+                       % ( render_task.logFile, render_task.host ) )
             log.write('RenderNodeMain is %s\n' % sys.argv)
             log.write ("Initial drive mappings (net use):\n\n")
             flushOut(log)
-            subprocess.call ("net use", stdout = log, stderr = subprocess.STDOUT)
+            subprocess.call("net use", stdout = log, 
+                            stderr = subprocess.STDOUT)
             if mapDrive ('w:', r'\\oscar.cpc.local\px3'):
                 log.write("Found w:, assuming it's correct.\n")
             else:
                 log.write("Attempted to map w:\n")
                 flushOut(log)
-                subprocess.call ("net use", stdout = log, stderr = subprocess.STDOUT)
+                subprocess.call("net use", stdout = log, 
+                                stderr = subprocess.STDOUT)
                 flushOut(log)
-            log.write( 'Command: %s\n\n' % ( render_task.command ) )
+            log.write('Command: %s\n\n' % ( render_task.command ) )
             flushOut(log)
             
             # run the job and keep track of the process
             self.childProcess = subprocess.Popen( eval( render_task.command ),
                                                   stdout = log,
                                                   stderr = subprocess.STDOUT )
-            logger.debug ('started PID %s to do task %s', self.childProcess.pid, render_task.id)
+            logger.debug('started PID %s to do task %s', 
+                          self.childProcess.pid, render_task.id)
             
             # wait until the job is finished or terminated
             render_task.exitCode = self.childProcess.wait()
             
-            log.write( '\nProcess exited with code %d\n' % render_task.exitCode )
+            log.write('\nProcess exited with code %d\n' % render_task.exitCode)
             return RenderAnswer( )
         
         except Exception, e:
@@ -110,10 +121,11 @@ class RenderTCPServer(TCPServer):
         finally:
             # get the latest info about this render node
             with transaction() as t:
-                [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ),
+                [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" 
+                                                     % Utils.myHostName( ),
                                                      explicitTransaction=t)
                 
-                # check if the job was killed, then update the job board accordingly
+                # check if job was killed, update the job board accordingly
                 if self.childKilled:
                     # reset the rendertask
                     render_task.status = self.statusAfterDeath
@@ -122,10 +134,10 @@ class RenderTCPServer(TCPServer):
                     self.childKilled = False
                 else:
                     # report that the job was finished
-                    render_task.status = FINISHED # note: what if the process didn't run for some reason? maybe we should check the return code
+                    render_task.status = FINISHED # check the return code?
                     render_task.endTime = datetime.datetime.now( )
                 
-                # if nobody set status to OFFLINE, return to IDLE and continue to look for new jobs    
+                # return to 'IDLE' IFF current status is 'STARTED'    
                 if thisNode.status == STARTED:
                     logger.debug("status: %r", thisNode.status)
                     thisNode.status = IDLE
