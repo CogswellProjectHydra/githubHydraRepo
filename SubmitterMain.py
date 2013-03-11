@@ -104,19 +104,18 @@ be located. Please set the project path manually.""")
 Walks up the file tree looking for workspace.mel,
 returns the path if found"""
         
-        dirList = scenePath.split('/')
         
         # remove Maya scene file name from the end of the path
-        dirList.pop()
-        
+        mayaProjectPath = os.path.dirname (scenePath)
+        lastPath = None
         wrkspc = "workspace.mel"
-        while dirList:
-            mayaProjectPath = os.path.join(*dirList)
-            if os.path.exists(os.path.join(mayaProjectPath, wrkspc)):
-                return mayaProjectPath.replace ('\\', '/')
-            dirList.pop()
-        
-        return ""
+        while not os.path.exists(os.path.join(mayaProjectPath, wrkspc)):
+            logger.debug ("%s not in %s", wrkspc, mayaProjectPath)
+            lastPath = mayaProjectPath
+            mayaProjectPath = os.path.dirname (mayaProjectPath)
+            if lastPath == mayaProjectPath:
+                return ""
+        return mayaProjectPath
     
     def setMayaProjectPath(self):
         """
