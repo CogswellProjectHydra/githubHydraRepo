@@ -123,19 +123,19 @@ Opens a file browser dialog for finding workspace.mel,
 tries to start the user somewhere sensible"""
         
         currentDir = str( self.projectDirLineEdit.text() )
-        projectDir = None
+        startDir = None
         if len(currentDir) == 0:
             sceneFile = str( self.sceneText.text() )
-            projectDir = self.getMayaProjectPath(sceneFile)
-            if not projectDir:
-                projectDir = os.getcwd()
+            startDir = self.getMayaProjectPath(sceneFile)
+            if not startDir:
+                startDir = os.getcwd()
         else:
-            projectDir = currentDir
+            startDir = currentDir
             
         mayaProjectPath = QFileDialog.getOpenFileName(
             parent=self,
             caption="Find workspace.mel",
-            directory=projectDir,
+            directory=startDir,
             filter="workspace.mel")
         if mayaProjectPath:
             # remove "workspace.mel" from the end of the path
