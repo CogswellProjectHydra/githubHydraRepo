@@ -15,7 +15,7 @@ import Utils
 from LoggingSetup import logger
 import pickle
 import JobTicket
-from JobKill import killJob, killTask, socketerror
+from JobKill import killJob, killTask, resurrectTask, socketerror
 from MessageBoxes import aboutBox, yesNoBox
 from datetime import datetime as dt
 
@@ -43,6 +43,8 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
                          self.killTaskButtonHandler)
         QObject.connect (self.advancedSearchButton, SIGNAL ("clicked()"),
                          self.advancedSearchButtonClicked)
+        QObject.connect (self.resurrectTaskButton, SIGNAL("clicked()"),
+                         self.resurrectTaskButtonHandler)
         
     def refreshHandler (self, *args):
         try:
@@ -110,8 +112,29 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
                     aboutBox(self, "SQL Error", str(err))
                 self.jobCellClickedHandler(item.row(), 0)
     
-    def resurrectJobButtonHandler(self):
-        pass
+    def resurrectTaskButtonHandler(self):
+        taskItem = self.taskTable.currentItem ()
+        if taskItem and taskItem.isSelected ():
+            row = self.taskTable.currentRow ()
+            id = int (self.taskTable.item(row, 0).text ())
+            choice = yesNoBox(self, "Confirm", "Resurrect task {:d}?"
+                              .format(id))
+            if choice == QMessageBox.Yes:
+                error = None
+                try:
+                    error = resurrectTask(id)
+                except sqlerror as err:
+                    logger.debug(str(err))
+                    aboutBox(self, "SQL Error", str(err))
+                finally:
+                    if error:
+                        msg = ("Task couldn't be resurrected because it's " +
+                         "either not dead or is currently running.")
+                        logger.debug(msg)
+                        aboutBox(self, "Error", msg)
+                    else:
+                        jobItem = self.jobTable.currentItem()
+                        self.jobCellClickedHandler(jobItem.row(), 0)
 
     def killTaskButtonHandler (self):
         item = self.taskTable.currentItem ()
@@ -125,9 +148,9 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
                     killTask(id)
                 except socketerror as err:
                     logger.debug(str(err))
-                    aboutBox(self, "Error", "Task couldn't be killed because \
-                    there was a problem communicating with the host running \
-                    it.")
+                    aboutBox(self, "Error", "Task couldn't be killed because"
+                    + "there was a problem communicating with the host running"
+                    + "it.")
                 except sqlerror as err:
                     logger.debug(str(err))
                     aboutBox(self, "SQL Error", str(err))
