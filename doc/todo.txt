@@ -26,7 +26,7 @@ column to the other Hydra tables, which must be a foreign key into the
 
 -Users should be able to read the log files remotely [IN PROGRESS]
 
--add a "heartbeat" column to Hydra_rendernode [IN PROGRESS]
+-add a "heartbeat" column to Hydra_rendernode [DONE]
 
 [DONE] farmview only runs on machines that have been registered (we should fix
 that)
