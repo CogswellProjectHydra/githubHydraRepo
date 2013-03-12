@@ -2,6 +2,8 @@
 #import itertools
 import os
 import sys
+import time
+import threading
 from Constants import *
 import datetime
 import traceback
@@ -166,6 +168,14 @@ class RenderTCPServer(TCPServer):
         else:
             logger.debug("no process was running.")
         
+def heartbeat(interval = 5):
+    while True:
+        host = Utils.myHostName()
+        with transaction() as t:
+            t.cur.execute("update Hydra_rendernode "
+                "set pulse = NOW() "
+                "where host = '%s'" % host)
+        time.sleep(interval)
 
 def main ():
     logger.info ('starting in %s', os.getcwd())
@@ -173,6 +183,10 @@ def main ():
     socketServer = RenderTCPServer( )
 #    socketServer.serverThread.join( )
     socketServer.createIdleLoop (5, socketServer.processRenderTasks )
+    
+    pulseThread = threading.Thread(target = heartbeat, name = "heartbeat", 
+                                   args = (10,))
+    pulseThread.start()
 
 if __name__ == '__main__':
     main ()

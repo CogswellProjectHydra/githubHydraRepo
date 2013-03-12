@@ -105,8 +105,8 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
             if choice == QMessageBox.Yes:
                 try:
                     if killJob(id):
-                        aboutBox(self, "Error", "Some nodes couldn't kill their"
-                                 + " tasks.")
+                        aboutBox(self, "Error", "Some nodes couldn't kill "
+                                 + "their tasks.")
                 except sqlerror as err:
                     logger.debug(str(err))
                     aboutBox(self, "SQL Error", str(err))
