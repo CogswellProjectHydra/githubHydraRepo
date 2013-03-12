@@ -35,7 +35,7 @@ that)
 started
 
 -drop the tables in hydraDB and make an exact copy of hydraTest's tables under
-hydraDB
+hydraDB [DONE]
 	-update hydraSettings.cfg on all render nodes to use hydraDB instead of
 	hydraTest.
 
@@ -51,6 +51,7 @@ task
 -we might want something where you can select a job, give a condition, and
 resurrect the tasks that meet that condition [IN PROGRESS]
 (developing a search dialog which finds tasks meeting certain conditions)
+note: maybe we'll just add a Search tab to FarmView
 
 [DONE] be able to sort tasks by column
 

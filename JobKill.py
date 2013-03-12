@@ -31,7 +31,7 @@ def killJob(job_id):
     
     # mark all of the Ready tasks as Killed
     with transaction() as t:
-        t.cur.execute("""update Hydra_rendernode set status = 'K' 
+        t.cur.execute("""update Hydra_rendertask set status = 'K' 
                         where job_id = '%d' and status = 'R'""" % job_id)
     
     # get hostnames for tasks that were already started

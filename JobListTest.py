@@ -105,10 +105,10 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
                     if killJob(id):
                         aboutBox(self, "Error", "Some nodes couldn't kill their"
                                  + " tasks.")
-                    self.jobCellClickedHandler(self.taskTable.currentRow(), 0)
                 except sqlerror as err:
                     logger.debug(str(err))
                     aboutBox(self, "SQL Error", str(err))
+                self.jobCellClickedHandler(item.row(), 0)
 
     def killTaskButtonHandler (self):
         item = self.taskTable.currentItem ()
