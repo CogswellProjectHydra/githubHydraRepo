@@ -15,7 +15,7 @@ import Utils
 from LoggingSetup import logger
 import pickle
 import JobTicket
-from JobKill import killJob, killTask
+from JobKill import killJob, killTask, socketerror
 from MessageBoxes import aboutBox, yesNoBox
 from datetime import datetime as dt
 
@@ -109,6 +109,9 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
                     logger.debug(str(err))
                     aboutBox(self, "SQL Error", str(err))
                 self.jobCellClickedHandler(item.row(), 0)
+    
+    def resurrectJobButtonHandler(self):
+        pass
 
     def killTaskButtonHandler (self):
         item = self.taskTable.currentItem ()
@@ -118,8 +121,16 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
             choice = yesNoBox(self, "Confirm", "Really kill task {:d}?"
                               .format(id))
             if choice == QMessageBox.Yes:
-                if killTask(id):
-                    aboutBox(self, "Error", "Task couldn't be killed.")
+                try:
+                    killTask(id)
+                except socketerror as err:
+                    logger.debug(str(err))
+                    aboutBox(self, "Error", "Task couldn't be killed because \
+                    there was a problem communicating with the host running \
+                    it.")
+                except sqlerror as err:
+                    logger.debug(str(err))
+                    aboutBox(self, "SQL Error", str(err))
 
 class QTableWidgetItem_int(QTableWidgetItem):
     """A QTableWidgetItem which holds integer data and sorts it properly."""

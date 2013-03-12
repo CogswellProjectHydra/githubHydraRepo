@@ -77,14 +77,7 @@ def killTask(task_id):
         with transaction() as t:
             task.update(t)
     elif task.status == STARTED:
-        try:
-            error = sendKillQuestion(task.host)
-        except socketerror:
-            logger.debug("There was a problem communicating with {:s}"
-                   .format(task.host))
-            error = True
-    
-    return error
+        sendKillQuestion(task.host)
 
 def resurrectTask(task_id, ignoreStarted = False):
     """Resurrects the task with the specified id. 
