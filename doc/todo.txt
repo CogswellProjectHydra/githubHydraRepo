@@ -5,9 +5,9 @@ column to the other Hydra tables, which must be a foreign key into the
 	-	[DONE] Add a drop-down menu to FarmView->ThisNode with a list of
 		projects that are available to choose from. On selection, spawn a YesNo
 		dialog which asks if the user would like to switch the node to the new
-		project selection. If Yes, update the project entry for that node in the
-		database. After the choice has been made, spawn an information dialog
-		which informs the user of the effects of their decision.
+		project selection. If Yes, update the project entry for that node in
+		the database. After the choice has been made, spawn an information
+		dialog which informs the user of the effects of their decision.
 
 	-	[DONE] Add a drop-down menu to SubmitterMain which allows the user to
 		choose which project their render job will be part of. The drop-down
@@ -24,9 +24,9 @@ column to the other Hydra tables, which must be a foreign key into the
 
 -Jobs should have user names so that we know who submitted them.
 
--Users should be able to read the log files remotely [IN PROGRESS]
+[IN PROGRESS] Users should be able to read the log files remotely
 
--add a "heartbeat" column to Hydra_rendernode [DONE]
+[DONE] add a "heartbeat" column to Hydra_rendernode
 
 [DONE] farmview only runs on machines that have been registered (we should fix
 that)
@@ -34,27 +34,27 @@ that)
 [DONE] column in farmview/joblisttest that shows how long it's been since it
 started
 
--drop the tables in hydraDB and make an exact copy of hydraTest's tables under
-hydraDB [DONE]
+[DONE]drop the tables in hydraDB and make an exact copy of hydraTest's tables
+under hydraDB
 	-update hydraSettings.cfg on all render nodes to use hydraDB instead of
 	hydraTest.
 
--update 211-10A and 211-14A to have .cpc.local on their hostnames and in their
-config files [DONE]
+[DONE] update 211-10A and 211-14A to have .cpc.local on their hostnames and in
+their config files
 
 -------------------------------------------------------------------------------
 JobList Tasks
 -------------------------------------------------------------------------------
--we wish we had a button where, when a TASK is selected, it will resurrect the
-task
+[DONE] we wish we had a button where, when a TASK is selected, it will
+resurrect the task
 
--we might want something where you can select a job, give a condition, and
-resurrect the tasks that meet that condition [IN PROGRESS]
-(developing a search dialog which finds tasks meeting certain conditions)
+[IN PROGRESS] we might want something where you can select a job, give a
+condition, and resurrect the tasks that meet that condition (developing a
+search dialog which finds tasks meeting certain conditions)
 note: maybe we'll just add a Search tab to FarmView
 
 [DONE] be able to sort tasks by column
 
 -be able to select tasks by check box (insert checkboxes into QItemWidgets?)
+and resubmit/kill operation on selected tasks
 
--be able to do resubmit/kill operation on selected tasks
