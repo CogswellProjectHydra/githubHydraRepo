@@ -23,7 +23,7 @@ from UnstickTask import unstick
 
 from mapDrive import mapDrive
 
-CURRENT_VERSION = '005'
+CURRENT_VERSION = '013'
 
 class RenderTCPServer(TCPServer):
     

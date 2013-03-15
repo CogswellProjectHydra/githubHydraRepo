@@ -28,6 +28,11 @@ column to the other Hydra tables, which must be a foreign key into the
 
 [DONE] add a "heartbeat" column to Hydra_rendernode
 
+[DONE] add a software version column to Hydra_rendernode and report current
+version from RenderNodeMain
+
+[DONE] enforce single instance per machine rule on RenderNodeMain
+
 [DONE] farmview only runs on machines that have been registered (we should fix
 that)
 
@@ -60,5 +65,6 @@ and resubmit/kill operation on selected tasks
 
 -online and offline render nodes by check box in farmview
 
--control # of instances of rendernodemain on any given machine
+-update FarmView to work with QTableWidgets instead of building widgets by hand
 
+-merge JobListTest into FarmView
