@@ -23,6 +23,8 @@ from UnstickTask import unstick
 
 from mapDrive import mapDrive
 
+CURRENT_VERSION = '005'
+
 class RenderTCPServer(TCPServer):
     
     def __init__(self, *arglist, **kwargs):
@@ -41,18 +43,24 @@ class RenderTCPServer(TCPServer):
 
         # clean up in case we had an unexpected termination last time around
         [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" 
-                                             % Utils.myHostName( ))
+                                             % Utils.myHostName())
         if thisNode.status == STARTED:
             unstick (thisNode.task_id)
+        
+        # update current software version if necessary
+        if thisNode.software_version != CURRENT_VERSION:
+            thisNode.software_version = CURRENT_VERSION
+            with transaction() as t:
+                thisNode.update(t)
         
     def processRenderTasks(self):
             
         [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" 
                                              % Utils.myHostName( ))
         
-        logger.debug("""Host: %r
-        Status: %r
-        Project: %r""", thisNode.host, thisNode.status, thisNode.project)
+        logger.info("""Host: %r
+         Status: %r
+         Project: %r""", thisNode.host, thisNode.status, thisNode.project)
         
         # If this node is not idle, don't try to find a new job
         if thisNode.status != IDLE:
