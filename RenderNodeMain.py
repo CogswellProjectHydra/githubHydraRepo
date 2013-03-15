@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import threading
+from psutil import process_iter
 from Constants import *
 import datetime
 import traceback
@@ -25,6 +26,14 @@ from mapDrive import mapDrive
 class RenderTCPServer(TCPServer):
     
     def __init__(self, *arglist, **kwargs):
+        # check for another instance of RenderNodeMain.exe
+        nInstances = sum(1 for proc in process_iter() 
+                                if 'RenderNodeMain' in proc.name)
+        if nInstances > 1:
+            logger.info("Blocked RenderNodeMain from running because another"
+                        " instance already exists.")
+            sys.exit(1)
+        
         TCPServer.__init__(self, *arglist, **kwargs) 
         self.childProcess = None
         self.childKilled = False
