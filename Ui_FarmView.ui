@@ -103,7 +103,7 @@
           <x>120</x>
           <y>20</y>
           <width>651</width>
-          <height>71</height>
+          <height>87</height>
          </rect>
         </property>
         <layout class="QFormLayout" name="formLayout">
@@ -152,13 +152,27 @@
            </property>
           </widget>
          </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="versionLabelLabel">
+           <property name="text">
+            <string>Version:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="versionLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>120</x>
-          <y>100</y>
+          <y>120</y>
           <width>221</width>
           <height>24</height>
          </rect>
@@ -202,8 +216,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>727</width>
-             <height>285</height>
+             <width>55</width>
+             <height>31</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
@@ -244,8 +258,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>748</width>
-             <height>285</height>
+             <width>68</width>
+             <height>62</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
