@@ -153,14 +153,14 @@
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="versionLabelLabel">
+          <widget class="QLabel" name="nodeVersionLabelLabel">
            <property name="text">
             <string>Version:</string>
            </property>
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QLabel" name="versionLabel">
+          <widget class="QLabel" name="nodeVersionLabel">
            <property name="text">
             <string/>
            </property>
@@ -216,8 +216,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>55</width>
-             <height>31</height>
+             <width>727</width>
+             <height>285</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
@@ -258,8 +258,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>68</width>
-             <height>62</height>
+             <width>748</width>
+             <height>285</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">

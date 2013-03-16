@@ -2,6 +2,7 @@ import sys
 #import traceback
 import datetime
 import functools
+import re
 from socket import error as socketerror
 from MySQLdb import Error as sqlerror
 
@@ -51,27 +52,32 @@ class FarmView( QMainWindow, Ui_FarmView ):
         kill its current task
         """
         if not self.thisNode:
-            aboutBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            aboutBox(self, "Error", "Node information not initialized. Do a "
+                     "fetch first.")
             return
         
         self.offline()
         try:
             self.connection = TCPConnection()
-            killed = self.getAnswer(KillCurrentJobQuestion(statusAfterDeath=READY))
+            killed = self.getAnswer(KillCurrentJobQuestion(
+                                        statusAfterDeath=READY))
             if not killed:
                 logger.debug("There was a problem killing the task.")
                 aboutBox(self, "Error", "There was a problem killing the task.")
         except socketerror:
             logger.debug(socketerror.message)
-            aboutBox(self, "Error", "The render node software is not running or has become unresponsive.")
+            aboutBox(self, "Error", "The render node software is not running" 
+                     " or has become unresponsive.")
             
         self.updateThisNodeInfo()
         
     def online(self):
-        """Changes the local render node's status to online if it wasn't on-line already"""
+        """Changes the local render node's status to online if it wasn't 
+        on-line already"""
         
         if not self.thisNode:
-            aboutBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            aboutBox(self, "Error", "Node information not initialized."
+                     " Do a fetch first.")
             return
         
         if self.thisNode.status == OFFLINE:
@@ -87,7 +93,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
         """Changes the local render node's status to offline"""
         
         if not self.thisNode:
-            aboutBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            aboutBox(self, "Error", "Node information not initialized."
+                     " Do a fetch first.")
             return
         
         self.thisNode.status = OFFLINE
@@ -96,7 +103,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
         self.updateThisNodeInfo()
     
     def projectSelectionHandler(self, currentProjectIndex):
-        """Checks to see if project selection has changed. If so, handles the change. Else, does nothing."""
+        """Checks to see if project selection has changed. If so, handles the 
+        change. Else, does nothing."""
         
         if currentProjectIndex != self.lastProjectIndex:
             self.projectChangeHandler(currentProjectIndex)
@@ -105,11 +113,14 @@ class FarmView( QMainWindow, Ui_FarmView ):
         """Handler for the event where the project selection changed."""
        
         if not self.thisNode:
-            aboutBox(self, "Error", "Node information not initialized. Do a fetch first.")
+            aboutBox(self, "Error", "Node information not initialized. Do a"
+            " fetch first.")
             return
         
         selectedProject = self.projectComboBox.itemText(index)
-        choice = yesNoBox(self, "Change project", "Reassign this node to " + selectedProject + "? (will avoid jobs from other projects)")
+        choice = yesNoBox(self, "Change project", "Reassign this node to " + 
+                          selectedProject + "? (will avoid jobs from other"
+                          " projects)")
         if choice == QMessageBox.Yes:
             self.thisNode.project = self.projectComboBox.currentText()
             with transaction() as t:
@@ -117,7 +128,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.lastProjectIndex = self.projectComboBox.currentIndex()
             aboutBox(self, "Success", "Node reassigned to " + selectedProject)
         else:
-            aboutBox(self, "No changes", "This node will remain assigned to " + self.thisNode.project + ".")
+            aboutBox(self, "No changes", "This node will remain assigned to " + 
+                     self.thisNode.project + ".")
             self.projectComboBox.setCurrentIndex(self.lastProjectIndex)
 
     # refresh the display, rebuilding every blessed widget.
@@ -130,17 +142,19 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.updateRenderTaskGrid()
             self.updateStatusBar()
         except sqlerror:
-            aboutBox(self, "Database Error", "There was a problem while trying to fetch info from the database.")
+            aboutBox(self, "Database Error", "There was a problem while trying"
+                     " to fetch info from the database.")
         
     def updateThisNodeInfo(self):
-        """Updates widgets on the "This Node" tab with the most recent information available."""
+        """Updates widgets on the "This Node" tab with the most recent 
+        information available."""
         
         # if the buttons are disabled, don't bother
         if not self.buttonsEnabled:
             return
         
         # get the most current info from the database
-        node = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName( ))
+        node = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName())
         if node:
             [self.thisNode] = node
         
@@ -151,21 +165,46 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.nodeNameLabel.setText(self.thisNode.host)
             self.nodeStatusLabel.setText(codes[self.thisNode.status])
             
-            # set task id, if one is available
+            # get RenderNodeMain version number if exists
+            if self.thisNode.software_version:
+                sw_ver = self.thisNode.software_version
+                
+                # case 1: executable in a versioned directory
+                v = re.search("rendernodemain-dist-([0-9]+)", sw_ver, 
+                                re.IGNORECASE)
+                if v:
+                    self.nodeVersionLabel.setText(v.group(1))
+                
+                # case 2: source code file
+                elif re.search("rendernodemain.py$", sw_ver, re.IGNORECASE):
+                    self.nodeVersionLabel.setText("Development source")
+                
+                # case 3: no freakin' clue
+                else:
+                    self.nodeVersionLabel.setText("Unrecognized version: " 
+                                                  + sw_ver)
+            else: 
+                self.nodeVersionLabel.setText("None")
+            
+            # get task id, if exists
             if self.thisNode.task_id:
                 self.taskIDLabel.setText(str(self.thisNode.task_id))
             else:
                 self.taskIDLabel.setText("None")
             
-            # set current project selection
-            idx = self.projectComboBox.findText(self.thisNode.project, flags=Qt.MatchExactly|Qt.MatchCaseSensitive)
+            # set project selection based on node's current project setting
+            idx = self.projectComboBox.findText(
+                           self.thisNode.project, 
+                           flags=Qt.MatchExactly|Qt.MatchCaseSensitive)
             self.projectComboBox.setCurrentIndex(idx)
             self.lastProjectIndex = idx
         else:
-            QMessageBox.about(self, "Notice", "Information about this node cannot be displayed because it is " +
-                              "not registered on the render farm. You may continue to use this application, but " +
-                              "the application must be restarted after this node is registered if you wish to see " +
-                              "its information")
+            QMessageBox.about(self, "Notice", "Information about this node"
+                              " cannot be displayed because it is not"
+                              " registered on the render farm. You may" 
+                              " continue to use Farm View, but it must be"
+                              " restarted after this node is registered if you"
+                              " wish to see this node's information.")
             self.setButtonsEnabled(False)
     
     def setButtonsEnabled(self, choice):
@@ -207,7 +246,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
             labelAttr( 'task_id' ),
             labelAttr ( 'project' ),
             getOffButton ("Get off!!!")]
-        setup( Hydra_rendernode.fetch(order="order by host"), columns, self.renderNodesGrid)
+        setup( Hydra_rendernode.fetch(order="order by host"), columns, 
+               self.renderNodesGrid)
 
     def updateRenderTaskGrid(self):
         
@@ -221,15 +261,16 @@ class FarmView( QMainWindow, Ui_FarmView ):
             labelAttr( 'startTime' ),
             labelAttr( 'endTime' ),
             labelAttr( 'exitCode' )]
-        setup( Hydra_rendertask.fetch (order = "order by id desc",
-                                        limit = self.limitSpinBox.value ()), columns, self.jobsGrid)
+        setup( Hydra_rendertask.fetch (order = "order by id desc", 
+                                       limit = self.limitSpinBox.value ()), 
+                                       columns, self.jobsGrid)
 
     def updateStatusBar(self):
         
         with transaction() as t:
-            t.cur.execute ("""select count(status), status from Hydra_rendernode
-                            group by status
-                        """)
+            t.cur.execute ("""select count(status), status 
+                                from Hydra_rendernode
+                                group by status""")
             counts = t.cur.fetchall ()
         logger.debug (counts)
         countString = ", ".join (["%d %s" % (count, codes[status])
@@ -290,14 +331,14 @@ class textAttr( labelAttr ):
         w.setReadOnly( True )
         return w
 
-# as above, but makes a specialized button to implement the GetOff!!! functionality.            
+# as above, but makes a specialized button to implement the GetOff function.            
 class getOffButton (labelAttr):
 
     def dataWidget ( self, record ):
         w = QPushButton( self.name )
 
-        # the click handler is the doGetOff method, but with the record argument already supplied.
-        # it's called a "partial application".
+        # the click handler is the doGetOff method, but with the record 
+        # argument already supplied. it's called a "partial application".
         handler = functools.partial (self.doGetOff, record=record)
 
         QObject.connect (w, SIGNAL("clicked()"), handler)

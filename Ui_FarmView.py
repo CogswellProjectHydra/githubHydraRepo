@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_farmview.ui'
+# Form implementation generated from reading ui file 'Ui_FarmView.ui'
 #
-# Created: Thu Feb 28 21:29:11 2013
+# Created: Fri Mar 15 21:12:18 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -63,7 +63,7 @@ class Ui_FarmView(object):
         self.getOffButton.setObjectName(_fromUtf8("getOffButton"))
         self.verticalLayout.addWidget(self.getOffButton)
         self.layoutWidget1 = QtGui.QWidget(self.thisNodeTab)
-        self.layoutWidget1.setGeometry(QtCore.QRect(120, 20, 651, 71))
+        self.layoutWidget1.setGeometry(QtCore.QRect(120, 20, 651, 87))
         self.layoutWidget1.setObjectName(_fromUtf8("layoutWidget1"))
         self.formLayout = QtGui.QFormLayout(self.layoutWidget1)
         self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.AllNonFixedFieldsGrow)
@@ -90,8 +90,15 @@ class Ui_FarmView(object):
         self.taskIDLabel.setText(_fromUtf8(""))
         self.taskIDLabel.setObjectName(_fromUtf8("taskIDLabel"))
         self.formLayout.setWidget(2, QtGui.QFormLayout.FieldRole, self.taskIDLabel)
+        self.nodeVersionLabelLabel = QtGui.QLabel(self.layoutWidget1)
+        self.nodeVersionLabelLabel.setObjectName(_fromUtf8("nodeVersionLabelLabel"))
+        self.formLayout.setWidget(3, QtGui.QFormLayout.LabelRole, self.nodeVersionLabelLabel)
+        self.nodeVersionLabel = QtGui.QLabel(self.layoutWidget1)
+        self.nodeVersionLabel.setText(_fromUtf8(""))
+        self.nodeVersionLabel.setObjectName(_fromUtf8("nodeVersionLabel"))
+        self.formLayout.setWidget(3, QtGui.QFormLayout.FieldRole, self.nodeVersionLabel)
         self.layoutWidget2 = QtGui.QWidget(self.thisNodeTab)
-        self.layoutWidget2.setGeometry(QtCore.QRect(120, 100, 221, 24))
+        self.layoutWidget2.setGeometry(QtCore.QRect(120, 120, 221, 24))
         self.layoutWidget2.setObjectName(_fromUtf8("layoutWidget2"))
         self.formLayout_2 = QtGui.QFormLayout(self.layoutWidget2)
         self.formLayout_2.setMargin(0)
@@ -176,6 +183,7 @@ class Ui_FarmView(object):
         self.nodeNameLabelLabel.setText(_translate("FarmView", "Node name:", None))
         self.nodeStatusLabelLabel.setText(_translate("FarmView", "Node status:", None))
         self.taskIDLabelLabel.setText(_translate("FarmView", "Task ID:", None))
+        self.nodeVersionLabelLabel.setText(_translate("FarmView", "Version:", None))
         self.projectLabel.setText(_translate("FarmView", "Project:", None))
         self.projectComboBox.setWhatsThis(_translate("FarmView", "<html><head/><body><p><br/></p></body></html>", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.thisNodeTab), _translate("FarmView", "This Node", None))
