@@ -1,1 +1,6 @@
 *.pyc
+build/*
+*.pyd
+*.dll
+*.exe
+*.zip

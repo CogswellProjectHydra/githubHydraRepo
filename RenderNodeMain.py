@@ -23,8 +23,6 @@ from UnstickTask import unstick
 
 from mapDrive import mapDrive
 
-CURRENT_VERSION = '013'
-
 class RenderTCPServer(TCPServer):
     
     def __init__(self, *arglist, **kwargs):
@@ -48,8 +46,9 @@ class RenderTCPServer(TCPServer):
             unstick (thisNode.task_id)
         
         # update current software version if necessary
-        if thisNode.software_version != CURRENT_VERSION:
-            thisNode.software_version = CURRENT_VERSION
+        current_version = sys.argv[0]
+        if thisNode.software_version != current_version:
+            thisNode.software_version = current_version
             with transaction() as t:
                 thisNode.update(t)
         
