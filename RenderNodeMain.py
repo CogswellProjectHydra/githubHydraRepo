@@ -16,8 +16,7 @@ import Utils
 from Utils import flushOut
 from Answers import RenderAnswer
 
-from MySQLSetup import (Hydra_rendernode, Hydra_rendertask, transaction, IDLE, 
-                        READY, STARTED, FINISHED)
+from MySQLSetup import *
 
 from UnstickTask import unstick
 
@@ -159,6 +158,8 @@ class RenderTCPServer(TCPServer):
                 if thisNode.status == STARTED:
                     logger.debug("status: %r", thisNode.status)
                     thisNode.status = IDLE
+                elif thisNode.status == PENDING:
+                    thisNode.status = OFFLINE
                 thisNode.task_id = None
                 
                 # update the records

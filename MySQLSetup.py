@@ -11,17 +11,23 @@ KILLED = 'K'                # job was killed
 # statuses for render nodes
 IDLE = 'I'                  # ready to accept jobs
 OFFLINE = 'O'               # not ready to accept jobs
+PENDING = 'P'               # soon to go offline
 
 # statuses for either jobs/tasks or render nodes
 STARTED = 'S'               # working on a job
 
-# open config file
-config = ConfigParser.RawConfigParser ()
-config.read ("C:/Hydra/hydraSettings.cfg")
+def getDbInfo():
+    # open config file
+    config = ConfigParser.RawConfigParser()
+    config.read("C:/Hydra/hydraSettings.cfg")
 
-# get server & db names
-hostname = config.get (section="database", option="host")
-dbname = config.get (section="database", option="db")
+    # get server & db names
+    host = config.get(section="database", option="host")
+    db = config.get(section="database", option="db")
+    
+    return host, db
+
+db_host, db_name = getDbInfo()
 
 #def execute (queryString):
 #    return cur.execute (queryString)
@@ -126,7 +132,7 @@ class transaction:
 
     def __init__(self):
         # open db connection
-        self.db = MySQLdb.connect (hostname, user="root", db=dbname)
+        self.db = MySQLdb.connect (db_host, user="root", db=db_name)
         self.cur = self.db.cursor ()
         self.cur.execute ("set autocommit = 1")
         

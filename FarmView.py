@@ -17,7 +17,8 @@ from Ui_FarmView import Ui_FarmView
 #from Hydra.models import RenderNode, RenderTask
 #from django.db import transaction
 
-from MySQLSetup import Hydra_rendernode, Hydra_rendertask, transaction, READY, OFFLINE, IDLE
+from MySQLSetup import (Hydra_rendernode, Hydra_rendertask, transaction, READY, 
+                        OFFLINE, IDLE, PENDING)
 from Questions import KillCurrentJobQuestion
 import Utils
 from Connections import TCPConnection
@@ -40,17 +41,16 @@ class FarmView( QMainWindow, Ui_FarmView ):
         QObject.connect(self.onlineButton, SIGNAL("clicked()"), self.online)
         QObject.connect(self.offlineButton, SIGNAL("clicked()"), self.offline)
         QObject.connect(self.getOffButton, SIGNAL("clicked()"), self.getOff)
-        QObject.connect(self.projectComboBox, SIGNAL("activated(int)"), self.projectSelectionHandler)
+        QObject.connect(self.projectComboBox, SIGNAL("activated(int)"), 
+                        self.projectSelectionHandler)
         
         self.thisNode = None
         self.lastProjectIndex = -1
         self.buttonsEnabled = True
 
     def getOff(self):
-        """
-        Offlines the node and sends a message to the render node server running on localhost to
-        kill its current task
-        """
+        """Offlines the node and sends a message to the render node server 
+        running on localhost tokill its current task"""
         if not self.thisNode:
             aboutBox(self, "Error", "Node information not initialized. Do a "
                      "fetch first.")
@@ -66,8 +66,9 @@ class FarmView( QMainWindow, Ui_FarmView ):
                 aboutBox(self, "Error", "There was a problem killing the task.")
         except socketerror:
             logger.debug(socketerror.message)
-            aboutBox(self, "Error", "The render node software is not running" 
-                     " or has become unresponsive.")
+            aboutBox(self, "Error", "There was a problem communicating with the"
+            "render node software. Either it's not running, or it has become"
+            " unresponsive.")
             
         self.updateThisNodeInfo()
         
@@ -97,9 +98,13 @@ class FarmView( QMainWindow, Ui_FarmView ):
                      " Do a fetch first.")
             return
         
-        self.thisNode.status = OFFLINE
+        if self.thisNode.task_id:
+            self.thisNode.status = PENDING
+        else:
+            self.thisNode.status = OFFLINE
         with transaction() as t:
             self.thisNode.update(t)
+            
         self.updateThisNodeInfo()
     
     def projectSelectionHandler(self, currentProjectIndex):
