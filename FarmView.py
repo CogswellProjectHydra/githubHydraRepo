@@ -1,5 +1,6 @@
 import sys
 #import traceback
+from exceptions import NotImplementedError
 import datetime
 import functools
 import re
@@ -166,43 +167,15 @@ class FarmView( QMainWindow, Ui_FarmView ):
         self.updateProjectComboBox()
         
         if self.thisNode:
-            # update host/status labels
+            # update the labels
             self.nodeNameLabel.setText(self.thisNode.host)
             self.nodeStatusLabel.setText(codes[self.thisNode.status])
+            self.updateTaskIDLabel()
+            self.nodeVersionLabel.setText(
+                        getSoftwareVersionText(self.thisNode.software_version))
             
-            # get RenderNodeMain version number if exists
-            if self.thisNode.software_version:
-                sw_ver = self.thisNode.software_version
-                
-                # case 1: executable in a versioned directory
-                v = re.search("rendernodemain-dist-([0-9]+)", sw_ver, 
-                                re.IGNORECASE)
-                if v:
-                    self.nodeVersionLabel.setText(v.group(1))
-                
-                # case 2: source code file
-                elif re.search("rendernodemain.py$", sw_ver, re.IGNORECASE):
-                    self.nodeVersionLabel.setText("Development source")
-                
-                # case 3: no freakin' clue
-                else:
-                    self.nodeVersionLabel.setText("Unrecognized version: " 
-                                                  + sw_ver)
-            else: 
-                self.nodeVersionLabel.setText("None")
+            self.setCurrentProjectSelection()
             
-            # get task id, if exists
-            if self.thisNode.task_id:
-                self.taskIDLabel.setText(str(self.thisNode.task_id))
-            else:
-                self.taskIDLabel.setText("None")
-            
-            # set project selection based on node's current project setting
-            idx = self.projectComboBox.findText(
-                           self.thisNode.project, 
-                           flags=Qt.MatchExactly|Qt.MatchCaseSensitive)
-            self.projectComboBox.setCurrentIndex(idx)
-            self.lastProjectIndex = idx
         else:
             QMessageBox.about(self, "Notice", "Information about this node"
                               " cannot be displayed because it is not"
@@ -210,10 +183,10 @@ class FarmView( QMainWindow, Ui_FarmView ):
                               " continue to use Farm View, but it must be"
                               " restarted after this node is registered if you"
                               " wish to see this node's information.")
-            self.setButtonsEnabled(False)
+            self.setThisNodeButtonsEnabled(False)
     
-    def setButtonsEnabled(self, choice):
-        """Enables or disables buttons on the This Node tab"""
+    def setThisNodeButtonsEnabled(self, choice):
+        """Enables or disables buttons on This Node tab"""
         
         self.onlineButton.setEnabled(choice)
         self.offlineButton.setEnabled(choice)
@@ -242,30 +215,47 @@ class FarmView( QMainWindow, Ui_FarmView ):
         # refresh the dropdown
         for project in projectsList:
             self.projectComboBox.addItem(project)
-            
+    
+    def updateTaskIDLabel(self):
+        """Get task_id, if exists, update label on This Node tab."""
+        
+        if self.thisNode.task_id:
+            self.taskIDLabel.setText(str(self.thisNode.task_id))
+        else:
+            self.taskIDLabel.setText("None")
+    
+    def setCurrentProjectSelection(self):
+        """Set project selection based on node's current project setting."""
+        
+        idx = self.projectComboBox.findText(
+                       self.thisNode.project, 
+                       flags=Qt.MatchExactly|Qt.MatchCaseSensitive)
+        self.projectComboBox.setCurrentIndex(idx)
+        self.lastProjectIndex = idx
+        
     def updateRenderNodeGrid(self):
         
         columns = [
-            labelAttr( 'host' ),
-            labelAttr( 'status' ),
-            labelAttr( 'task_id' ),
-            labelAttr ( 'project' ),
-            getOffButton ("Get off!!!")]
+            labelFactory( 'host' ),
+            labelFactory( 'status' ),
+            labelFactory( 'task_id' ),
+            labelFactory( 'project' ),
+            versionLabelFactory( 'software_version' )]
         setup( Hydra_rendernode.fetch(order="order by host"), columns, 
                self.renderNodesGrid)
 
     def updateRenderTaskGrid(self):
         
         columns = [
-            labelAttr( 'id' ),
-            labelAttr( 'status' ),
-            textAttr( 'logFile' ),
-            labelAttr( 'host' ),
-            labelAttr( 'project' ),
-            labelAttr( 'command' ),
-            labelAttr( 'startTime' ),
-            labelAttr( 'endTime' ),
-            labelAttr( 'exitCode' )]
+            labelFactory( 'id' ),
+            labelFactory( 'status' ),
+            lineEditFactory( 'logFile' ),
+            labelFactory( 'host' ),
+            labelFactory( 'project' ),
+            labelFactory( 'command' ),
+            labelFactory( 'startTime' ),
+            labelFactory( 'endTime' ),
+            labelFactory( 'exitCode' )]
         setup( Hydra_rendertask.fetch (order = "order by id desc", 
                                        limit = self.limitSpinBox.value ()), 
                                        columns, self.jobsGrid)
@@ -284,62 +274,109 @@ class FarmView( QMainWindow, Ui_FarmView ):
         msg = "%s as of %s" % (countString, time)
         self.statusLabel.setText (msg)
 
-# populate a data grid. The "columns"
-# are like widget factory objects.
-def setup( records, columns, grid):
+def getSoftwareVersionText(sw_ver):
+    """Displays the current version of RenderNodeMain in the This Node tab.
+    The text shown varies depending on what's in the database."""
+    
+    # get RenderNodeMain version number if exists
+    if sw_ver:
+        
+        # case 1: executable in a versioned directory
+        v = re.search("rendernodemain-dist-([0-9]+)", sw_ver, 
+                        re.IGNORECASE)
+        if v:
+            return v.group(1)
+        
+        # case 2: source code file
+        elif re.search("rendernodemain.py$", sw_ver, re.IGNORECASE):
+            return "Development source"
+        
+        # case 3: no freakin' clue
+        return sw_ver
+    
+    else: 
+        return "None"
+
+def setup(records, columns, grid):
+    """Populate a data grid. "colums" is a list of widget factory objects."""
+    
+    # build the header row
     for (column, attr) in enumerate( columns ):
         item = grid.itemAtPosition( 0, column )
         if item:
             grid.removeItem( item )
-            item.widget( ).hide(  )
-        grid.addWidget( attr.labelWidget(  ), 0, column )
+            item.widget().hide()
+        grid.addWidget( attr.headerWidget(), 0, column )
     
+    # build the data rows
     for (row, record) in enumerate( records ):
         for (column, attr) in enumerate( columns ):
             item = grid.itemAtPosition( row + 1, column )
             if item:
                 grid.removeItem( item )
-                item.widget( ).hide( )
+                item.widget().hide()
             grid.addWidget(attr.dataWidget( record ),
                            row + 1,
                            column,
                            )
 
-# labelAttr: a widget factory object for making a label.
-# the object's name is the name of a database column.
-# to make a label widget, given a record, extract the
-# named attribute from the record and use that as the label
-# text.
-# the labelWidget method makes a widget suitable for the heading
-# (first) row of the display.
-# the dataWidget method makes a widget that displays actual data.
-class labelAttr:
-
-    def __init__( self, name ):
+class widgetFactory():
+    """A widget building class intended to be subclassed for building particular 
+    types of widgets. 'name' must be the name of a database column."""
+    
+    def __init__(self, name):
         self.name = name
+    
+    def headerWidget(self):
+        """Makes a label for the header row of the display."""
+        
+        return QLabel('<b>' + self.name + '</b>')
+    
+    def data(self, record):
+        
+        return str(getattr(record, self.name))
+    
+    def dataWidget(self, record):
+        """Create a QWidget instance and return a reference to it. To make a 
+        widget, given a record, extract the named attribute from the record
+        with the data method, and use that as the widget's text/data."""
+        
+        raise NotImplementedError
 
-    def labelWidget( self ):
-        return QLabel( '<b>' + self.name + '</b>' )
-
-    def data( self, record ):
-        return str( getattr (record, self.name) )
+class labelFactory(widgetFactory):
+    """A label widget factory. The object's name is the name of a database 
+    column."""
     
     def dataWidget( self, record ):
+        
         return QLabel( self.data( record ) )
 
-# like labelAttr, but makes a read-only text field instead of a label.
-class textAttr( labelAttr ):
-
+class lineEditFactory(widgetFactory):
+    """like labelFactory, but makes a read-only text field instead of a 
+    label."""
+    
     def dataWidget( self, record ):
+        
         w = QLineEdit( )
         w.setText( self.data( record ) )
         w.setReadOnly( True )
         return w
 
-# as above, but makes a specialized button to implement the GetOff function.            
-class getOffButton (labelAttr):
+class versionLabelFactory(widgetFactory):
+    """Builds a label specially for the software_version column in the render
+    node table, trimming out non-essential information in the process."""
+    
+    def dataWidget (self, record ):
+        
+        sw_version_text = getSoftwareVersionText(self.data(record))
+        return QLabel(sw_version_text)
 
+class getOffButton(widgetFactory):
+    """As above, but makes a specialized button to implement the GetOff 
+    function."""
+    
     def dataWidget ( self, record ):
+        
         w = QPushButton( self.name )
 
         # the click handler is the doGetOff method, but with the record 
@@ -350,6 +387,7 @@ class getOffButton (labelAttr):
         return w
 
     def doGetOff (self, record):
+        
         logger.debug('clobber %s', record.host)
 
 if __name__ == '__main__':
