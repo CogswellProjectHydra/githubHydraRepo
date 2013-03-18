@@ -240,7 +240,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
             labelFactory( 'status' ),
             labelFactory( 'task_id' ),
             labelFactory( 'project' ),
-            versionLabelFactory( 'software_version' )]
+            versionLabelFactory( 'software_version' ),
+            labelFactory( 'pulse' )]
         setup( Hydra_rendernode.fetch(order="order by host"), columns, 
                self.renderNodesGrid)
 
