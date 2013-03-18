@@ -1,8 +1,8 @@
 '''
-Created on Feb 16, 2013
+Created on Mar 10, 2013
 
-@author: Aaron Cohn
-@summary: Procedures for killing and resurrecting jobs and tasks
+@author: David Gladstein
+@summary: Procedure and mini-program for rebooting render nodes
 '''
 from socket import error as socketerror
 from MySQLSetup import Hydra_rendertask, transaction, KILLED, READY, STARTED
@@ -22,4 +22,17 @@ if __name__ == '__main__':
         host = argv[1]
         print sendRebootQuestion (host).output
     else:
-        print "Command line args: hostName"
+        print ("Type the host name of a render node to reboot it, or type 'q'" 
+               " to quit.")
+        host = raw_input("Host to reboot: ")
+        while host.lower() != 'q':
+            try:
+                print sendRebootQuestion(host).output
+            except socketerror as err:
+                print str(err)
+                if err.errno == 11004:
+                    print "Hostname could not be resolved to an address."
+                print # newline
+                    
+            host = raw_input("Host to reboot: ")
+            
