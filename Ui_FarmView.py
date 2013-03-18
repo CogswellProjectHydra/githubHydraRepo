@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'Ui_FarmView.ui'
 #
-# Created: Fri Mar 15 21:12:18 2013
-#      by: PyQt4 UI code generator 4.9.6
+# Created: Mon Mar 18 13:45:03 2013
+#      by: PyQt4 UI code generator 4.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,16 +12,7 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    def _fromUtf8(s):
-        return s
-
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+    _fromUtf8 = lambda s: s
 
 class Ui_FarmView(object):
     def setupUi(self, FarmView):
@@ -110,16 +101,16 @@ class Ui_FarmView(object):
         self.projectComboBox.setObjectName(_fromUtf8("projectComboBox"))
         self.formLayout_2.setWidget(0, QtGui.QFormLayout.FieldRole, self.projectComboBox)
         self.tabWidget.addTab(self.thisNodeTab, _fromUtf8(""))
-        self.renderNodesTab = QtGui.QWidget()
-        self.renderNodesTab.setObjectName(_fromUtf8("renderNodesTab"))
-        self.gridLayout_4 = QtGui.QGridLayout(self.renderNodesTab)
+        self.renderNodesTabOld = QtGui.QWidget()
+        self.renderNodesTabOld.setObjectName(_fromUtf8("renderNodesTabOld"))
+        self.gridLayout_4 = QtGui.QGridLayout(self.renderNodesTabOld)
         self.gridLayout_4.setObjectName(_fromUtf8("gridLayout_4"))
-        self.scrollArea = QtGui.QScrollArea(self.renderNodesTab)
+        self.scrollArea = QtGui.QScrollArea(self.renderNodesTabOld)
         self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 727, 285))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 740, 322))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.gridLayout_3 = QtGui.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
@@ -130,6 +121,29 @@ class Ui_FarmView(object):
         self.gridLayout_3.addItem(spacerItem1, 1, 0, 1, 1)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.gridLayout_4.addWidget(self.scrollArea, 0, 0, 1, 1)
+        self.tabWidget.addTab(self.renderNodesTabOld, _fromUtf8(""))
+        self.renderNodesTab = QtGui.QWidget()
+        self.renderNodesTab.setObjectName(_fromUtf8("renderNodesTab"))
+        self.gridLayout_6 = QtGui.QGridLayout(self.renderNodesTab)
+        self.gridLayout_6.setObjectName(_fromUtf8("gridLayout_6"))
+        self.renderNodesTable = QtGui.QTableWidget(self.renderNodesTab)
+        self.renderNodesTable.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.renderNodesTable.setObjectName(_fromUtf8("renderNodesTable"))
+        self.renderNodesTable.setColumnCount(6)
+        self.renderNodesTable.setRowCount(0)
+        item = QtGui.QTableWidgetItem()
+        self.renderNodesTable.setHorizontalHeaderItem(0, item)
+        item = QtGui.QTableWidgetItem()
+        self.renderNodesTable.setHorizontalHeaderItem(1, item)
+        item = QtGui.QTableWidgetItem()
+        self.renderNodesTable.setHorizontalHeaderItem(2, item)
+        item = QtGui.QTableWidgetItem()
+        self.renderNodesTable.setHorizontalHeaderItem(3, item)
+        item = QtGui.QTableWidgetItem()
+        self.renderNodesTable.setHorizontalHeaderItem(4, item)
+        item = QtGui.QTableWidgetItem()
+        self.renderNodesTable.setHorizontalHeaderItem(5, item)
+        self.gridLayout_6.addWidget(self.renderNodesTable, 0, 0, 1, 1)
         self.tabWidget.addTab(self.renderNodesTab, _fromUtf8(""))
         self.jobsTab = QtGui.QWidget()
         self.jobsTab.setObjectName(_fromUtf8("jobsTab"))
@@ -139,7 +153,7 @@ class Ui_FarmView(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 748, 285))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 756, 322))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -159,7 +173,7 @@ class Ui_FarmView(object):
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
         FarmView.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(FarmView)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 18))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         FarmView.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(FarmView)
@@ -168,25 +182,38 @@ class Ui_FarmView(object):
         self.projectLabel.setBuddy(self.projectComboBox)
 
         self.retranslateUi(FarmView)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(FarmView)
 
     def retranslateUi(self, FarmView):
-        FarmView.setWindowTitle(_translate("FarmView", "FarmView", None))
-        self.fetchButton.setText(_translate("FarmView", "Fetch", None))
-        self.onlineButton.setToolTip(_translate("FarmView", "<html><head/><body><p>Allow this node to accept render tasks</p></body></html>", None))
-        self.onlineButton.setText(_translate("FarmView", "Online", None))
-        self.offlineButton.setToolTip(_translate("FarmView", "<html><head/><body><p>Don\'t allow this node to accept any new jobs (it will still finish what it\'s working on)</p></body></html>", None))
-        self.offlineButton.setText(_translate("FarmView", "Offline", None))
-        self.getOffButton.setToolTip(_translate("FarmView", "<html><head/><body><p>Tell this node to stop the current job, put it back on the job board, and don\'t accept any more.</p></body></html>", None))
-        self.getOffButton.setText(_translate("FarmView", "Get Off!", None))
-        self.nodeNameLabelLabel.setText(_translate("FarmView", "Node name:", None))
-        self.nodeStatusLabelLabel.setText(_translate("FarmView", "Node status:", None))
-        self.taskIDLabelLabel.setText(_translate("FarmView", "Task ID:", None))
-        self.nodeVersionLabelLabel.setText(_translate("FarmView", "Version:", None))
-        self.projectLabel.setText(_translate("FarmView", "Project:", None))
-        self.projectComboBox.setWhatsThis(_translate("FarmView", "<html><head/><body><p><br/></p></body></html>", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.thisNodeTab), _translate("FarmView", "This Node", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.renderNodesTab), _translate("FarmView", "Render Nodes", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.jobsTab), _translate("FarmView", "Jobs", None))
+        FarmView.setWindowTitle(QtGui.QApplication.translate("FarmView", "FarmView", None, QtGui.QApplication.UnicodeUTF8))
+        self.fetchButton.setText(QtGui.QApplication.translate("FarmView", "Fetch", None, QtGui.QApplication.UnicodeUTF8))
+        self.onlineButton.setToolTip(QtGui.QApplication.translate("FarmView", "<html><head/><body><p>Allow this node to accept render tasks</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.onlineButton.setText(QtGui.QApplication.translate("FarmView", "Online", None, QtGui.QApplication.UnicodeUTF8))
+        self.offlineButton.setToolTip(QtGui.QApplication.translate("FarmView", "<html><head/><body><p>Don\'t allow this node to accept any new jobs (it will still finish what it\'s working on)</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.offlineButton.setText(QtGui.QApplication.translate("FarmView", "Offline", None, QtGui.QApplication.UnicodeUTF8))
+        self.getOffButton.setToolTip(QtGui.QApplication.translate("FarmView", "<html><head/><body><p>Tell this node to stop the current job, put it back on the job board, and don\'t accept any more.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.getOffButton.setText(QtGui.QApplication.translate("FarmView", "Get Off!", None, QtGui.QApplication.UnicodeUTF8))
+        self.nodeNameLabelLabel.setText(QtGui.QApplication.translate("FarmView", "Node name:", None, QtGui.QApplication.UnicodeUTF8))
+        self.nodeStatusLabelLabel.setText(QtGui.QApplication.translate("FarmView", "Node status:", None, QtGui.QApplication.UnicodeUTF8))
+        self.taskIDLabelLabel.setText(QtGui.QApplication.translate("FarmView", "Task ID:", None, QtGui.QApplication.UnicodeUTF8))
+        self.nodeVersionLabelLabel.setText(QtGui.QApplication.translate("FarmView", "Version:", None, QtGui.QApplication.UnicodeUTF8))
+        self.projectLabel.setText(QtGui.QApplication.translate("FarmView", "Project:", None, QtGui.QApplication.UnicodeUTF8))
+        self.projectComboBox.setWhatsThis(QtGui.QApplication.translate("FarmView", "<html><head/><body><p><br/></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.thisNodeTab), QtGui.QApplication.translate("FarmView", "This Node", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.renderNodesTabOld), QtGui.QApplication.translate("FarmView", "Render Nodes Old", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.renderNodesTable.horizontalHeaderItem(0)
+        item.setText(QtGui.QApplication.translate("FarmView", "host", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.renderNodesTable.horizontalHeaderItem(1)
+        item.setText(QtGui.QApplication.translate("FarmView", "status", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.renderNodesTable.horizontalHeaderItem(2)
+        item.setText(QtGui.QApplication.translate("FarmView", "task id", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.renderNodesTable.horizontalHeaderItem(3)
+        item.setText(QtGui.QApplication.translate("FarmView", "project", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.renderNodesTable.horizontalHeaderItem(4)
+        item.setText(QtGui.QApplication.translate("FarmView", "software version", None, QtGui.QApplication.UnicodeUTF8))
+        item = self.renderNodesTable.horizontalHeaderItem(5)
+        item.setText(QtGui.QApplication.translate("FarmView", "pulse", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.renderNodesTab), QtGui.QApplication.translate("FarmView", "Render Nodes", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.jobsTab), QtGui.QApplication.translate("FarmView", "Jobs", None, QtGui.QApplication.UnicodeUTF8))
 
