@@ -41,8 +41,9 @@ class RenderTCPServer(TCPServer):
         # clean up in case we had an unexpected termination last time around
         [thisNode] = Hydra_rendernode.fetch ("where host = '%s'" 
                                              % Utils.myHostName())
-        if thisNode.status == STARTED:
-            unstick (thisNode.task_id)
+        if thisNode.task_id:
+            unstick (taskID=thisNode.task_id, newTaskStatus=CRASHED,
+                     host=thisNode.host, newHostStatus=IDLE)
         
         # update current software version if necessary
         current_version = sys.argv[0]

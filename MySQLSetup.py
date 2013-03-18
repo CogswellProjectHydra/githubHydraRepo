@@ -7,6 +7,8 @@ import Utils
 READY = 'R'                 # ready to be run by a render node
 FINISHED = 'F'              # job complete
 KILLED = 'K'                # job was killed
+CRASHED = 'C'               # machine or server software crashed,
+                            # task was found in host's DB record upon restart
 
 # statuses for render nodes
 IDLE = 'I'                  # ready to accept jobs
@@ -15,6 +17,16 @@ PENDING = 'P'               # soon to go offline
 
 # statuses for either jobs/tasks or render nodes
 STARTED = 'S'               # working on a job
+
+niceNames = {READY: 'Ready',
+             FINISHED: 'Finished',
+             KILLED: 'Killed',
+             CRASHED: 'Crashed',
+             IDLE: 'Idle',
+             OFFLINE: 'Offline',
+             PENDING: 'Pending',
+             STARTED: 'Started',
+             }
 
 def getDbInfo():
     # open config file
