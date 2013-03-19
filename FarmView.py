@@ -19,17 +19,12 @@ from Ui_FarmView import Ui_FarmView
 #from django.db import transaction
 
 from MySQLSetup import (Hydra_rendernode, Hydra_rendertask, transaction, READY, 
-                        OFFLINE, IDLE, PENDING)
+                        OFFLINE, IDLE, PENDING,
+                        niceNames)
 from Questions import KillCurrentJobQuestion
 import Utils
 from Connections import TCPConnection
 from MessageBoxes import aboutBox, yesNoBox
-
-codes = {'I': 'idle',
-         'R': 'ready',
-         'O': 'offline',
-         'F': 'finished',
-         'S': 'started'}
 
 class FarmView( QMainWindow, Ui_FarmView ):
 
@@ -169,7 +164,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         if self.thisNode:
             # update the labels
             self.nodeNameLabel.setText(self.thisNode.host)
-            self.nodeStatusLabel.setText(codes[self.thisNode.status])
+            self.nodeStatusLabel.setText(niceNames[self.thisNode.status])
             self.updateTaskIDLabel()
             self.nodeVersionLabel.setText(
                         getSoftwareVersionText(self.thisNode.software_version))
@@ -238,7 +233,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         self.renderNodeTable.setRowCount (len (rows))
         columns = [
             lambda o: QTableWidgetItem(str(o.host)),
-            lambda o: QTableWidgetItem(str(o.status)),
+            lambda o: QTableWidgetItem(str(niceNames[o.status])),
             lambda o: QTableWidgetItem(str(o.task_id)),
             lambda o: QTableWidgetItem(str(o.project)),
             lambda o: QTableWidgetItem(
@@ -275,7 +270,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
                                 group by status""")
             counts = t.cur.fetchall ()
         logger.debug (counts)
-        countString = ", ".join (["%d %s" % (count, codes[status])
+        countString = ", ".join (["%d %s" % (count, niceNames[status])
                                   for (count, status) in counts])
         time = datetime.datetime.now().strftime ("%H:%M")
         msg = "%s as of %s" % (countString, time)
