@@ -144,7 +144,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         
         try:
             self.updateThisNodeInfo()
-            self.updateRenderNodeGrid()
+            self.updateRenderNodeTable()
             self.updateRenderTaskGrid()
             self.updateStatusBar()
         except sqlerror:
@@ -233,17 +233,22 @@ class FarmView( QMainWindow, Ui_FarmView ):
         self.projectComboBox.setCurrentIndex(idx)
         self.lastProjectIndex = idx
         
-    def updateRenderNodeGrid(self):
-        
+    def updateRenderNodeTable(self):
+        rows = Hydra_rendernode.fetch(order="order by host")
+        self.renderNodeTable.setRowCount (len (rows))
         columns = [
-            labelFactory( 'host' ),
-            labelFactory( 'status' ),
-            labelFactory( 'task_id' ),
-            labelFactory( 'project' ),
-            versionLabelFactory( 'software_version' ),
-            labelFactory( 'pulse' )]
-        setup( Hydra_rendernode.fetch(order="order by host"), columns, 
-               self.renderNodesGrid)
+            lambda o: o.host,
+            lambda o: o.status,
+            lambda o: o.task_id,
+            lambda o: o.project,
+            lambda o: getSoftwareVersionText (o.software_version),
+            lambda o: o.pulse,
+            ]
+        for (rowIndex, row) in enumerate (rows):
+            for (columnIndex, columnFun) in enumerate (columns):
+                self.renderNodeTable.setItem (
+                    rowIndex, columnIndex,
+                    QTableWidgetItem (str (columnFun (row))))
 
     def updateRenderTaskGrid(self):
         
