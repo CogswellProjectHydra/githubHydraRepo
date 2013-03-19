@@ -237,18 +237,19 @@ class FarmView( QMainWindow, Ui_FarmView ):
         rows = Hydra_rendernode.fetch(order="order by host")
         self.renderNodeTable.setRowCount (len (rows))
         columns = [
-            lambda o: o.host,
-            lambda o: o.status,
-            lambda o: o.task_id,
-            lambda o: o.project,
-            lambda o: getSoftwareVersionText (o.software_version),
-            lambda o: o.pulse,
+            lambda o: QTableWidgetItem(str(o.host)),
+            lambda o: QTableWidgetItem(str(o.status)),
+            lambda o: QTableWidgetItem(str(o.task_id)),
+            lambda o: QTableWidgetItem(str(o.project)),
+            lambda o: QTableWidgetItem(
+                                getSoftwareVersionText(o.software_version)),
+            lambda o: QTableWidgetItem_dt(o.pulse),
             ]
         for (rowIndex, row) in enumerate (rows):
             for (columnIndex, columnFun) in enumerate (columns):
                 self.renderNodeTable.setItem (
                     rowIndex, columnIndex,
-                    QTableWidgetItem (str (columnFun (row))))
+                    columnFun (row))
 
     def updateRenderTaskGrid(self):
         
@@ -281,8 +282,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
         self.statusLabel.setText (msg)
 
 def getSoftwareVersionText(sw_ver):
-    """Displays the current version of RenderNodeMain in the This Node tab.
-    The text shown varies depending on what's in the database."""
+    """Given the software_version attribute of a Hydra_rendernode row, returns
+    a string suitable for display purposes."""
     
     # get RenderNodeMain version number if exists
     if sw_ver:
@@ -395,6 +396,21 @@ class getOffButton(widgetFactory):
     def doGetOff (self, record):
         
         logger.debug('clobber %s', record.host)
+
+class QTableWidgetItem_dt(QTableWidgetItem):
+    """A QTableWidgetItem which holds datetime data and sorts it properly."""
+
+    def __init__(self, dtValue):
+        QTableWidgetItem.__init__(self, str(dtValue))
+        self.dtValue = dtValue
+    
+    def __lt__(self, other):
+        if self.dtValue and other.dtValue:
+            return self.dtValue < other.dtValue
+        elif self.dtValue and not other.dtValue:
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     app = QApplication( sys.argv )
