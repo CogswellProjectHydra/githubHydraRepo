@@ -188,11 +188,14 @@ class RenderTCPServer(TCPServer):
         
 def heartbeat(interval = 5):
     while True:
-        host = Utils.myHostName()
-        with transaction() as t:
-            t.cur.execute("update Hydra_rendernode "
-                "set pulse = NOW() "
-                "where host = '%s'" % host)
+        try:
+            host = Utils.myHostName()
+            with transaction() as t:
+                t.cur.execute("update Hydra_rendernode "
+                    "set pulse = NOW() "
+                    "where host = '%s'" % host)
+        except Exception, e:
+            logger.error (traceback.format_exc (e))
         time.sleep(interval)
 
 def main ():
@@ -203,7 +206,7 @@ def main ():
     socketServer.createIdleLoop (5, socketServer.processRenderTasks )
     
     pulseThread = threading.Thread(target = heartbeat, name = "heartbeat", 
-                                   args = (10,))
+                                   args = (60,))
     pulseThread.start()
 
 if __name__ == '__main__':
