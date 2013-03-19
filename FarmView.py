@@ -12,6 +12,8 @@ from LoggingSetup import logger
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+from tableHelpers import TableWidgetItem, LabelForTable
+
 from Ui_FarmView import Ui_FarmView
 
 #import DjangoSetup
@@ -232,19 +234,18 @@ class FarmView( QMainWindow, Ui_FarmView ):
         rows = Hydra_rendernode.fetch(order="order by host")
         self.renderNodeTable.setRowCount (len (rows))
         columns = [
-            lambda o: QTableWidgetItem(str(o.host)),
-            lambda o: QTableWidgetItem(str(niceNames[o.status])),
-            lambda o: QTableWidgetItem(str(o.task_id)),
-            lambda o: QTableWidgetItem(str(o.project)),
-            lambda o: QTableWidgetItem(
+            lambda o: TableWidgetItem(str(o.host)),
+            lambda o: TableWidgetItem(str(niceNames[o.status])),
+            lambda o: TableWidgetItem(str(o.task_id)),
+            lambda o: TableWidgetItem(str(o.project)),
+            lambda o: TableWidgetItem(
                                 getSoftwareVersionText(o.software_version)),
-            lambda o: QTableWidgetItem_dt(o.pulse),
+            lambda o: TableWidgetItem_dt(o.pulse),
             ]
         for (rowIndex, row) in enumerate (rows):
             for (columnIndex, columnFun) in enumerate (columns):
-                self.renderNodeTable.setItem (
-                    rowIndex, columnIndex,
-                    columnFun (row))
+                columnFun (row).setIntoTable (self.renderNodeTable,
+                                              rowIndex, columnIndex)
 
     def updateRenderTaskGrid(self):
         
@@ -392,7 +393,7 @@ class getOffButton(widgetFactory):
         
         logger.debug('clobber %s', record.host)
 
-class QTableWidgetItem_dt(QTableWidgetItem):
+class TableWidgetItem_dt(TableWidgetItem):
     """A QTableWidgetItem which holds datetime data and sorts it properly."""
 
     def __init__(self, dtValue):
