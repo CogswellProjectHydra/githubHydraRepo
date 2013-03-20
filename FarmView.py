@@ -12,7 +12,7 @@ from LoggingSetup import logger
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from tableHelpers import TableWidgetItem, LabelForTable
+from tableHelpers import *
 
 from Ui_FarmView import Ui_FarmView
 
@@ -35,18 +35,36 @@ class FarmView( QMainWindow, Ui_FarmView ):
         QMainWindow.__init__( self )
         self.setupUi( self )
 
+        self.renderNodeTable.setColumnWidth(0, 200)
+        self.renderNodeTable.setColumnWidth(1, 70)
+        self.renderNodeTable.setColumnWidth(2, 70)
+        self.renderNodeTable.setColumnWidth(4, 100)
+        self.renderNodeTable.setColumnWidth(5, 150)
+
+        # Buttons on the This Node tab
         QObject.connect(self.fetchButton, SIGNAL("clicked()"), self.doFetch)
-        QObject.connect(self.onlineButton, SIGNAL("clicked()"), self.online)
-        QObject.connect(self.offlineButton, SIGNAL("clicked()"), self.offline)
-        QObject.connect(self.getOffButton, SIGNAL("clicked()"), self.getOff)
+        QObject.connect(self.onlineThisNodeButton, SIGNAL("clicked()"), 
+                        self.onlineThisNodeButtonClicked)
+        QObject.connect(self.offlineThisNodeButton, SIGNAL("clicked()"), 
+                        self.offlineThisNodeButtonClicked)
+        QObject.connect(self.getOffThisNodeButton, SIGNAL("clicked()"), 
+                        self.getOffThisNodeButtonClicked)
         QObject.connect(self.projectComboBox, SIGNAL("activated(int)"), 
                         self.projectSelectionHandler)
+        
+        # Buttons on the Render Nodes tab
+        QObject.connect(self.onlineRenderNodesButton, SIGNAL("clicked()"), 
+                        self.onlineRenderNodesButtonClicked)
+        QObject.connect(self.offlineRenderNodesButton, SIGNAL("clicked()"),
+                        self.offlineRenderNodesButtonClicked)
+        QObject.connect(self.getOffRenderNodesButton, SIGNAL("clicked()"),
+                        self.getOffRenderNodesButtonClicked)
         
         self.thisNode = None
         self.lastProjectIndex = -1
         self.buttonsEnabled = True
 
-    def getOff(self):
+    def getOffThisNodeButtonClicked(self):
         """Offlines the node and sends a message to the render node server 
         running on localhost tokill its current task"""
         if not self.thisNode:
@@ -70,7 +88,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             
         self.updateThisNodeInfo()
         
-    def online(self):
+    def onlineThisNodeButtonClicked(self):
         """Changes the local render node's status to online if it wasn't 
         on-line already"""
         
@@ -88,7 +106,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
                 
         self.updateThisNodeInfo()
             
-    def offline(self):
+    def offlineThisNodeButtonClicked(self):
         """Changes the local render node's status to offline"""
         
         if not self.thisNode:
@@ -104,6 +122,34 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.thisNode.update(t)
             
         self.updateThisNodeInfo()
+    
+    def onlineRenderNodesButtonClicked(self):
+        nRows = self.renderNodeTable.rowCount()
+        checks = list()
+        for rowIndex in range(0, nRows - 1):
+            host = str(self.renderNodeTable.item(rowIndex, 0).text())
+            checkState = self.renderNodeTable.item(rowIndex, 6).checkState()
+            if checkState:
+                checks.append(host)
+        
+        choice = yesNoBox(self, "Confirm", "Are you sure you want to online"
+                          " these nodes? <br>" + str(checks))
+        
+        if choice == QMessageBox.Yes:
+            with transaction() as t:
+                rendernode_rows = Hydra_rendernode.fetch(explicitTransaction=t)
+                for node_row in rendernode_rows:
+                    if node_row.host in checks and node_row.status == OFFLINE:
+                        node_row.status = IDLE
+                        node_row.update(t)
+        else:
+            aboutBox(self, "Aborted", "The nodes will not be onlined.")
+                    
+    def offlineRenderNodesButtonClicked(self):
+        pass
+    
+    def getOffRenderNodesButtonClicked(self):
+        pass
     
     def projectSelectionHandler(self, currentProjectIndex):
         """Checks to see if project selection has changed. If so, handles the 
@@ -135,7 +181,6 @@ class FarmView( QMainWindow, Ui_FarmView ):
                      self.thisNode.project + ".")
             self.projectComboBox.setCurrentIndex(self.lastProjectIndex)
 
-    # refresh the display, rebuilding every blessed widget.
     def doFetch( self ):
         """Aggregate method for updating all of the widgets."""
         
@@ -185,9 +230,9 @@ class FarmView( QMainWindow, Ui_FarmView ):
     def setThisNodeButtonsEnabled(self, choice):
         """Enables or disables buttons on This Node tab"""
         
-        self.onlineButton.setEnabled(choice)
-        self.offlineButton.setEnabled(choice)
-        self.getOffButton.setEnabled(choice)
+        self.onlineThisNodeButton.setEnabled(choice)
+        self.offlineThisNodeButton.setEnabled(choice)
+        self.getOffThisNodeButton.setEnabled(choice)
         self.projectComboBox.setEnabled(choice)
         self.buttonsEnabled = choice
         
@@ -241,12 +286,13 @@ class FarmView( QMainWindow, Ui_FarmView ):
             lambda o: TableWidgetItem(
                                 getSoftwareVersionText(o.software_version)),
             lambda o: TableWidgetItem_dt(o.pulse),
+            lambda o: TableWidgetItem_check(),
             ]
         for (rowIndex, row) in enumerate (rows):
             for (columnIndex, columnFun) in enumerate (columns):
                 columnFun (row).setIntoTable (self.renderNodeTable,
                                               rowIndex, columnIndex)
-
+                
     def updateRenderTaskGrid(self):
         
         columns = [

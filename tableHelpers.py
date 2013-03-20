@@ -1,4 +1,5 @@
 from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 class TableWidgetItem (QTableWidgetItem):
 
@@ -11,3 +12,8 @@ class WidgetForTable:
         table.setCellWidget (row, column, self)
 
 class LabelForTable (QLabel, WidgetForTable): pass
+
+class TableWidgetItem_check(TableWidgetItem):
+    def __init__(self):
+        TableWidgetItem.__init__(self)
+        self.setCheckState(Qt.Unchecked)

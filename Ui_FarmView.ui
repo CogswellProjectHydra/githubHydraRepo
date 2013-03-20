@@ -66,7 +66,7 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QPushButton" name="onlineButton">
+          <widget class="QPushButton" name="onlineThisNodeButton">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allow this node to accept render tasks&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -76,7 +76,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="offlineButton">
+          <widget class="QPushButton" name="offlineThisNodeButton">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Don't allow this node to accept any new jobs (it will still finish what it's working on)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -86,7 +86,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="getOffButton">
+          <widget class="QPushButton" name="getOffThisNodeButton">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tell this node to stop the current job, put it back on the job board, and don't accept any more.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -208,6 +208,9 @@
           <property name="verticalScrollBarPolicy">
            <enum>Qt::ScrollBarAlwaysOn</enum>
           </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
           <property name="sortingEnabled">
            <bool>true</bool>
           </property>
@@ -239,7 +242,7 @@
           </column>
           <column>
            <property name="text">
-            <string>Software version</string>
+            <string>Node Version</string>
            </property>
           </column>
           <column>
@@ -247,7 +250,42 @@
             <string>Last heartbeat</string>
            </property>
           </column>
+          <column>
+           <property name="text">
+            <string>þ</string>
+           </property>
+           <property name="font">
+            <font>
+             <family>Wingdings</family>
+            </font>
+           </property>
+          </column>
          </widget>
+        </item>
+        <item row="1" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="onlineRenderNodesButton">
+            <property name="text">
+             <string>Online</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="offlineRenderNodesButton">
+            <property name="text">
+             <string>Offline</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="getOffRenderNodesButton">
+            <property name="text">
+             <string>Get Off!</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -266,8 +304,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>756</width>
-             <height>322</height>
+             <width>748</width>
+             <height>285</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
@@ -313,7 +351,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>18</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Ui_FarmView.ui'
+# Form implementation generated from reading ui file 'Ui_farmview.ui'
 #
-# Created: Mon Mar 18 18:53:51 2013
-#      by: PyQt4 UI code generator 4.9.4
+# Created: Wed Mar 20 00:37:06 2013
+#      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_FarmView(object):
     def setupUi(self, FarmView):
@@ -44,15 +53,15 @@ class Ui_FarmView(object):
         self.verticalLayout = QtGui.QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setMargin(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.onlineButton = QtGui.QPushButton(self.layoutWidget)
-        self.onlineButton.setObjectName(_fromUtf8("onlineButton"))
-        self.verticalLayout.addWidget(self.onlineButton)
-        self.offlineButton = QtGui.QPushButton(self.layoutWidget)
-        self.offlineButton.setObjectName(_fromUtf8("offlineButton"))
-        self.verticalLayout.addWidget(self.offlineButton)
-        self.getOffButton = QtGui.QPushButton(self.layoutWidget)
-        self.getOffButton.setObjectName(_fromUtf8("getOffButton"))
-        self.verticalLayout.addWidget(self.getOffButton)
+        self.onlineThisNodeButton = QtGui.QPushButton(self.layoutWidget)
+        self.onlineThisNodeButton.setObjectName(_fromUtf8("onlineThisNodeButton"))
+        self.verticalLayout.addWidget(self.onlineThisNodeButton)
+        self.offlineThisNodeButton = QtGui.QPushButton(self.layoutWidget)
+        self.offlineThisNodeButton.setObjectName(_fromUtf8("offlineThisNodeButton"))
+        self.verticalLayout.addWidget(self.offlineThisNodeButton)
+        self.getOffThisNodeButton = QtGui.QPushButton(self.layoutWidget)
+        self.getOffThisNodeButton.setObjectName(_fromUtf8("getOffThisNodeButton"))
+        self.verticalLayout.addWidget(self.getOffThisNodeButton)
         self.layoutWidget1 = QtGui.QWidget(self.thisNodeTab)
         self.layoutWidget1.setGeometry(QtCore.QRect(120, 20, 651, 87))
         self.layoutWidget1.setObjectName(_fromUtf8("layoutWidget1"))
@@ -107,8 +116,9 @@ class Ui_FarmView(object):
         self.gridLayout_6.setObjectName(_fromUtf8("gridLayout_6"))
         self.renderNodeTable = QtGui.QTableWidget(self.renderNodesTab)
         self.renderNodeTable.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.renderNodeTable.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.renderNodeTable.setObjectName(_fromUtf8("renderNodeTable"))
-        self.renderNodeTable.setColumnCount(6)
+        self.renderNodeTable.setColumnCount(7)
         self.renderNodeTable.setRowCount(0)
         item = QtGui.QTableWidgetItem()
         self.renderNodeTable.setHorizontalHeaderItem(0, item)
@@ -122,9 +132,26 @@ class Ui_FarmView(object):
         self.renderNodeTable.setHorizontalHeaderItem(4, item)
         item = QtGui.QTableWidgetItem()
         self.renderNodeTable.setHorizontalHeaderItem(5, item)
+        item = QtGui.QTableWidgetItem()
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Wingdings"))
+        item.setFont(font)
+        self.renderNodeTable.setHorizontalHeaderItem(6, item)
         self.renderNodeTable.horizontalHeader().setStretchLastSection(True)
         self.renderNodeTable.verticalHeader().setVisible(False)
         self.gridLayout_6.addWidget(self.renderNodeTable, 0, 0, 1, 1)
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.onlineRenderNodesButton = QtGui.QPushButton(self.renderNodesTab)
+        self.onlineRenderNodesButton.setObjectName(_fromUtf8("onlineRenderNodesButton"))
+        self.horizontalLayout_2.addWidget(self.onlineRenderNodesButton)
+        self.offlineRenderNodesButton = QtGui.QPushButton(self.renderNodesTab)
+        self.offlineRenderNodesButton.setObjectName(_fromUtf8("offlineRenderNodesButton"))
+        self.horizontalLayout_2.addWidget(self.offlineRenderNodesButton)
+        self.getOffRenderNodesButton = QtGui.QPushButton(self.renderNodesTab)
+        self.getOffRenderNodesButton.setObjectName(_fromUtf8("getOffRenderNodesButton"))
+        self.horizontalLayout_2.addWidget(self.getOffRenderNodesButton)
+        self.gridLayout_6.addLayout(self.horizontalLayout_2, 1, 0, 1, 1)
         self.tabWidget.addTab(self.renderNodesTab, _fromUtf8(""))
         self.jobsTab = QtGui.QWidget()
         self.jobsTab.setObjectName(_fromUtf8("jobsTab"))
@@ -134,7 +161,7 @@ class Ui_FarmView(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 756, 322))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 748, 285))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -154,7 +181,7 @@ class Ui_FarmView(object):
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
         FarmView.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(FarmView)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 18))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 26))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         FarmView.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(FarmView)
@@ -167,34 +194,39 @@ class Ui_FarmView(object):
         QtCore.QMetaObject.connectSlotsByName(FarmView)
 
     def retranslateUi(self, FarmView):
-        FarmView.setWindowTitle(QtGui.QApplication.translate("FarmView", "FarmView", None, QtGui.QApplication.UnicodeUTF8))
-        self.fetchButton.setText(QtGui.QApplication.translate("FarmView", "Fetch", None, QtGui.QApplication.UnicodeUTF8))
-        self.onlineButton.setToolTip(QtGui.QApplication.translate("FarmView", "<html><head/><body><p>Allow this node to accept render tasks</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.onlineButton.setText(QtGui.QApplication.translate("FarmView", "Online", None, QtGui.QApplication.UnicodeUTF8))
-        self.offlineButton.setToolTip(QtGui.QApplication.translate("FarmView", "<html><head/><body><p>Don\'t allow this node to accept any new jobs (it will still finish what it\'s working on)</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.offlineButton.setText(QtGui.QApplication.translate("FarmView", "Offline", None, QtGui.QApplication.UnicodeUTF8))
-        self.getOffButton.setToolTip(QtGui.QApplication.translate("FarmView", "<html><head/><body><p>Tell this node to stop the current job, put it back on the job board, and don\'t accept any more.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.getOffButton.setText(QtGui.QApplication.translate("FarmView", "Get Off!", None, QtGui.QApplication.UnicodeUTF8))
-        self.nodeNameLabelLabel.setText(QtGui.QApplication.translate("FarmView", "Node name:", None, QtGui.QApplication.UnicodeUTF8))
-        self.nodeStatusLabelLabel.setText(QtGui.QApplication.translate("FarmView", "Node status:", None, QtGui.QApplication.UnicodeUTF8))
-        self.taskIDLabelLabel.setText(QtGui.QApplication.translate("FarmView", "Task ID:", None, QtGui.QApplication.UnicodeUTF8))
-        self.nodeVersionLabelLabel.setText(QtGui.QApplication.translate("FarmView", "Version:", None, QtGui.QApplication.UnicodeUTF8))
-        self.projectLabel.setText(QtGui.QApplication.translate("FarmView", "Project:", None, QtGui.QApplication.UnicodeUTF8))
-        self.projectComboBox.setWhatsThis(QtGui.QApplication.translate("FarmView", "<html><head/><body><p><br/></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.thisNodeTab), QtGui.QApplication.translate("FarmView", "This Node", None, QtGui.QApplication.UnicodeUTF8))
+        FarmView.setWindowTitle(_translate("FarmView", "FarmView", None))
+        self.fetchButton.setText(_translate("FarmView", "Fetch", None))
+        self.onlineThisNodeButton.setToolTip(_translate("FarmView", "<html><head/><body><p>Allow this node to accept render tasks</p></body></html>", None))
+        self.onlineThisNodeButton.setText(_translate("FarmView", "Online", None))
+        self.offlineThisNodeButton.setToolTip(_translate("FarmView", "<html><head/><body><p>Don\'t allow this node to accept any new jobs (it will still finish what it\'s working on)</p></body></html>", None))
+        self.offlineThisNodeButton.setText(_translate("FarmView", "Offline", None))
+        self.getOffThisNodeButton.setToolTip(_translate("FarmView", "<html><head/><body><p>Tell this node to stop the current job, put it back on the job board, and don\'t accept any more.</p></body></html>", None))
+        self.getOffThisNodeButton.setText(_translate("FarmView", "Get Off!", None))
+        self.nodeNameLabelLabel.setText(_translate("FarmView", "Node name:", None))
+        self.nodeStatusLabelLabel.setText(_translate("FarmView", "Node status:", None))
+        self.taskIDLabelLabel.setText(_translate("FarmView", "Task ID:", None))
+        self.nodeVersionLabelLabel.setText(_translate("FarmView", "Version:", None))
+        self.projectLabel.setText(_translate("FarmView", "Project:", None))
+        self.projectComboBox.setWhatsThis(_translate("FarmView", "<html><head/><body><p><br/></p></body></html>", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.thisNodeTab), _translate("FarmView", "This Node", None))
         self.renderNodeTable.setSortingEnabled(True)
         item = self.renderNodeTable.horizontalHeaderItem(0)
-        item.setText(QtGui.QApplication.translate("FarmView", "Host", None, QtGui.QApplication.UnicodeUTF8))
+        item.setText(_translate("FarmView", "Host", None))
         item = self.renderNodeTable.horizontalHeaderItem(1)
-        item.setText(QtGui.QApplication.translate("FarmView", "Status", None, QtGui.QApplication.UnicodeUTF8))
+        item.setText(_translate("FarmView", "Status", None))
         item = self.renderNodeTable.horizontalHeaderItem(2)
-        item.setText(QtGui.QApplication.translate("FarmView", "Task ID", None, QtGui.QApplication.UnicodeUTF8))
+        item.setText(_translate("FarmView", "Task ID", None))
         item = self.renderNodeTable.horizontalHeaderItem(3)
-        item.setText(QtGui.QApplication.translate("FarmView", "Project", None, QtGui.QApplication.UnicodeUTF8))
+        item.setText(_translate("FarmView", "Project", None))
         item = self.renderNodeTable.horizontalHeaderItem(4)
-        item.setText(QtGui.QApplication.translate("FarmView", "Software version", None, QtGui.QApplication.UnicodeUTF8))
+        item.setText(_translate("FarmView", "Node Version", None))
         item = self.renderNodeTable.horizontalHeaderItem(5)
-        item.setText(QtGui.QApplication.translate("FarmView", "Last heartbeat", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.renderNodesTab), QtGui.QApplication.translate("FarmView", "Render Nodes", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.jobsTab), QtGui.QApplication.translate("FarmView", "Jobs", None, QtGui.QApplication.UnicodeUTF8))
+        item.setText(_translate("FarmView", "Last heartbeat", None))
+        item = self.renderNodeTable.horizontalHeaderItem(6)
+        item.setText(_translate("FarmView", "þ", None))
+        self.onlineRenderNodesButton.setText(_translate("FarmView", "Online", None))
+        self.offlineRenderNodesButton.setText(_translate("FarmView", "Offline", None))
+        self.getOffRenderNodesButton.setText(_translate("FarmView", "Get Off!", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.renderNodesTab), _translate("FarmView", "Render Nodes", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.jobsTab), _translate("FarmView", "Jobs", None))
 
