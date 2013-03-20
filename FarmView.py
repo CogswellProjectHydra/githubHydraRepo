@@ -62,7 +62,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         
         self.thisNode = None
         self.lastProjectIndex = -1
-        self.buttonsEnabled = True
+        self.thisNodeButtonsEnabled = True
 
     def getOffThisNodeButtonClicked(self):
         """Offlines the node and sends a message to the render node server 
@@ -132,6 +132,12 @@ class FarmView( QMainWindow, Ui_FarmView ):
             if checkState:
                 checks.append(host)
         
+        if len(checks) == 0:
+            aboutBox(self, "None checked", "No nodes have been selected. Use"
+                     " the check boxes on the right side of the table to"
+                     " select render nodes.")
+            return
+        
         choice = yesNoBox(self, "Confirm", "Are you sure you want to online"
                           " these nodes? <br>" + str(checks))
         
@@ -142,8 +148,11 @@ class FarmView( QMainWindow, Ui_FarmView ):
                     if node_row.host in checks and node_row.status == OFFLINE:
                         node_row.status = IDLE
                         node_row.update(t)
+                    else:
+                        logger.info(node_row.host + " was already online.")
+            self.updateRenderNodeTable()
         else:
-            aboutBox(self, "Aborted", "The nodes will not be onlined.")
+            aboutBox(self, "Aborted", "No action taken.")
                     
     def offlineRenderNodesButtonClicked(self):
         pass
@@ -198,7 +207,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         information available."""
         
         # if the buttons are disabled, don't bother
-        if not self.buttonsEnabled:
+        if not self.thisNodeButtonsEnabled:
             return
         
         # get the most current info from the database
@@ -234,7 +243,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         self.offlineThisNodeButton.setEnabled(choice)
         self.getOffThisNodeButton.setEnabled(choice)
         self.projectComboBox.setEnabled(choice)
-        self.buttonsEnabled = choice
+        self.thisNodeButtonsEnabled = choice
         
     def updateProjectComboBox(self):
         """Clears and refreshes the contents of the projects dropdown box."""
