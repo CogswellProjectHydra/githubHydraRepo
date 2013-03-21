@@ -21,7 +21,7 @@ from Ui_FarmView import Ui_FarmView
 #from django.db import transaction
 
 from MySQLSetup import (Hydra_rendernode, Hydra_rendertask, transaction, READY, 
-                        OFFLINE, IDLE, PENDING,
+                        OFFLINE, IDLE, PENDING, STARTED,
                         niceNames)
 from Questions import KillCurrentJobQuestion
 import Utils
@@ -35,11 +35,12 @@ class FarmView( QMainWindow, Ui_FarmView ):
         QMainWindow.__init__( self )
         self.setupUi( self )
 
-        self.renderNodeTable.setColumnWidth(0, 200)
-        self.renderNodeTable.setColumnWidth(1, 70)
+        self.renderNodeTable.setColumnWidth(0, 30)
+        self.renderNodeTable.setColumnWidth(1, 200)
         self.renderNodeTable.setColumnWidth(2, 70)
-        self.renderNodeTable.setColumnWidth(4, 100)
-        self.renderNodeTable.setColumnWidth(5, 150)
+        self.renderNodeTable.setColumnWidth(3, 70)
+        self.renderNodeTable.setColumnWidth(5, 100)
+        self.renderNodeTable.setColumnWidth(6, 150)
 
         # Buttons on the This Node tab
         QObject.connect(self.fetchButton, SIGNAL("clicked()"), self.doFetch)
@@ -60,102 +61,189 @@ class FarmView( QMainWindow, Ui_FarmView ):
         QObject.connect(self.getOffRenderNodesButton, SIGNAL("clicked()"),
                         self.getOffRenderNodesButtonClicked)
         
-        self.thisNode = None
+        # internal variables
         self.lastProjectIndex = -1
         self.thisNodeButtonsEnabled = True
+        
+        # other stuff
+        # TODO: test sqlErrorBox
+        self.sqlErrorBox = (
+            functools.partial(aboutBox, 
+                        parent=self, 
+                        title="Error", 
+                        msg="There was a problem while trying to fetch info"
+                        " from the database. Check the FarmView log file for"
+                        " more details about the error.")
+        )
+        
+        # let there be data
+        self.doFetch()
 
+    def getThisNodeData(self):
+        
+        [thisNode] = Hydra_rendernode.fetch("where host = '%s'" 
+                                            % Utils.myHostName())
+        return thisNode
+    
+    def offlineNode(self, thisNode):
+        if thisNode.status == OFFLINE:
+                return
+        elif thisNode.task_id:
+            thisNode.status = PENDING
+        else:
+            thisNode.status = OFFLINE
+        with transaction() as t:
+                thisNode.update(t)
+                
     def getOffThisNodeButtonClicked(self):
         """Offlines the node and sends a message to the render node server 
-        running on localhost tokill its current task"""
-        if not self.thisNode:
-            aboutBox(self, "Error", "Node information not initialized. Do a "
-                     "fetch first.")
+        running on localhost to kill its current task"""
+        #TODO: test getOffThisNodeButtonClicked
+        thisNode = None
+        try:
+            thisNode = self.getThisNodeData()
+        except sqlerror as err:
+            logger.debug(str(err))
+            self.sqlErrorBox()
             return
         
-        self.offline()
-        try:
-            self.connection = TCPConnection()
-            killed = self.getAnswer(KillCurrentJobQuestion(
-                                        statusAfterDeath=READY))
-            if not killed:
-                logger.debug("There was a problem killing the task.")
-                aboutBox(self, "Error", "There was a problem killing the task.")
-        except socketerror:
-            logger.debug(socketerror.message)
-            aboutBox(self, "Error", "There was a problem communicating with the"
-            "render node software. Either it's not running, or it has become"
-            " unresponsive.")
-            
-        self.updateThisNodeInfo()
+        choice = yesNoBox(self, "Confirm", "All progress on the current job"
+                          " will be lost. Are you sure you want to stop it?")
+        if choice == QMessageBox.No:
+            aboutBox(self, "Abort", "No action taken.")
+            return
+        
+        if thisNode:
+            self.offlineNode(thisNode)
+                
+            if thisNode.task_id:
+                try:
+                    # TODO: use JobKill for getOff instead of doing it manually
+                    connection = TCPConnection()
+                    killed = connection.getAnswer(KillCurrentJobQuestion(
+                                                statusAfterDeath=READY))
+                    if not killed:
+                        logger.debug("There was a problem killing the task.")
+                        aboutBox(self, "Error", "There was a problem killing"
+                                 " the task.")
+                except socketerror:
+                    logger.debug(socketerror.message)
+                    aboutBox(self, "Error", "There was a problem communicating"
+                             " with the render node software. Either it's not"
+                             " running, or it has become unresponsive.")
+            else:
+                aboutBox(self, "Offline", "No job was running. Node offlined.")
+                
+        self.doFetch()
         
     def onlineThisNodeButtonClicked(self):
-        """Changes the local render node's status to online if it wasn't 
-        on-line already"""
+        """Changes the local render node's status to online if it was offline,
+        goes back to started if it was pending offline."""
         
-        if not self.thisNode:
-            aboutBox(self, "Error", "Node information not initialized."
-                     " Do a fetch first.")
+        # get most current info from the database
+        thisNode = None
+        try:
+            thisNode = self.getThisNodeData()
+        except sqlerror as err:
+            logger.debug(str(err))
+            self.sqlErrorBox()
             return
         
-        if self.thisNode.status == OFFLINE:
-            self.thisNode.status = IDLE
+        if thisNode:
+            if thisNode.status == IDLE:
+                return
+            elif thisNode.status == OFFLINE:
+                thisNode.status = IDLE
+            elif thisNode.status == PENDING and thisNode.task_id:
+                thisNode.status = STARTED
             with transaction() as t:
-                self.thisNode.update(t)
-        else:
-            aboutBox(self, "Notice", "Node is already online.")
-                
-        self.updateThisNodeInfo()
+                thisNode.update(t)
+        
+        self.doFetch()
             
     def offlineThisNodeButtonClicked(self):
-        """Changes the local render node's status to offline"""
+        """Changes the local render node's status to offline if it was idle,
+        pending if it was working on something."""
         
-        if not self.thisNode:
-            aboutBox(self, "Error", "Node information not initialized."
-                     " Do a fetch first.")
+        # get the most current info from the database
+        thisNode = None
+        try:
+            thisNode = self.getThisNodeData()
+        except sqlerror as err:
+            logger.debug(str(err))
+            self.sqlErrorBox()
             return
         
-        if self.thisNode.task_id:
-            self.thisNode.status = PENDING
-        else:
-            self.thisNode.status = OFFLINE
-        with transaction() as t:
-            self.thisNode.update(t)
+        if thisNode:
+            self.offlineNode(thisNode)
             
-        self.updateThisNodeInfo()
+        self.doFetch()
     
-    def onlineRenderNodesButtonClicked(self):
-        nRows = self.renderNodeTable.rowCount()
+    def getCheckedItems(self, table, itemColumn, checkBoxColumn):
+        nRows = table.rowCount()
         checks = list()
         for rowIndex in range(0, nRows - 1):
-            host = str(self.renderNodeTable.item(rowIndex, 0).text())
-            checkState = self.renderNodeTable.item(rowIndex, 6).checkState()
+            item = str(table.item(rowIndex, itemColumn).text())
+            checkState = table.item(rowIndex, checkBoxColumn).checkState()
             if checkState:
-                checks.append(host)
+                checks.append(item)
+        return checks
+    
+    def onlineRenderNodesButtonClicked(self):
         
-        if len(checks) == 0:
+        hosts = self.getCheckedItems(table=self.renderNodeTable, itemColumn=0, 
+                                checkBoxColumn=6)
+        if len(hosts) == 0:
             aboutBox(self, "None checked", "No nodes have been selected. Use"
                      " the check boxes on the right side of the table to"
                      " select render nodes.")
             return
         
         choice = yesNoBox(self, "Confirm", "Are you sure you want to online"
-                          " these nodes? <br>" + str(checks))
+                          " these nodes? <br>" + str(hosts))
         
         if choice == QMessageBox.Yes:
             with transaction() as t:
                 rendernode_rows = Hydra_rendernode.fetch(explicitTransaction=t)
                 for node_row in rendernode_rows:
-                    if node_row.host in checks and node_row.status == OFFLINE:
-                        node_row.status = IDLE
-                        node_row.update(t)
-                    else:
-                        logger.info(node_row.host + " was already online.")
-            self.updateRenderNodeTable()
+                    if node_row.host in hosts:
+                        if node_row.status == OFFLINE:
+                            node_row.status = IDLE
+                            node_row.update(t)
+                        else:
+                            logger.info(node_row.host + " was already online.")
+            self.doFetch()
         else:
             aboutBox(self, "Aborted", "No action taken.")
                     
     def offlineRenderNodesButtonClicked(self):
-        pass
+        """For all nodes with boxes checked in the render nodes table, changes
+        status to offline if idle, or pending if started."""
+        
+        hosts = self.getCheckedItems(table=self.renderNodeTable, itemColumn=0, 
+                                checkBoxColumn=6)
+        if len(hosts) == 0:
+            aboutBox(self, "None checked", "No nodes have been selected. Use"
+                     " the check boxes on the right side of the table to"
+                     " select render nodes.")
+            return
+        
+        choice = yesNoBox(self, "Confirm", "Are you sure you want to online"
+                          " these nodes? <br>" + str(hosts))
+        
+        if choice == QMessageBox.Yes:
+            with transaction() as t:
+                rendernode_rows = Hydra_rendernode.fetch(explicitTransaction=t)
+                for node_row in rendernode_rows:
+                    if node_row.host in hosts:
+                        if node_row.status == STARTED:
+                            node_row.status = PENDING
+                        else:
+                            node_row.status = OFFLINE
+                        node_row.update(t)
+            self.doFetch()
+        else:
+            aboutBox(self, "Aborted", "No action taken.")
     
     def getOffRenderNodesButtonClicked(self):
         pass
@@ -169,26 +257,32 @@ class FarmView( QMainWindow, Ui_FarmView ):
         
     def projectChangeHandler(self, index):
         """Handler for the event where the project selection changed."""
-       
-        if not self.thisNode:
-            aboutBox(self, "Error", "Node information not initialized. Do a"
-            " fetch first.")
-            return
         
         selectedProject = self.projectComboBox.itemText(index)
         choice = yesNoBox(self, "Change project", "Reassign this node to " + 
                           selectedProject + "? (will avoid jobs from other"
                           " projects)")
-        if choice == QMessageBox.Yes:
-            self.thisNode.project = self.projectComboBox.currentText()
-            with transaction() as t:
-                self.thisNode.update(t)
-            self.lastProjectIndex = self.projectComboBox.currentIndex()
-            aboutBox(self, "Success", "Node reassigned to " + selectedProject)
-        else:
+        
+        if choice == QMessageBox.No:
             aboutBox(self, "No changes", "This node will remain assigned to " + 
                      self.thisNode.project + ".")
             self.projectComboBox.setCurrentIndex(self.lastProjectIndex)
+            return
+        
+        # get the most up to date info from the database
+        thisNode = None
+        try:
+            thisNode = self.getThisNodeData()
+        except sqlerror as err:
+            logger.debug(str(err))
+            self.sqlErrorBox()
+            return
+        
+        thisNode.project = self.projectComboBox.currentText()
+        with transaction() as t:
+            thisNode.update(t)
+        self.lastProjectIndex = self.projectComboBox.currentIndex()
+        aboutBox(self, "Success", "Node reassigned to " + selectedProject)
 
     def doFetch( self ):
         """Aggregate method for updating all of the widgets."""
@@ -198,9 +292,9 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.updateRenderNodeTable()
             self.updateRenderTaskGrid()
             self.updateStatusBar()
-        except sqlerror:
-            aboutBox(self, "Database Error", "There was a problem while trying"
-                     " to fetch info from the database.")
+        except sqlerror as err:
+            logger.debug(str(err))
+            self.sqlErrorBox()
         
     def updateThisNodeInfo(self):
         """Updates widgets on the "This Node" tab with the most recent 
@@ -211,29 +305,30 @@ class FarmView( QMainWindow, Ui_FarmView ):
             return
         
         # get the most current info from the database
-        node = Hydra_rendernode.fetch ("where host = '%s'" % Utils.myHostName())
-        if node:
-            [self.thisNode] = node
+        thisNode = None
+        try:
+            thisNode = self.getThisNodeData()
+            self.updateProjectComboBox()
+        except sqlerror as err:
+            logger.debug(str(err))
+            self.sqlErrorBox()
         
-        self.updateProjectComboBox()
-        
-        if self.thisNode:
+        if thisNode:
             # update the labels
-            self.nodeNameLabel.setText(self.thisNode.host)
-            self.nodeStatusLabel.setText(niceNames[self.thisNode.status])
-            self.updateTaskIDLabel()
+            self.nodeNameLabel.setText(thisNode.host)
+            self.nodeStatusLabel.setText(niceNames[thisNode.status])
+            self.updateTaskIDLabel(thisNode.task_id)
             self.nodeVersionLabel.setText(
-                        getSoftwareVersionText(self.thisNode.software_version))
+                        getSoftwareVersionText(thisNode.software_version))
             
-            self.setCurrentProjectSelection()
+            self.setCurrentProjectSelection(thisNode.project)
             
         else:
-            QMessageBox.about(self, "Notice", "Information about this node"
-                              " cannot be displayed because it is not"
-                              " registered on the render farm. You may" 
-                              " continue to use Farm View, but it must be"
-                              " restarted after this node is registered if you"
-                              " wish to see this node's information.")
+            QMessageBox.about(self, "Notice", 
+                "Information about this node cannot be displayed because it is"
+                "not registered on the render farm. You may continue to use"
+                " Farm View, but it must be restarted after this node is "
+                "registered if you wish to see this node's information.")
             self.setThisNodeButtonsEnabled(False)
     
     def setThisNodeButtonsEnabled(self, choice):
@@ -267,27 +362,35 @@ class FarmView( QMainWindow, Ui_FarmView ):
         for project in projectsList:
             self.projectComboBox.addItem(project)
     
-    def updateTaskIDLabel(self):
-        """Get task_id, if exists, update label on This Node tab."""
+    def updateTaskIDLabel(self, task_id):
         
-        if self.thisNode.task_id:
-            self.taskIDLabel.setText(str(self.thisNode.task_id))
+        if task_id:
+            self.taskIDLabel.setText(str(task_id))
         else:
             self.taskIDLabel.setText("None")
     
-    def setCurrentProjectSelection(self):
+    def setCurrentProjectSelection(self, project):
         """Set project selection based on node's current project setting."""
         
-        idx = self.projectComboBox.findText(
-                       self.thisNode.project, 
+        
+        idx = self.projectComboBox.findText(project, 
                        flags=Qt.MatchExactly|Qt.MatchCaseSensitive)
         self.projectComboBox.setCurrentIndex(idx)
         self.lastProjectIndex = idx
         
     def updateRenderNodeTable(self):
+        
+        # clear the table (note: this is done to avoid duplication of items)
+        self.renderNodeTable.clearContents()
+        self.renderNodeTable.setRowCount(0)
+        
+        # prevent rows from being sorted while table is populating
+        self.renderNodeTable.setSortingEnabled(False)
+        
         rows = Hydra_rendernode.fetch(order="order by host")
         self.renderNodeTable.setRowCount (len (rows))
         columns = [
+            lambda o: TableWidgetItem_check(),
             lambda o: TableWidgetItem(str(o.host)),
             lambda o: TableWidgetItem(str(niceNames[o.status])),
             lambda o: TableWidgetItem(str(o.task_id)),
@@ -295,12 +398,13 @@ class FarmView( QMainWindow, Ui_FarmView ):
             lambda o: TableWidgetItem(
                                 getSoftwareVersionText(o.software_version)),
             lambda o: TableWidgetItem_dt(o.pulse),
-            lambda o: TableWidgetItem_check(),
             ]
         for (rowIndex, row) in enumerate (rows):
             for (columnIndex, columnFun) in enumerate (columns):
                 columnFun (row).setIntoTable (self.renderNodeTable,
                                               rowIndex, columnIndex)
+        
+        self.renderNodeTable.setSortingEnabled(True)
                 
     def updateRenderTaskGrid(self):
         
@@ -468,6 +572,5 @@ if __name__ == '__main__':
     window = FarmView( )
 
     window.show( )
-    window.doFetch()
     retcode = app.exec_( )
     sys.exit( retcode )
