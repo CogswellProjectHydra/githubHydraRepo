@@ -11,11 +11,11 @@ from Questions import KillCurrentJobQuestion
 from LoggingSetup import logger
 from sys import argv
 
-def sendKillQuestion(renderhost):
+def sendKillQuestion(renderhost, newStatus=KILLED):
     
     connection = TCPConnection(hostname=renderhost)
     answer = connection.getAnswer(
-                            KillCurrentJobQuestion(statusAfterDeath=KILLED))
+                            KillCurrentJobQuestion(newStatus))
     
     if not answer.childKilled:
         logger.debug("%r tried to kill its job but failed for some reason." 
