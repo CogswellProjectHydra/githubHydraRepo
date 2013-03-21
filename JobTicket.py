@@ -62,25 +62,31 @@ class MayaTicket( JobTicket ):
         for start, end in zip( starts, ends ):
             command = self.renderCommand(start, end)
             logger.debug( command )
-            task = Hydra_rendertask( status = READY,
-                              command = repr( command ),
-                              job_id = job.id, priority = self.priority, project = self.project)
+            task = Hydra_rendertask( status = READY, 
+                                     command = repr( command ),
+                                     job_id = job.id, 
+                                     priority = self.priority, 
+                                     project = self.project)
             with transaction() as t:
                 task.insert(transaction=t)
 
 class CMDTicket(JobTicket):
-    """A job ticket for shoehorning arbitrary commands into the task list. You know, just in case you wanted to do something like that."""
+    """A job ticket for shoehorning arbitrary commands into the task list. You 
+    know, just in case you wanted to do something like that."""
     
     def __init__(self, cmd):
         self.command = cmd
         self.priority = 50
+        self.project = "Test Project"
 
     def name (self):
         return str (self.command)
         
     def createTasks(self, job):
         task = Hydra_rendertask( status = READY,
-                          command = repr( self.command ),
-                          job_id = job.id, priority = self.priority)
+                                 command = repr( self.command ),
+                                 job_id = job.id, 
+                                 priority = self.priority,
+                                 project = self.project)
         with transaction() as t:
-            task.insert(transaction=t) # the keys here represent columns in the database table
+            task.insert(transaction=t)
