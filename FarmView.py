@@ -75,33 +75,60 @@ class FarmView( QMainWindow, Ui_FarmView ):
                         " from the database. Check the FarmView log file for"
                         " more details about the error.")
         )
+        self.noneCheckedBox = (
+            functools.partial(aboutBox,
+                        parent=self,
+                        title="None checked",
+                        msg= "No nodes have been selected. Use the check boxes" 
+                        " to make a selection from the table.")
+        )
         
         # let there be data
         self.doFetch()
-
-    def getThisNodeData(self):
         
-        [thisNode] = Hydra_rendernode.fetch("where host = '%s'" 
-                                            % Utils.myHostName())
-        return thisNode
+    def onlineThisNodeButtonClicked(self):
+        """Changes the local render node's status to online if it was offline,
+        goes back to started if it was pending offline."""
+        
+        # get most current info from the database
+        thisNode = None
+        try:
+            thisNode = getThisNodeData()
+        except sqlerror as err:
+            logger.debug(str(err))
+            self.sqlErrorBox()
+            return
+        
+        if thisNode:
+            onlineNode(thisNode)
+        
+        self.doFetch()
+            
+    def offlineThisNodeButtonClicked(self):
+        """Changes the local render node's status to offline if it was idle,
+        pending if it was working on something."""
+        
+        # get the most current info from the database
+        thisNode = None
+        try:
+            thisNode = getThisNodeData()
+        except sqlerror as err:
+            logger.debug(str(err))
+            self.sqlErrorBox()
+            return
+        
+        if thisNode:
+            offlineNode(thisNode)
+            
+        self.doFetch()
     
-    def offlineNode(self, thisNode):
-        if thisNode.status == OFFLINE:
-                return
-        elif thisNode.task_id:
-            thisNode.status = PENDING
-        else:
-            thisNode.status = OFFLINE
-        with transaction() as t:
-                thisNode.update(t)
-                
     def getOffThisNodeButtonClicked(self):
         """Offlines the node and sends a message to the render node server 
         running on localhost to kill its current task"""
         #TODO: test getOffThisNodeButtonClicked
         thisNode = None
         try:
-            thisNode = self.getThisNodeData()
+            thisNode = getThisNodeData()
         except sqlerror as err:
             logger.debug(str(err))
             self.sqlErrorBox()
@@ -114,7 +141,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             return
         
         if thisNode:
-            self.offlineNode(thisNode)
+            offlineNode(thisNode)
                 
             if thisNode.task_id:
                 try:
@@ -135,115 +162,52 @@ class FarmView( QMainWindow, Ui_FarmView ):
                 aboutBox(self, "Offline", "No job was running. Node offlined.")
                 
         self.doFetch()
-        
-    def onlineThisNodeButtonClicked(self):
-        """Changes the local render node's status to online if it was offline,
-        goes back to started if it was pending offline."""
-        
-        # get most current info from the database
-        thisNode = None
-        try:
-            thisNode = self.getThisNodeData()
-        except sqlerror as err:
-            logger.debug(str(err))
-            self.sqlErrorBox()
-            return
-        
-        if thisNode:
-            if thisNode.status == IDLE:
-                return
-            elif thisNode.status == OFFLINE:
-                thisNode.status = IDLE
-            elif thisNode.status == PENDING and thisNode.task_id:
-                thisNode.status = STARTED
-            with transaction() as t:
-                thisNode.update(t)
-        
-        self.doFetch()
-            
-    def offlineThisNodeButtonClicked(self):
-        """Changes the local render node's status to offline if it was idle,
-        pending if it was working on something."""
-        
-        # get the most current info from the database
-        thisNode = None
-        try:
-            thisNode = self.getThisNodeData()
-        except sqlerror as err:
-            logger.debug(str(err))
-            self.sqlErrorBox()
-            return
-        
-        if thisNode:
-            self.offlineNode(thisNode)
-            
-        self.doFetch()
-    
-    def getCheckedItems(self, table, itemColumn, checkBoxColumn):
-        nRows = table.rowCount()
-        checks = list()
-        for rowIndex in range(0, nRows - 1):
-            item = str(table.item(rowIndex, itemColumn).text())
-            checkState = table.item(rowIndex, checkBoxColumn).checkState()
-            if checkState:
-                checks.append(item)
-        return checks
     
     def onlineRenderNodesButtonClicked(self):
         
-        hosts = self.getCheckedItems(table=self.renderNodeTable, itemColumn=0, 
-                                checkBoxColumn=6)
+        hosts = getCheckedItems(table=self.renderNodeTable, itemColumn=1, 
+                                checkBoxColumn=0)
         if len(hosts) == 0:
-            aboutBox(self, "None checked", "No nodes have been selected. Use"
-                     " the check boxes on the right side of the table to"
-                     " select render nodes.")
+            self.noneCheckedBox()
             return
         
         choice = yesNoBox(self, "Confirm", "Are you sure you want to online"
                           " these nodes? <br>" + str(hosts))
         
-        if choice == QMessageBox.Yes:
-            with transaction() as t:
-                rendernode_rows = Hydra_rendernode.fetch(explicitTransaction=t)
-                for node_row in rendernode_rows:
-                    if node_row.host in hosts:
-                        if node_row.status == OFFLINE:
-                            node_row.status = IDLE
-                            node_row.update(t)
-                        else:
-                            logger.info(node_row.host + " was already online.")
-            self.doFetch()
-        else:
+        if choice == QMessageBox.No:
             aboutBox(self, "Aborted", "No action taken.")
+            return
+        
+        with transaction() as t:
+            rendernode_rows = Hydra_rendernode.fetch(explicitTransaction=t)
+            for node_row in rendernode_rows:
+                if node_row.host in hosts:
+                    onlineNode(node_row)
+        self.doFetch()
                     
     def offlineRenderNodesButtonClicked(self):
         """For all nodes with boxes checked in the render nodes table, changes
         status to offline if idle, or pending if started."""
         
-        hosts = self.getCheckedItems(table=self.renderNodeTable, itemColumn=0, 
-                                checkBoxColumn=6)
+        hosts = getCheckedItems(table=self.renderNodeTable, itemColumn=1,
+                                checkBoxColumn=0)
         if len(hosts) == 0:
-            aboutBox(self, "None checked", "No nodes have been selected. Use"
-                     " the check boxes on the right side of the table to"
-                     " select render nodes.")
+            self.noneCheckedBox()
             return
         
-        choice = yesNoBox(self, "Confirm", "Are you sure you want to online"
+        choice = yesNoBox(self, "Confirm", "Are you sure you want to offline"
                           " these nodes? <br>" + str(hosts))
         
-        if choice == QMessageBox.Yes:
-            with transaction() as t:
-                rendernode_rows = Hydra_rendernode.fetch(explicitTransaction=t)
-                for node_row in rendernode_rows:
-                    if node_row.host in hosts:
-                        if node_row.status == STARTED:
-                            node_row.status = PENDING
-                        else:
-                            node_row.status = OFFLINE
-                        node_row.update(t)
-            self.doFetch()
-        else:
+        if choice == QMessageBox.No:
             aboutBox(self, "Aborted", "No action taken.")
+            return
+        
+        with transaction() as t:
+            rendernode_rows = Hydra_rendernode.fetch(explicitTransaction=t)
+            for node_row in rendernode_rows:
+                if node_row.host in hosts:
+                    offlineNode(node_row)
+        self.doFetch()
     
     def getOffRenderNodesButtonClicked(self):
         pass
@@ -272,7 +236,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         # get the most up to date info from the database
         thisNode = None
         try:
-            thisNode = self.getThisNodeData()
+            thisNode = getThisNodeData()
         except sqlerror as err:
             logger.debug(str(err))
             self.sqlErrorBox()
@@ -307,7 +271,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         # get the most current info from the database
         thisNode = None
         try:
-            thisNode = self.getThisNodeData()
+            thisNode = getThisNodeData()
             self.updateProjectComboBox()
         except sqlerror as err:
             logger.debug(str(err))
@@ -458,6 +422,55 @@ def getSoftwareVersionText(sw_ver):
     
     else: 
         return "None"
+
+def getThisNodeData():
+    """Gets the row corresponding to localhost in the Hydra_rendernode table.
+    Raises MySQLdb.Error"""
+    
+    [thisNode] = Hydra_rendernode.fetch("where host = '%s'" 
+                                        % Utils.myHostName())
+    return thisNode
+
+def onlineNode(node):
+    """Onlines the node. 
+    Precondition: node refers to a row from the Hydra_rendernode table.
+    Raises MySQLdb.Error"""
+    
+    if node.status == IDLE:
+        return
+    elif node.status == OFFLINE:
+        node.status = IDLE
+    elif node.status == PENDING and node.task_id:
+        node.status = STARTED
+    with transaction() as t:
+        node.update(t)
+
+def offlineNode(node):
+    """Onlines the node. 
+    Precondition: node refers to a row from the Hydra_rendernode table.
+    Raises MySQLdb.Error"""
+    
+    if node.status == OFFLINE:
+            return
+    elif node.task_id:
+        node.status = PENDING
+    else:
+        node.status = OFFLINE
+    with transaction() as t:
+            node.update(t)
+
+def getCheckedItems(table, itemColumn, checkBoxColumn):
+    """Given a table with a column of check boxes in it, returns a list of
+    the items in itemColumn which have a checked box in the same row."""
+    
+    nRows = table.rowCount()
+    checks = list()
+    for rowIndex in range(0, nRows - 1):
+        item = str(table.item(rowIndex, itemColumn).text())
+        checkState = table.item(rowIndex, checkBoxColumn).checkState()
+        if checkState:
+            checks.append(item)
+    return checks
 
 def setup(records, columns, grid):
     """Populate a data grid. "colums" is a list of widget factory objects."""
