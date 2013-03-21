@@ -130,7 +130,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         
         choice = yesNoBox(self, "Confirm", "All progress on the current job"
                           " will be lost. Are you sure you want to stop it?")
-        if choice == QMessageBox.No:
+        if choice != QMessageBox.Yes:
             aboutBox(self, "Abort", "No action taken.")
             return
         
@@ -170,7 +170,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         choice = yesNoBox(self, "Confirm", "Are you sure you want to online"
                           " these nodes? <br>" + str(hosts))
         
-        if choice == QMessageBox.No:
+        if choice != QMessageBox.Yes:
             aboutBox(self, "Aborted", "No action taken.")
             return
         
@@ -194,7 +194,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         choice = yesNoBox(self, "Confirm", "Are you sure you want to offline"
                           " these nodes? <br>" + str(hosts))
         
-        if choice == QMessageBox.No:
+        if choice != QMessageBox.Yes:
             aboutBox(self, "Aborted", "No action taken.")
             return
         
@@ -206,7 +206,46 @@ class FarmView( QMainWindow, Ui_FarmView ):
         self.doFetch()
     
     def getOffRenderNodesButtonClicked(self):
-        pass
+        """For all nodes with boxes checked in the render nodes table, changes
+        status to offline if idle, or pending if started, and attempts to kill
+        any task that is running on each node."""
+        
+        hosts = getCheckedItems(table=self.renderNodeTable, itemColumn=1,
+                                checkBoxColumn=0)
+        if len(hosts) == 0:
+            self.noneCheckedBox()
+            return
+        
+        choice = yesNoBox(self, "Confirm", "<B>WARNING</B>: All progress on"
+                          " current tasks will be lost for the selected"
+                          " render nodes. Are you sure you want to stop these"
+                          " nodes? <br>" + str(hosts))
+        
+        if choice != QMessageBox.Yes:
+            aboutBox(self, "Aborted", "No action taken.")
+            return
+        
+        error = False
+        notKilledList = list()
+        with transaction() as t:
+            rendernode_rows = Hydra_rendernode.fetch(explicitTransaction=t)
+            for node_row in rendernode_rows:
+                if node_row.host in hosts:
+                    offlineNode(node_row)
+                    try:
+                        killed = sendKillQuestion(node_row.host, READY)
+                        error = error or not killed
+                    except socketerror as err:
+                        logger.debug(str(err) + '\n' 
+                                     + "Error while trying to contact " 
+                                     + node_row.host)
+                        notKilledList.append(node_row.host)
+                        error = True
+        if error:
+            aboutBox(self, "Error", "The following nodes could not be stopped"
+                     " for some reason. Look in FarmView.log for more details."
+                     "<br>" + str(notKilledList))
+        self.doFetch()
     
     def projectSelectionHandler(self, currentProjectIndex):
         """Checks to see if project selection has changed. If so, handles the 
@@ -223,7 +262,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
                           selectedProject + "? (will avoid jobs from other"
                           " projects)")
         
-        if choice == QMessageBox.No:
+        if choice != QMessageBox.Yes:
             aboutBox(self, "No changes", "This node will remain assigned to " + 
                      self.thisNode.project + ".")
             self.projectComboBox.setCurrentIndex(self.lastProjectIndex)
