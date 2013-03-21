@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Ui_farmview.ui'
+# Form implementation generated from reading ui file 'Ui_FarmView.ui'
 #
-# Created: Wed Mar 20 00:37:06 2013
+# Created: Wed Mar 20 19:49:48 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -121,6 +121,9 @@ class Ui_FarmView(object):
         self.renderNodeTable.setColumnCount(7)
         self.renderNodeTable.setRowCount(0)
         item = QtGui.QTableWidgetItem()
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Wingdings"))
+        item.setFont(font)
         self.renderNodeTable.setHorizontalHeaderItem(0, item)
         item = QtGui.QTableWidgetItem()
         self.renderNodeTable.setHorizontalHeaderItem(1, item)
@@ -133,9 +136,6 @@ class Ui_FarmView(object):
         item = QtGui.QTableWidgetItem()
         self.renderNodeTable.setHorizontalHeaderItem(5, item)
         item = QtGui.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setFamily(_fromUtf8("Wingdings"))
-        item.setFont(font)
         self.renderNodeTable.setHorizontalHeaderItem(6, item)
         self.renderNodeTable.horizontalHeader().setStretchLastSection(True)
         self.renderNodeTable.verticalHeader().setVisible(False)
@@ -161,7 +161,7 @@ class Ui_FarmView(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 748, 285))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 98, 62))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -211,19 +211,19 @@ class Ui_FarmView(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.thisNodeTab), _translate("FarmView", "This Node", None))
         self.renderNodeTable.setSortingEnabled(True)
         item = self.renderNodeTable.horizontalHeaderItem(0)
-        item.setText(_translate("FarmView", "Host", None))
-        item = self.renderNodeTable.horizontalHeaderItem(1)
-        item.setText(_translate("FarmView", "Status", None))
-        item = self.renderNodeTable.horizontalHeaderItem(2)
-        item.setText(_translate("FarmView", "Task ID", None))
-        item = self.renderNodeTable.horizontalHeaderItem(3)
-        item.setText(_translate("FarmView", "Project", None))
-        item = self.renderNodeTable.horizontalHeaderItem(4)
-        item.setText(_translate("FarmView", "Node Version", None))
-        item = self.renderNodeTable.horizontalHeaderItem(5)
-        item.setText(_translate("FarmView", "Last heartbeat", None))
-        item = self.renderNodeTable.horizontalHeaderItem(6)
         item.setText(_translate("FarmView", "þ", None))
+        item = self.renderNodeTable.horizontalHeaderItem(1)
+        item.setText(_translate("FarmView", "Host", None))
+        item = self.renderNodeTable.horizontalHeaderItem(2)
+        item.setText(_translate("FarmView", "Status", None))
+        item = self.renderNodeTable.horizontalHeaderItem(3)
+        item.setText(_translate("FarmView", "Task ID", None))
+        item = self.renderNodeTable.horizontalHeaderItem(4)
+        item.setText(_translate("FarmView", "Project", None))
+        item = self.renderNodeTable.horizontalHeaderItem(5)
+        item.setText(_translate("FarmView", "Node Version", None))
+        item = self.renderNodeTable.horizontalHeaderItem(6)
+        item.setText(_translate("FarmView", "Last heartbeat", None))
         self.onlineRenderNodesButton.setText(_translate("FarmView", "Online", None))
         self.offlineRenderNodesButton.setText(_translate("FarmView", "Offline", None))
         self.getOffRenderNodesButton.setText(_translate("FarmView", "Get Off!", None))

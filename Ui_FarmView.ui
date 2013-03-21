@@ -222,6 +222,16 @@
           </attribute>
           <column>
            <property name="text">
+            <string>þ</string>
+           </property>
+           <property name="font">
+            <font>
+             <family>Wingdings</family>
+            </font>
+           </property>
+          </column>
+          <column>
+           <property name="text">
             <string>Host</string>
            </property>
           </column>
@@ -248,16 +258,6 @@
           <column>
            <property name="text">
             <string>Last heartbeat</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>þ</string>
-           </property>
-           <property name="font">
-            <font>
-             <family>Wingdings</family>
-            </font>
            </property>
           </column>
          </widget>
@@ -304,8 +304,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>748</width>
-             <height>285</height>
+             <width>98</width>
+             <height>62</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
