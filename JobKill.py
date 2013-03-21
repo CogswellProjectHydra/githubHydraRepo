@@ -12,7 +12,8 @@ from LoggingSetup import logger
 from sys import argv
 
 def sendKillQuestion(renderhost, newStatus=KILLED):
-    
+    """Tries to kill the current task running on the renderhost. Returns True
+    if successful, otherwise False"""
     connection = TCPConnection(hostname=renderhost)
     answer = connection.getAnswer(
                             KillCurrentJobQuestion(newStatus))
@@ -21,7 +22,7 @@ def sendKillQuestion(renderhost, newStatus=KILLED):
         logger.debug("%r tried to kill its job but failed for some reason." 
                         % renderhost)
     
-    return not answer.childKilled
+    return answer.childKilled
     
 def killJob(job_id):
     """Kills every task associated with job_id. Killed tasks have status code 
@@ -48,7 +49,7 @@ def killJob(job_id):
     error = False
     for host in hosts:
         try:
-            error = error or sendKillQuestion(host)
+            error = error or not sendKillQuestion(host)
         except socketerror:
             logger.debug("There was a problem communicating with {:s}"
                          .format(host))
