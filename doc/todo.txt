@@ -63,8 +63,8 @@ note: maybe we'll just add a Search tab to FarmView
 -be able to select tasks by check box (insert checkboxes into QItemWidgets?)
 and resubmit/kill operation on selected tasks
 
--online and offline render nodes by check box in farmview
+[DONE] online and offline render nodes by check box in farmview
 
--update FarmView to work with QTableWidgets instead of building widgets by hand
+[IN PROGRESS] update FarmView to work with QTableWidgets instead of building widgets by hand
 
 -merge JobListTest into FarmView
