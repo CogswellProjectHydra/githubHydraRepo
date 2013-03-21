@@ -1,32 +1,26 @@
+# standard
 import sys
-#import traceback
 from exceptions import NotImplementedError
 import datetime
 import functools
 import re
 from socket import error as socketerror
+
+# 3rd party
 from MySQLdb import Error as sqlerror
 
-from LoggingSetup import logger
-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-
-from tableHelpers import *
-
+# Qt
+from PyQt4.QtGui import *                       #@UnusedWildImport
+from PyQt4.QtCore import *                      #@UnusedWildImport
 from Ui_FarmView import Ui_FarmView
 
-#import DjangoSetup
-#from Hydra.models import RenderNode, RenderTask
-#from django.db import transaction
-
-from MySQLSetup import (Hydra_rendernode, Hydra_rendertask, transaction, READY, 
-                        OFFLINE, IDLE, PENDING, STARTED,
-                        niceNames)
-from Questions import KillCurrentJobQuestion
-import Utils
-from Connections import TCPConnection
+# Project Hydra
+from tableHelpers import *                      #@UnusedWildImport
+from MySQLSetup import *                        #@UnusedWildImport
+from LoggingSetup import logger                 #@Reimport
+import Utils                                    #@Reimport
 from MessageBoxes import aboutBox, yesNoBox
+from JobKill import sendKillQuestion
 
 class FarmView( QMainWindow, Ui_FarmView ):
 
@@ -146,13 +140,15 @@ class FarmView( QMainWindow, Ui_FarmView ):
             if thisNode.task_id:
                 try:
                     # TODO: use JobKill for getOff instead of doing it manually
-                    connection = TCPConnection()
-                    killed = connection.getAnswer(KillCurrentJobQuestion(
-                                                statusAfterDeath=READY))
+                    killed = sendKillQuestion(renderhost = "localhost", 
+                                              newStatus = KILLED)
                     if not killed:
                         logger.debug("There was a problem killing the task.")
                         aboutBox(self, "Error", "There was a problem killing"
                                  " the task.")
+                    else:
+                        aboutBox(self, "Success", "Job was successfully"
+                                 " stopped. Node offlined.")
                 except socketerror:
                     logger.debug(socketerror.message)
                     aboutBox(self, "Error", "There was a problem communicating"
@@ -314,7 +310,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             count = self.projectComboBox.count()
         
         # get current list of projects from the database
-        tuples = None
+        tuples = None #@UnusedVariable
         with transaction() as t:
             t.cur.execute("select * from Hydra_projects")
             tuples = t.cur.fetchall()
