@@ -6,7 +6,12 @@ def unstick (taskID=None, newTaskStatus=READY,
     with transaction () as t:
         if taskID:
             [task] = Hydra_rendertask.fetch ("where id = %d" % taskID)
-            task.host = None
+
+            # if the task is marked, say, CRASHED, leave the host name alone.
+            # only READY would be confusing with a host named filled in. I think.
+            if newTaskStatus == READY:
+                task.host = None
+
             task.status = newTaskStatus
             task.startTime = None
             task.endTime = None
