@@ -500,7 +500,7 @@ def getCheckedItems(table, itemColumn, checkBoxColumn):
     
     nRows = table.rowCount()
     checks = list()
-    for rowIndex in range(0, nRows - 1):
+    for rowIndex in range(0, nRows):
         item = str(table.item(rowIndex, itemColumn).text())
         checkState = table.item(rowIndex, checkBoxColumn).checkState()
         if checkState:

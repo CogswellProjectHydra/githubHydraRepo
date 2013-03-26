@@ -81,7 +81,7 @@ class RenderTCPServer(TCPServer):
             render_tasks = Hydra_rendertask.fetch (
                                 queryString,
                                 limit=1,
-                                order="order by priority desc",
+                                order="order by priority desc, id asc",
                                 explicitTransaction=t)
             if not render_tasks:
                 return
