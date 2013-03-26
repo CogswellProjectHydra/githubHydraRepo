@@ -68,3 +68,5 @@ and resubmit/kill operation on selected tasks
 [IN PROGRESS] update FarmView to work with QTableWidgets instead of building widgets by hand
 
 -merge JobListTest into FarmView
+
+-do scheduling

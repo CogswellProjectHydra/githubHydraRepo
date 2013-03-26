@@ -3,6 +3,7 @@ not strictly necessary to getting the jobs executed."""
 
 import pickle
 from LoggingSetup import logger
+from datetime import datetime
 
 from MySQLSetup import Hydra_job, Hydra_rendertask, READY, transaction
 
@@ -18,7 +19,10 @@ class JobTicket:
         self.createTasks( job )
 
     def createJob( self ):
-        job = Hydra_job( pickledTicket = pickle.dumps( self ), priority = self.priority, project = self.project )
+        job = Hydra_job( pickledTicket = pickle.dumps( self ), 
+                         priority = self.priority, 
+                         project = self.project,
+                         createTime = datetime.now())
         with transaction() as t:
             job.insert(transaction=t)
             
@@ -32,7 +36,8 @@ class JobTicket:
 
 class MayaTicket( JobTicket ):
 
-    def __init__( self, sceneFile, mayaProjectPath, startFrame, endFrame, batchSize, priority, project ):
+    def __init__( self, sceneFile, mayaProjectPath, startFrame, endFrame, 
+                  batchSize, priority, project ):
         print ('initializing', self)
         JobTicket.__init__(self, project, priority)
         self.sceneFile = sceneFile
