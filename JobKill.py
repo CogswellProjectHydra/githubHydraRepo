@@ -4,12 +4,15 @@ Created on Feb 16, 2013
 @author: Aaron Cohn
 @summary: Procedures for killing and resurrecting jobs and tasks
 '''
+# standard
+from sys import argv
 from socket import error as socketerror
+
+# Project Hydra
 from MySQLSetup import Hydra_rendertask, transaction, KILLED, READY, STARTED
 from Connections import TCPConnection
 from Questions import KillCurrentJobQuestion
 from LoggingSetup import logger
-from sys import argv
 
 def sendKillQuestion(renderhost, newStatus=KILLED):
     """Tries to kill the current task running on the renderhost. Returns True
@@ -36,7 +39,7 @@ def killJob(job_id):
                         where job_id = '%d' and status = 'R'""" % job_id)
     
     # get hostnames for tasks that were already started
-    tuples = None
+    tuples = None # @UnusedVariable
     with transaction() as t:
         t.cur.execute("""select host from Hydra_rendertask 
                         where job_id = '%d' and status = 'S'""" % job_id)

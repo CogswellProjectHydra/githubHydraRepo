@@ -13,7 +13,7 @@ class TimeAnswer( Answer ):
 
 class EchoAnswer( Answer ):
     """An Answer which stores the object specified by a Question."""
-    def __init__( self, object ):
+    def __init__( self, object ): # @ReservedAssignment
         self.object = object
 
 class CMDAnswer( Answer ):

@@ -1,20 +1,14 @@
 import sys
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt4.QtGui import *                       # @UnusedWildImport
+from PyQt4.QtCore import *                      # @UnusedWildImport
 from Ui_JobListTest import Ui_MainWindow
 from TaskSearchDialog import TaskSearchDialog
 
-import Servers
-from Clients import Client
-from Connections import TCPConnection
-from MySQLSetup import (transaction, Hydra_job, Hydra_rendertask, 
-                        Hydra_rendernode, IDLE, OFFLINE)
+from MySQLSetup import Hydra_job, Hydra_rendertask
 from MySQLdb import Error as sqlerror
-import Utils
 from LoggingSetup import logger
 import pickle
-import JobTicket
 from JobKill import killJob, killTask, resurrectTask, socketerror
 from MessageBoxes import aboutBox, yesNoBox
 from datetime import datetime as dt
@@ -26,7 +20,7 @@ codes = {'I': 'idle',
          'F': 'finished',
          'S': 'started'}
 
-class JobListWindow(QMainWindow, Ui_MainWindow, Client):
+class JobListWindow(QMainWindow, Ui_MainWindow):
 
     def __init__(self):
         QMainWindow.__init__(self)
@@ -55,7 +49,7 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
                 self.jobTable.setItem (pos, 0, 
                                        QTableWidgetItem_int(str(job.id)))
                 self.jobTable.setItem (pos, 1, 
-                                       QTableWidgetItem(ticket.name ()))
+                                       QTableWidgetItem(ticket.name()))
         except sqlerror as err:
             logger.debug(str(err))
             aboutBox(self, "SQL error", str(err))
@@ -99,7 +93,7 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
         item = self.jobTable.currentItem()
         if item and item.isSelected ():
             row = self.jobTable.currentRow()
-            id = int(self.jobTable.item(row, 0).text())
+            id = int(self.jobTable.item(row, 0).text()) # @ReservedAssignment
             choice = yesNoBox(self, "Confirm", "Really kill job {:d}?"
                               .format(id))
             if choice == QMessageBox.Yes:
@@ -117,7 +111,7 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
         taskItem = self.taskTable.currentItem()
         if taskItem and taskItem.isSelected():
             row = self.taskTable.currentRow()
-            id = int (self.taskTable.item(row, 0).text())
+            id = int (self.taskTable.item(row, 0).text()) # @ReservedAssignment
             choice = yesNoBox(self, "Confirm", "Resurrect task {:d}?"
                               .format(id))
             if choice == QMessageBox.Yes:
@@ -141,7 +135,7 @@ class JobListWindow(QMainWindow, Ui_MainWindow, Client):
         item = self.taskTable.currentItem ()
         if item and item.isSelected ():
             row = self.taskTable.currentRow ()
-            id = int (self.taskTable.item (row, 0).text ())
+            id = int (self.taskTable.item (row, 0).text ()) #@ReservedAssignment
             choice = yesNoBox(self, "Confirm", "Really kill task {:d}?"
                               .format(id))
             if choice == QMessageBox.Yes:

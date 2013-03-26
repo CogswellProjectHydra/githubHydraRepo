@@ -4,12 +4,13 @@ Created on Mar 10, 2013
 @author: David Gladstein
 @summary: Procedure and mini-program for rebooting render nodes
 '''
+# standard
+from sys import argv
 from socket import error as socketerror
-from MySQLSetup import Hydra_rendertask, transaction, KILLED, READY, STARTED
+
+# 3rd party
 from Connections import TCPConnection
 from Questions import CMDQuestion
-from LoggingSetup import logger
-from sys import argv
 
 def sendRebootQuestion(renderhost):
     

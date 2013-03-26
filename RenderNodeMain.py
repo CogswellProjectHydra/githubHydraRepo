@@ -1,25 +1,24 @@
-#import functools
-#import itertools
-import os
+# standard
+import os                           # @UnusedImport
 import sys
 import time
 import threading
-from psutil import process_iter
-from Constants import *
 import datetime
 import traceback
 import subprocess
 
+# 3rd party
+from psutil import process_iter
+
+# Project Hydra
+from Constants import *             # @UnusedWildImport
 from Servers import TCPServer
-from LoggingSetup import logger
-import Utils
+from LoggingSetup import logger     # @UnusedImport
+import Utils                        # @UnusedImport
 from Utils import flushOut
 from Answers import RenderAnswer
-
-from MySQLSetup import *
-
+from MySQLSetup import *            # @UnusedWildImport
 from UnstickTask import unstick
-
 from mapDrive import mapDrive
 
 class RenderTCPServer(TCPServer):

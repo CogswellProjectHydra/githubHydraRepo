@@ -1,5 +1,5 @@
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt4.QtGui import *       # @UnusedWildImport
+from PyQt4.QtCore import *      # @UnusedWildImport
 
 class TableWidgetItem (QTableWidgetItem):
 
