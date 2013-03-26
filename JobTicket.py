@@ -71,7 +71,8 @@ class MayaTicket( JobTicket ):
                                      command = repr( command ),
                                      job_id = job.id, 
                                      priority = self.priority, 
-                                     project = self.project)
+                                     project = self.project,
+                                     createTime = job.createTime)
             with transaction() as t:
                 task.insert(transaction=t)
 
@@ -92,6 +93,7 @@ class CMDTicket(JobTicket):
                                  command = repr( self.command ),
                                  job_id = job.id, 
                                  priority = self.priority,
-                                 project = self.project)
+                                 project = self.project,
+                                 createTime = job.createTime)
         with transaction() as t:
             task.insert(transaction=t)
