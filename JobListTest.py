@@ -12,6 +12,7 @@ import pickle
 from JobKill import killJob, killTask, resurrectTask, socketerror
 from MessageBoxes import aboutBox, yesNoBox
 from datetime import datetime as dt
+from JobPriority import prioritizeJob 
 
 
 codes = {'I': 'idle',
@@ -39,6 +40,8 @@ class JobListWindow(QMainWindow, Ui_MainWindow):
                          self.advancedSearchButtonClicked)
         QObject.connect (self.resurrectTaskButton, SIGNAL("clicked()"),
                          self.resurrectTaskButtonHandler)
+        QObject.connect (self.prioritySetButton, SIGNAL("clicked()"),
+                         self.setPriorityButtonHandler)
         
     def refreshHandler (self, *args):
         try:
@@ -49,6 +52,8 @@ class JobListWindow(QMainWindow, Ui_MainWindow):
                 self.jobTable.setItem (pos, 0, 
                                        QTableWidgetItem_int(str(job.id)))
                 self.jobTable.setItem (pos, 1, 
+                                       QTableWidgetItem_int(str(job.priority)))
+                self.jobTable.setItem (pos, 2, 
                                        QTableWidgetItem(ticket.name()))
         except sqlerror as err:
             logger.debug(str(err))
@@ -74,14 +79,16 @@ class JobListWindow(QMainWindow, Ui_MainWindow):
                 self.taskTable.setItem(pos, 0, 
                                        QTableWidgetItem_int(str(task.id)))
                 self.taskTable.setItem(pos, 1, 
-                                       QTableWidgetItem(str(task.host)))
+                                       QTableWidgetItem_int(str(task.priority)))
                 self.taskTable.setItem(pos, 2, 
-                                       QTableWidgetItem(str(task.status)))
+                                       QTableWidgetItem(str(task.host)))
                 self.taskTable.setItem(pos, 3, 
-                                       QTableWidgetItem_dt(task.startTime))
+                                       QTableWidgetItem(str(task.status)))
                 self.taskTable.setItem(pos, 4, 
+                                       QTableWidgetItem_dt(task.startTime))
+                self.taskTable.setItem(pos, 5, 
                                        QTableWidgetItem_dt(task.endTime))
-                self.taskTable.setItem(pos, 5, QTableWidgetItem_dt(str(tdiff)))
+                self.taskTable.setItem(pos, 6, QTableWidgetItem_dt(str(tdiff)))
         except sqlerror as err:
             aboutBox(self, "SQL Error", str(err))
             
@@ -106,7 +113,16 @@ class JobListWindow(QMainWindow, Ui_MainWindow):
                     aboutBox(self, "SQL Error", str(err))
                 finally:
                     self.jobCellClickedHandler(item.row(), 0)
-    
+
+    def setPriorityButtonHandler (self):
+        item = self.jobTable.currentItem()
+        if item and item.isSelected ():
+            row = self.jobTable.currentRow()
+            id = int(self.jobTable.item(row, 0).text()) # @ReservedAssignment
+            prioritizeJob (id, self.prioritySpinBox.value ())
+            self.jobCellClickedHandler(item.row(), 0)
+            self.refreshHandler ([])
+            
     def resurrectTaskButtonHandler(self):
         taskItem = self.taskTable.currentItem()
         if taskItem and taskItem.isSelected():
