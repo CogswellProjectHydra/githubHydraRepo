@@ -12,7 +12,8 @@ import pickle
 from JobKill import killJob, killTask, resurrectTask, socketerror
 from MessageBoxes import aboutBox, yesNoBox
 from datetime import datetime as dt
-from JobPriority import prioritizeJob 
+from JobPriority import prioritizeJob
+import JobTicket
 
 
 codes = {'I': 'idle',
