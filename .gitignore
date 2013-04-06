@@ -4,3 +4,5 @@ build/*
 *.dll
 *.exe
 *.zip
+.project
+.pydevproject
