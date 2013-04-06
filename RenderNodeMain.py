@@ -191,9 +191,9 @@ class RenderTCPServer(TCPServer):
             logger.debug("no process was running.")
         
 def heartbeat(interval = 5):
+    host = Utils.myHostName()
     while True:
         try:
-            host = Utils.myHostName()
             with transaction() as t:
                 t.cur.execute("update Hydra_rendernode "
                     "set pulse = NOW() "
