@@ -1,7 +1,7 @@
 # standard
 import sys
 from exceptions import NotImplementedError
-import datetime
+import datetime.datetime as dt
 import functools
 import re
 from socket import error as socketerror
@@ -13,6 +13,7 @@ from MySQLdb import Error as sqlerror
 from PyQt4.QtGui import *                       #@UnusedWildImport
 from PyQt4.QtCore import *                      #@UnusedWildImport
 from Ui_FarmView import Ui_FarmView
+from TaskSearchDialog import TaskSearchDialog
 
 # Project Hydra
 from tableHelpers import *                      #@UnusedWildImport
@@ -20,7 +21,10 @@ from MySQLSetup import *                        #@UnusedWildImport
 from LoggingSetup import logger                 #@Reimport
 import Utils                                    #@Reimport
 from MessageBoxes import aboutBox, yesNoBox
-from JobKill import sendKillQuestion
+from JobKill import sendKillQuestion, killJob, killTask, resurrectTask
+from JobPriority import prioritizeJob
+import pickle
+import JobTicket                                # @UnusedImport
 
 class FarmView( QMainWindow, Ui_FarmView ):
 
@@ -28,7 +32,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
         
         QMainWindow.__init__( self )
         self.setupUi( self )
-
+        
+        # Column widths on the render node table
         self.renderNodeTable.setColumnWidth(0, 30)
         self.renderNodeTable.setColumnWidth(1, 200)
         self.renderNodeTable.setColumnWidth(2, 70)
@@ -36,7 +41,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         self.renderNodeTable.setColumnWidth(5, 100)
         self.renderNodeTable.setColumnWidth(6, 150)
 
-        # Buttons on the This Node tab
+        # Connect buttons on the This Node tab with their actions
         QObject.connect(self.fetchButton, SIGNAL("clicked()"), self.doFetch)
         QObject.connect(self.onlineThisNodeButton, SIGNAL("clicked()"), 
                         self.onlineThisNodeButtonClicked)
@@ -47,7 +52,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         QObject.connect(self.projectComboBox, SIGNAL("activated(int)"), 
                         self.projectSelectionHandler)
         
-        # Buttons on the Render Nodes tab
+        # Connect buttons on the Render Nodes tab with their actions
         QObject.connect(self.onlineRenderNodesButton, SIGNAL("clicked()"), 
                         self.onlineRenderNodesButtonClicked)
         QObject.connect(self.offlineRenderNodesButton, SIGNAL("clicked()"),
@@ -58,9 +63,23 @@ class FarmView( QMainWindow, Ui_FarmView ):
         # internal variables
         self.lastProjectIndex = -1
         self.thisNodeButtonsEnabled = True
+
+        QObject.connect (self.refreshButton, SIGNAL("clicked()"), 
+                         self.refreshHandler)
+        QObject.connect (self.jobTable, SIGNAL ("cellClicked(int,int)"), 
+                         self.jobCellClickedHandler)
+        QObject.connect (self.killJobButton, SIGNAL ("clicked()"), 
+                         self.killJobButtonHandler)
+        QObject.connect (self.killTaskButton, SIGNAL ("clicked()"), 
+                         self.killTaskButtonHandler)
+        QObject.connect (self.advancedSearchButton, SIGNAL ("clicked()"),
+                         self.advancedSearchButtonClicked)
+        QObject.connect (self.resurrectTaskButton, SIGNAL("clicked()"),
+                         self.resurrectTaskButtonHandler)
+        QObject.connect (self.prioritySetButton, SIGNAL("clicked()"),
+                         self.setPriorityButtonHandler)
         
-        # other stuff
-        # TODO: test sqlErrorBox
+        # other stuff for convenience
         self.sqlErrorBox = (
             functools.partial(aboutBox, 
                         parent=self, 
@@ -118,8 +137,9 @@ class FarmView( QMainWindow, Ui_FarmView ):
     
     def getOffThisNodeButtonClicked(self):
         """Offlines the node and sends a message to the render node server 
-        running on localhost to kill its current task"""
-        #TODO: test getOffThisNodeButtonClicked
+        running on localhost to kill its current task (task will be 
+        resubmitted)"""
+        
         thisNode = None
         try:
             thisNode = getThisNodeData()
@@ -141,7 +161,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
                 try:
                     # TODO: use JobKill for getOff instead of doing it manually
                     killed = sendKillQuestion(renderhost = "localhost", 
-                                              newStatus = KILLED)
+                                              newStatus = READY)
                     if not killed:
                         logger.debug("There was a problem killing the task.")
                         aboutBox(self, "Error", "There was a problem killing"
@@ -283,6 +303,118 @@ class FarmView( QMainWindow, Ui_FarmView ):
         self.lastProjectIndex = self.projectComboBox.currentIndex()
         aboutBox(self, "Success", "Node reassigned to " + selectedProject)
 
+    def jobCellClickedHandler (self, row, column):
+        # populate the task table widget
+        item = self.jobTable.item (row, 0)
+        job_id = int (item.text ())
+        self.taskTableLabel.setText("Task List (job: " + item.text() + ")")
+        try:
+            tasks = Hydra_rendertask.fetch ("where job_id = %d" % job_id)
+            self.taskTable.setRowCount (len (tasks))
+            for pos, task in enumerate (tasks):
+                # calcuate time difference
+                tdiff = None
+                if task.endTime:
+                    tdiff = task.endTime - task.startTime
+                elif task.startTime:
+                    tdiff = dt.now().replace(microsecond=0) - task.startTime
+                
+                # populate table
+                self.taskTable.setItem(pos, 0, 
+                                       TableWidgetItem_int(str(task.id)))
+                self.taskTable.setItem(pos, 1, 
+                                       TableWidgetItem_int(str(task.priority)))
+                self.taskTable.setItem(pos, 2, 
+                                       TableWidgetItem(str(task.host)))
+                self.taskTable.setItem(pos, 3, 
+                                       TableWidgetItem(str(task.status)))
+                self.taskTable.setItem(pos, 4, 
+                                       TableWidgetItem_dt(task.startTime))
+                self.taskTable.setItem(pos, 5, 
+                                       TableWidgetItem_dt(task.endTime))
+                self.taskTable.setItem(pos, 6, TableWidgetItem_dt(str(tdiff)))
+        except sqlerror as err:
+            aboutBox(self, "SQL Error", str(err))
+            
+    def advancedSearchButtonClicked(self):
+        results = TaskSearchDialog.create()
+        print results
+
+    def killJobButtonHandler (self):
+        item = self.jobTable.currentItem()
+        if item and item.isSelected ():
+            row = self.jobTable.currentRow()
+            id = int(self.jobTable.item(row, 0).text()) # @ReservedAssignment
+            choice = yesNoBox(self, "Confirm", "Really kill job {:d}?"
+                              .format(id))
+            if choice == QMessageBox.Yes:
+                try:
+                    if killJob(id):
+                        aboutBox(self, "Error", "Some nodes couldn't kill "
+                                 + "their tasks.")
+                except sqlerror as err:
+                    logger.debug(str(err))
+                    aboutBox(self, "SQL Error", str(err))
+                finally:
+                    self.jobCellClickedHandler(item.row(), 0)
+
+    def setPriorityButtonHandler (self):
+        item = self.jobTable.currentItem()
+        if item and item.isSelected ():
+            row = self.jobTable.currentRow()
+            id = int(self.jobTable.item(row, 0).text()) # @ReservedAssignment
+            prioritizeJob (id, self.prioritySpinBox.value ())
+            self.jobCellClickedHandler(item.row(), 0)
+            self.refreshHandler ([])
+            
+    def resurrectTaskButtonHandler(self):
+        taskItem = self.taskTable.currentItem()
+        if taskItem and taskItem.isSelected():
+            row = self.taskTable.currentRow()
+            id = int (self.taskTable.item(row, 0).text()) # @ReservedAssignment
+            choice = yesNoBox(self, "Confirm", "Resurrect task {:d}?"
+                              .format(id))
+            if choice == QMessageBox.Yes:
+                error = None
+                try:
+                    error = resurrectTask(id)
+                except sqlerror as err:
+                    logger.debug(str(err))
+                    aboutBox(self, "SQL Error", str(err))
+                finally:
+                    if error:
+                        msg = ("Task couldn't be resurrected because it's "
+                         "either not dead or is currently running.")
+                        logger.debug(msg)
+                        aboutBox(self, "Error", msg)
+                    else:
+                        jobItem = self.jobTable.currentItem()
+                        self.jobCellClickedHandler(jobItem.row(), 0)
+
+    def killTaskButtonHandler (self):
+        item = self.taskTable.currentItem ()
+        if item and item.isSelected ():
+            row = self.taskTable.currentRow ()
+            id = int (self.taskTable.item (row, 0).text ()) #@ReservedAssignment
+            choice = yesNoBox(self, "Confirm", "Really kill task {:d}?"
+                              .format(id))
+            if choice == QMessageBox.Yes:
+                killed = None
+                try:
+                    killed = killTask(id)
+                except socketerror as err:
+                    logger.debug(str(err))
+                    aboutBox(self, "Error", "Task couldn't be killed because "
+                    "there was a problem communicating with the host running "
+                    "it.")
+                except sqlerror as err:
+                    logger.debug(str(err))
+                    aboutBox(self, "SQL Error", str(err))
+                if not killed:
+                    # TODO: make a better error message
+                    aboutBox(self, "Error", "Task couldn't be killed for some "
+                             "reason.")
+
     def doFetch( self ):
         """Aggregate method for updating all of the widgets."""
         
@@ -290,6 +422,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.updateThisNodeInfo()
             self.updateRenderNodeTable()
             self.updateRenderTaskGrid()
+            self.refreshHandler()
             self.updateStatusBar()
         except sqlerror as err:
             logger.debug(str(err))
@@ -405,6 +538,22 @@ class FarmView( QMainWindow, Ui_FarmView ):
         
         self.renderNodeTable.setSortingEnabled(True)
                 
+    def refreshHandler (self, *args):
+        try:
+            jobs = Hydra_job.fetch ()
+            self.jobTable.setRowCount (len (jobs))
+            for pos, job in enumerate (jobs):
+                ticket = pickle.loads(job.pickledTicket)
+                self.jobTable.setItem (pos, 0, 
+                                       TableWidgetItem_int(str(job.id)))
+                self.jobTable.setItem (pos, 1, 
+                                       TableWidgetItem_int(str(job.priority)))
+                self.jobTable.setItem (pos, 2, 
+                                       QTableWidgetItem(ticket.name()))
+        except sqlerror as err:
+            logger.debug(str(err))
+            aboutBox(self, "SQL error", str(err))
+    
     def updateRenderTaskGrid(self):
         
         columns = [
@@ -431,7 +580,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         logger.debug (counts)
         countString = ", ".join (["%d %s" % (count, niceNames[status])
                                   for (count, status) in counts])
-        time = datetime.datetime.now().strftime ("%H:%M")
+        time = dt.now().strftime ("%H:%M")
         msg = "%s as of %s" % (countString, time)
         self.statusLabel.setText (msg)
 
@@ -600,6 +749,15 @@ class getOffButton(widgetFactory):
         
         logger.debug('clobber %s', record.host)
 
+class TableWidgetItem_int(QTableWidgetItem):
+    """A QTableWidgetItem which holds integer data and sorts it properly."""
+    
+    def __init__(self, stringValue):
+        QTableWidgetItem.__init__(self, stringValue)
+    
+    def __lt__(self, other):
+        return int(self.text()) < int(other.text())
+    
 class TableWidgetItem_dt(TableWidgetItem):
     """A QTableWidgetItem which holds datetime data and sorts it properly."""
 
