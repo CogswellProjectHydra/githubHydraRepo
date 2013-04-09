@@ -73,15 +73,20 @@ def resurrectJob(job_id):
 def killTask(task_id):
     """Kills the task with the specified id. If the task has been started, a 
     kill request is sent to the node running it.
-    @return: False if there were no errors killing the task, else True."""
+    @return: True if there were no errors killing the task, else False."""
     
     [task] = Hydra_rendertask.fetch("where id = '%d'" % task_id)
     if task.status == READY:
         task.status = KILLED
         with transaction() as t:
             task.update(t)
+        # if we reach this point: transaction successful, no exception raised
+        return True
     elif task.status == STARTED:
-        sendKillQuestion(task.host)
+        killed = sendKillQuestion(renderhost = task.host, newStatus = KILLED)
+        # if we reach this point: TCPconnection successful, no exception raised
+        return killed
+    return False
 
 def resurrectTask(task_id, ignoreStarted = False):
     """Resurrects the task with the specified id. 
