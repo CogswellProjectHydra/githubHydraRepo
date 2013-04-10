@@ -65,20 +65,22 @@ class FarmView( QMainWindow, Ui_FarmView ):
                         self.getOffRenderNodesButtonClicked)
         
         # Connect buttons on the Job List tab with their actions
-        QObject.connect (self.refreshButton, SIGNAL("clicked()"), 
-                         self.updateJobTable)
-        QObject.connect (self.jobTable, SIGNAL ("cellClicked(int,int)"), 
-                         self.jobCellClickedHandler)
+        QObject.connect(self.refreshButton, SIGNAL("clicked()"), 
+                        self.updateJobTable)
+        QObject.connect(self.jobTable, SIGNAL ("cellClicked(int,int)"), 
+                        self.jobCellClickedHandler)
         QObject.connect (self.killJobButton, SIGNAL ("clicked()"), 
-                         self.killJobButtonHandler)
-        QObject.connect (self.killTaskButton, SIGNAL ("clicked()"), 
-                         self.killTaskButtonHandler)
-        QObject.connect (self.advancedSearchButton, SIGNAL ("clicked()"),
-                         self.advancedSearchButtonClicked)
-        QObject.connect (self.resurrectTaskButton, SIGNAL("clicked()"),
-                         self.resurrectTaskButtonHandler)
-        QObject.connect (self.prioritySetButton, SIGNAL("clicked()"),
-                         self.setPriorityButtonHandler)
+                        self.killJobButtonHandler)
+        QObject.connect(self.killTaskButton, SIGNAL ("clicked()"), 
+                        self.killTaskButtonHandler)
+        QObject.connect(self.advancedSearchButton, SIGNAL ("clicked()"),
+                        self.advancedSearchButtonClicked)
+        QObject.connect(self.resurrectTaskButton, SIGNAL("clicked()"),
+                        self.resurrectTaskButtonHandler)
+        QObject.connect(self.prioritySetButton, SIGNAL("clicked()"),
+                        self.setPriorityButtonHandler)
+        QObject.connect(self.taskIDLineEdit, SIGNAL("returnPressed()"), 
+                        self.searchByTaskID)
         
         self.jobTable.setColumnWidth(0, 60)     # job id
         self.jobTable.setColumnWidth(1, 60)     # priority
@@ -421,6 +423,38 @@ class FarmView( QMainWindow, Ui_FarmView ):
                     aboutBox(self, "Error", "Task couldn't be killed for some "
                              "reason.")
 
+    def searchByTaskID(self):
+        """Given a task id, finds the job, selects it in the job table, and
+        displays the tasks for that job, including the one searched for. Does
+        nothing if task id doesn't exist."""
+        
+        # retrieve job id by task id in the database
+        task_id = str(self.taskIDLineEdit.text())
+        if task_id:
+            with transaction() as t:
+                query = ("select job_id from Hydra_rendertask where id = %s" 
+                         % task_id)
+                t.cur.execute(query)
+                job_id = t.cur.fetchall()
+                
+                if not job_id:
+                    aboutBox(self, "Error", "The given task ID does not "
+                             "correspond to an existing job.")
+                    return
+                
+                # find item with matching job id in the table
+                ((job_id,),) = job_id # unpack -- TODO: fix this hack?
+                [item] = self.jobTable.findItems(str(job_id), Qt.MatchExactly)
+                
+                # select the row and trigger the update for the task list
+                self.jobTable.setCurrentItem(item)
+                self.jobCellClickedHandler(item.row(), item.column())
+                [item] = self.taskTable.findItems(str(task_id), Qt.MatchExactly)
+                self.taskTable.setCurrentItem(item)
+        else:
+            aboutBox(self, "Error", "No task ID was entered.")
+            return
+        
     def doFetch( self ):
         """Aggregate method for updating all of the widgets."""
         
