@@ -1,7 +1,7 @@
 # standard
 import sys
 from exceptions import NotImplementedError
-import datetime.datetime as dt
+from datetime import datetime as dt
 import functools
 import re
 from socket import error as socketerror
@@ -34,13 +34,17 @@ class FarmView( QMainWindow, Ui_FarmView ):
         self.setupUi( self )
         
         # Column widths on the render node table
-        self.renderNodeTable.setColumnWidth(0, 30)
-        self.renderNodeTable.setColumnWidth(1, 200)
-        self.renderNodeTable.setColumnWidth(2, 70)
-        self.renderNodeTable.setColumnWidth(3, 70)
-        self.renderNodeTable.setColumnWidth(5, 100)
-        self.renderNodeTable.setColumnWidth(6, 150)
+        self.renderNodeTable.setColumnWidth(0, 30)  # check boxes
+        self.renderNodeTable.setColumnWidth(1, 200) # host
+        self.renderNodeTable.setColumnWidth(2, 70)  # status
+        self.renderNodeTable.setColumnWidth(3, 70)  # task id
+        self.renderNodeTable.setColumnWidth(5, 100) # project
+        self.renderNodeTable.setColumnWidth(6, 150) # heartbeat
 
+        # State variables for the This Node tab
+        self.lastProjectIndex = -1
+        self.thisNodeButtonsEnabled = True
+        
         # Connect buttons on the This Node tab with their actions
         QObject.connect(self.fetchButton, SIGNAL("clicked()"), self.doFetch)
         QObject.connect(self.onlineThisNodeButton, SIGNAL("clicked()"), 
@@ -60,12 +64,9 @@ class FarmView( QMainWindow, Ui_FarmView ):
         QObject.connect(self.getOffRenderNodesButton, SIGNAL("clicked()"),
                         self.getOffRenderNodesButtonClicked)
         
-        # internal variables
-        self.lastProjectIndex = -1
-        self.thisNodeButtonsEnabled = True
-
+        # Connect buttons on the Job List tab with their actions
         QObject.connect (self.refreshButton, SIGNAL("clicked()"), 
-                         self.refreshHandler)
+                         self.updateJobTable)
         QObject.connect (self.jobTable, SIGNAL ("cellClicked(int,int)"), 
                          self.jobCellClickedHandler)
         QObject.connect (self.killJobButton, SIGNAL ("clicked()"), 
@@ -79,7 +80,12 @@ class FarmView( QMainWindow, Ui_FarmView ):
         QObject.connect (self.prioritySetButton, SIGNAL("clicked()"),
                          self.setPriorityButtonHandler)
         
-        # other stuff for convenience
+        self.jobTable.setColumnWidth(0, 60)     # job id
+        self.jobTable.setColumnWidth(1, 60)     # priority
+        self.jobTable.setColumnWidth(2, 700)    # job name
+        self.jobTable.sortItems(0, order = Qt.DescendingOrder)
+        
+        # partial applications for convenience
         self.sqlErrorBox = (
             functools.partial(aboutBox, 
                         parent=self, 
@@ -365,7 +371,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             id = int(self.jobTable.item(row, 0).text()) # @ReservedAssignment
             prioritizeJob (id, self.prioritySpinBox.value ())
             self.jobCellClickedHandler(item.row(), 0)
-            self.refreshHandler ([])
+            self.updateJobTable ([])
             
     def resurrectTaskButtonHandler(self):
         taskItem = self.taskTable.currentItem()
@@ -422,7 +428,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.updateThisNodeInfo()
             self.updateRenderNodeTable()
             self.updateRenderTaskGrid()
-            self.refreshHandler()
+            self.updateJobTable()
             self.updateStatusBar()
         except sqlerror as err:
             logger.debug(str(err))
@@ -538,7 +544,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
         
         self.renderNodeTable.setSortingEnabled(True)
                 
-    def refreshHandler (self, *args):
+    def updateJobTable (self, *args):
+        self.jobTable.setSortingEnabled(False)
         try:
             jobs = Hydra_job.fetch ()
             self.jobTable.setRowCount (len (jobs))
@@ -553,6 +560,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
         except sqlerror as err:
             logger.debug(str(err))
             aboutBox(self, "SQL error", str(err))
+        self.jobTable.setSortingEnabled(True)
     
     def updateRenderTaskGrid(self):
         
@@ -568,7 +576,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
             labelFactory( 'exitCode' )]
         setup( Hydra_rendertask.fetch (order = "order by id desc", 
                                        limit = self.limitSpinBox.value ()), 
-                                       columns, self.jobsGrid)
+                                       columns, self.taskGrid)
 
     def updateStatusBar(self):
         
