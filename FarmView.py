@@ -84,7 +84,6 @@ class FarmView( QMainWindow, Ui_FarmView ):
         
         self.jobTable.setColumnWidth(0, 60)     # job id
         self.jobTable.setColumnWidth(1, 60)     # priority
-        self.jobTable.setColumnWidth(2, 700)    # job name
         self.jobTable.sortItems(0, order = Qt.DescendingOrder)
         
         # partial applications for convenience
@@ -403,13 +402,17 @@ class FarmView( QMainWindow, Ui_FarmView ):
         item = self.taskTable.currentItem ()
         if item and item.isSelected ():
             row = self.taskTable.currentRow ()
-            id = int (self.taskTable.item (row, 0).text ()) #@ReservedAssignment
+            task_id = int(self.taskTable.item(row, 0).text())
             choice = yesNoBox(self, "Confirm", "Really kill task {:d}?"
-                              .format(id))
+                              .format(task_id))
             if choice == QMessageBox.Yes:
                 killed = None
                 try:
-                    killed = killTask(id)
+                    killed = killTask(task_id)
+                    if not killed:
+                        # TODO: make a better error message
+                        aboutBox(self, "Error", "Task couldn't be killed for "
+                                 "some reason.")
                 except socketerror as err:
                     logger.debug(str(err))
                     aboutBox(self, "Error", "Task couldn't be killed because "
@@ -418,11 +421,7 @@ class FarmView( QMainWindow, Ui_FarmView ):
                 except sqlerror as err:
                     logger.debug(str(err))
                     aboutBox(self, "SQL Error", str(err))
-                if not killed:
-                    # TODO: make a better error message
-                    aboutBox(self, "Error", "Task couldn't be killed for some "
-                             "reason.")
-
+                
     def searchByTaskID(self):
         """Given a task id, finds the job, selects it in the job table, and
         displays the tasks for that job, including the one searched for. Does
@@ -432,9 +431,8 @@ class FarmView( QMainWindow, Ui_FarmView ):
         task_id = str(self.taskIDLineEdit.text())
         if task_id:
             with transaction() as t:
-                query = ("select job_id from Hydra_rendertask where id = %s" 
-                         % task_id)
-                t.cur.execute(query)
+                query = "select job_id from Hydra_rendertask where id = %s"
+                t.cur.execute(query % task_id)
                 job_id = t.cur.fetchall()
                 
                 if not job_id:

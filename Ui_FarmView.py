@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_FarmView.ui'
 #
-# Created: Tue Apr 09 16:13:11 2013
+# Created: Wed Apr 10 22:52:07 2013
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -117,6 +117,9 @@ class Ui_FarmView(object):
         self.renderNodeTable = QtGui.QTableWidget(self.renderNodesTab)
         self.renderNodeTable.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.renderNodeTable.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.renderNodeTable.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.renderNodeTable.setVerticalScrollMode(QtGui.QAbstractItemView.ScrollPerItem)
+        self.renderNodeTable.setCornerButtonEnabled(False)
         self.renderNodeTable.setObjectName(_fromUtf8("renderNodeTable"))
         self.renderNodeTable.setColumnCount(7)
         self.renderNodeTable.setRowCount(0)
@@ -209,6 +212,7 @@ class Ui_FarmView(object):
         self.jobTable.setHorizontalHeaderItem(1, item)
         item = QtGui.QTableWidgetItem()
         self.jobTable.setHorizontalHeaderItem(2, item)
+        self.jobTable.horizontalHeader().setStretchLastSection(True)
         self.jobTable.verticalHeader().setVisible(False)
         self.gridLayout_jobListJobs.addWidget(self.jobTable, 1, 0, 1, 5)
         self.layoutWidget_3 = QtGui.QWidget(self.splitter_jobList)
@@ -279,7 +283,7 @@ class Ui_FarmView(object):
         self.scrollArea_recentTasks.setWidgetResizable(True)
         self.scrollArea_recentTasks.setObjectName(_fromUtf8("scrollArea_recentTasks"))
         self.scrollAreaWidgetContents_recentTasks = QtGui.QWidget()
-        self.scrollAreaWidgetContents_recentTasks.setGeometry(QtCore.QRect(0, 0, 1242, 395))
+        self.scrollAreaWidgetContents_recentTasks.setGeometry(QtCore.QRect(0, 0, 1242, 421))
         self.scrollAreaWidgetContents_recentTasks.setObjectName(_fromUtf8("scrollAreaWidgetContents_recentTasks"))
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents_recentTasks)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -298,10 +302,6 @@ class Ui_FarmView(object):
         self.tabWidget.addTab(self.jobsTab, _fromUtf8(""))
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
         FarmView.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(FarmView)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1294, 26))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
-        FarmView.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(FarmView)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         FarmView.setStatusBar(self.statusbar)
