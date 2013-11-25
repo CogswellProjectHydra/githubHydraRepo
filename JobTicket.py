@@ -50,7 +50,7 @@ class MayaTicket( JobTicket ):
         return self.sceneFile
 
     def renderCommand(self, start, end):
-        return [r'c:\program files\autodesk\maya2011\bin\render.exe',
+        return [self.executable,
                 '-mr:v', '5',
                 '-s', str( start ),
                 '-e', str( end ),
@@ -75,6 +75,16 @@ class MayaTicket( JobTicket ):
                                      createTime = job.createTime)
             with transaction() as t:
                 task.insert(transaction=t)
+
+# these classes are selected by the submitter GUI
+class Maya2011 (MayaTicket):
+
+    executable = r'c:\program files\autodesk\maya2011\bin\render.exe'
+
+class Maya2013 (MayaTicket):
+
+    executable = r'c:\program files\autodesk\maya2013\bin\render.exe'
+
 
 class CMDTicket(JobTicket):
     """A job ticket for shoehorning arbitrary commands into the task list. You 

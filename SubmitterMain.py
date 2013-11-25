@@ -9,7 +9,7 @@ from PyQt4.QtCore import *
 from Ui_submitter import Ui_MainWindow
 
 from LoggingSetup import logger
-from JobTicket import MayaTicket
+import JobTicket
 from MySQLSetup import transaction, Hydra_rendernode
 import Utils
 from MessageBoxes import aboutBox, yesNoBox
@@ -35,9 +35,10 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         self.startSpinBox.setValue( eval (start ) )
         self.endSpinBox.setValue( eval( end ) )
         self.populateProjectComboBox()
+        self.populateExecutableComboBox()
 
     def populateProjectComboBox(self):
-        """Clears and refreshes the contents of the projects dropdown box."""
+        """Populates the projects dropdown box."""
 
         # get current list of projects from the database
         tuples = None
@@ -60,6 +61,30 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
             flags=Qt.MatchExactly|Qt.MatchCaseSensitive)
         self.projectComboBox.setCurrentIndex(idx)
             
+    def populateExecutableComboBox(self):
+        """Populates the executables dropdown box."""
+
+        # get current list of executables from the database
+        tuples = None
+        with transaction() as t:
+            t.cur.execute("select * from Hydra_executable")
+            tuples = t.cur.fetchall()
+        
+        # flatten list of tuples fetched from the database
+        executables = [t for (t,) in tuples]
+        
+        # populate the dropdown
+        for program in executables:
+            self.executableComboBox.addItem(program)
+        
+##        # show default project selection
+##        [thisNode] = Hydra_rendernode.fetch(
+##            "where host = '%s'" % Utils.myHostName())
+##        idx = self.projectComboBox.findText(
+##            thisNode.project,
+##            flags=Qt.MatchExactly|Qt.MatchCaseSensitive)
+##        self.projectComboBox.setCurrentIndex(idx)
+
 # called by pressing the "submit" button in the Qt main window
     def doSubmit( self ):
         """Submits a job ticket for this scene to be split into
@@ -75,6 +100,7 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         logger.debug ("numJobs %s batchSize %s", numJobs, batchSize)
         priority = self.prioritySpinBox.value( )
         project = str(self.projectComboBox.currentText())
+        executable = str(self.executableComboBox.currentText())
         
         mayaProjectPath = str(self.projectDirLineEdit.text())
         if not os.path.exists(os.path.join (mayaProjectPath, "workspace.mel")):
@@ -94,7 +120,11 @@ be located. Please set the project path manually.""")
 "Submission aborted. Please set the Maya project path manually.")
                 return
         self.projectDirLineEdit.setText(mayaProjectPath)
-        MayaTicket(sceneFile, mayaProjectPath, startFrame, endFrame, batchSize, priority, project).submit()
+
+        # executable names a class in the JobTicket module
+        ticketClass = getattr (JobTicket, executable)
+        ticketClass(sceneFile, mayaProjectPath, startFrame, endFrame, batchSize, priority, project).submit()
+
         aboutBox(self, "Success",
 "Job submitted. Please close the submitter window.")
         
