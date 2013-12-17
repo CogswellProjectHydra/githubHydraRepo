@@ -8,7 +8,7 @@ import traceback
 import subprocess
 
 # 3rd party
-from psutil import process_iter
+from psutil import process_iter, AccessDenied
 
 # Project Hydra
 from Constants import *             # @UnusedWildImport
@@ -25,8 +25,13 @@ class RenderTCPServer(TCPServer):
     
     def __init__(self, *arglist, **kwargs):
         # check for another instance of RenderNodeMain.exe
-        nInstances = sum(1 for proc in process_iter() 
-                                if 'RenderNodeMain' in proc.name)
+        nInstances = 0
+        for proc in process_iter():
+            try:
+                if 'RenderNodeMain' in proc.name:
+                    nInstances += 1
+            except (AccessDenied):
+                pass
         if nInstances > 1:
             logger.info("Blocked RenderNodeMain from running because another"
                         " instance already exists.")
@@ -72,16 +77,19 @@ class RenderTCPServer(TCPServer):
         # otherwise, get a job that's:
         ## ready to be run and
         ## has a high enough priority level for this particular node and
-        ## is on the this node's assigned project 
-        queryString = ("""where status = '%s' and priority >= %s 
-                            and project = '%s'""" 
-                        % (READY, thisNode.minPriority, thisNode.project))
+        ## (optionally) is on this node's assigned project
+        queryString = ("where status = '%s' and priority >= %s" 
+                        % (READY, thisNode.minPriority))
+        if thisNode.restrict_to_project:
+            queryString += " and project = '%s'" % thisNode.project
+        orderString = ("order by project = '%s' desc, priority desc, id asc" %
+                       thisNode.project)
         
         with transaction() as t:
             render_tasks = Hydra_rendertask.fetch (
                                 queryString,
                                 limit=1,
-                                order="order by priority desc, id asc",
+                                order=orderString,
                                 explicitTransaction=t)
             if not render_tasks:
                 return

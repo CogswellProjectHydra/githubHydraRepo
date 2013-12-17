@@ -2,6 +2,9 @@ import MySQLdb
 import ConfigParser
 from LoggingSetup import logger
 import Utils
+import os
+import shutil
+import sys
 
 # statuses for jobs/tasks
 READY = 'R'                 # ready to be run by a render node
@@ -28,10 +31,28 @@ niceNames = {READY: 'Ready',
              STARTED: 'Started',
              }
 
+SETTINGS = "C:/Hydra/hydraSettings.cfg"
 def getDbInfo():
     # open config file
     config = ConfigParser.RawConfigParser()
-    config.read("C:/Hydra/hydraSettings.cfg")
+
+    # creat a copy if it doesn't exist
+    if not os.path.exists (SETTINGS):
+        folder = os.path.dirname (SETTINGS)
+        logger.debug ('check for folder %s' % folder)
+        if os.path.exists (folder):
+            logger.debug ('exists')
+        else:
+            logger.debug ('make %s' % folder)
+            os.mkdir (folder)
+        cfgFile = os.path.join (os.path.dirname (sys.argv[0]),
+                                os.path.basename (SETTINGS))
+        logger.debug ('copy %s' % cfgFile)
+        shutil.copyfile (cfgFile, SETTINGS)
+        
+        
+        
+    config.read(SETTINGS)
 
     # get server & db names
     host = config.get(section="database", option="host")
