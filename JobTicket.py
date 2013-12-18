@@ -85,6 +85,9 @@ class Maya2013 (MayaTicket):
 
     executable = r'c:\program files\autodesk\maya2013\bin\render.exe'
 
+class Maya2014 (MayaTicket):
+
+    executable = r'c:\program files\autodesk\maya2014\bin\render.exe'
 
 class CMDTicket(JobTicket):
     """A job ticket for shoehorning arbitrary commands into the task list. You 
