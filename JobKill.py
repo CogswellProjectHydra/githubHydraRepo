@@ -17,9 +17,13 @@ from LoggingSetup import logger
 def sendKillQuestion(renderhost, newStatus=KILLED):
     """Tries to kill the current task running on the renderhost. Returns True
     if successful, otherwise False"""
+
+    logger.debug ('kill job on %s' % renderhost)
     connection = TCPConnection(hostname=renderhost)
     answer = connection.getAnswer(
                             KillCurrentJobQuestion(newStatus))
+
+    logger.debug("child killed: %s" % answer.childKilled)
     
     if not answer.childKilled:
         logger.debug("%r tried to kill its job but failed for some reason." 
