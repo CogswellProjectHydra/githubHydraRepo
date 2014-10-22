@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'Ui_submitter.ui'
 #
-# Created: Sun Nov 24 15:31:57 2013
-#      by: PyQt4 UI code generator 4.9.4
+# Created: Tue Oct 21 17:21:39 2014
+#      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,12 +12,21 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(280, 308)
+        MainWindow.resize(304, 389)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -81,6 +90,7 @@ class Ui_MainWindow(object):
         self.priorityLabel.setObjectName(_fromUtf8("priorityLabel"))
         self.formLayout.setWidget(3, QtGui.QFormLayout.LabelRole, self.priorityLabel)
         self.prioritySpinBox = QtGui.QSpinBox(self.centralwidget)
+        self.prioritySpinBox.setMinimum(-100)
         self.prioritySpinBox.setMaximum(99999)
         self.prioritySpinBox.setProperty("value", 50)
         self.prioritySpinBox.setObjectName(_fromUtf8("prioritySpinBox"))
@@ -98,6 +108,12 @@ class Ui_MainWindow(object):
         self.executableComboBox = QtGui.QComboBox(self.centralwidget)
         self.executableComboBox.setObjectName(_fromUtf8("executableComboBox"))
         self.formLayout.setWidget(5, QtGui.QFormLayout.FieldRole, self.executableComboBox)
+        self.requirementsListWidget = QtGui.QListWidget(self.centralwidget)
+        self.requirementsListWidget.setObjectName(_fromUtf8("requirementsListWidget"))
+        self.formLayout.setWidget(6, QtGui.QFormLayout.FieldRole, self.requirementsListWidget)
+        self.label_2 = QtGui.QLabel(self.centralwidget)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.formLayout.setWidget(6, QtGui.QFormLayout.LabelRole, self.label_2)
         self.verticalLayout.addLayout(self.formLayout)
         self.submitButton = QtGui.QPushButton(self.centralwidget)
         self.submitButton.setObjectName(_fromUtf8("submitButton"))
@@ -116,17 +132,18 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.numJobsSpinBox, self.prioritySpinBox)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Submitter", None, QtGui.QApplication.UnicodeUTF8))
-        self.sceneLabel.setText(QtGui.QApplication.translate("MainWindow", "scene:", None, QtGui.QApplication.UnicodeUTF8))
-        self.sceneText.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "scene name here", None, QtGui.QApplication.UnicodeUTF8))
-        self.projectDirLabel.setText(QtGui.QApplication.translate("MainWindow", "project dir:", None, QtGui.QApplication.UnicodeUTF8))
-        self.projectDirLineEdit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "browse to set project directory", None, QtGui.QApplication.UnicodeUTF8))
-        self.browseButton.setText(QtGui.QApplication.translate("MainWindow", "Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.startFrameLabel.setText(QtGui.QApplication.translate("MainWindow", "start frame:", None, QtGui.QApplication.UnicodeUTF8))
-        self.endFrameLabel.setText(QtGui.QApplication.translate("MainWindow", "end frame:", None, QtGui.QApplication.UnicodeUTF8))
-        self.renderNodesLabel.setText(QtGui.QApplication.translate("MainWindow", "<html><head/><body><p># of render<br/>nodes to use:</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.priorityLabel.setText(QtGui.QApplication.translate("MainWindow", "priority:", None, QtGui.QApplication.UnicodeUTF8))
-        self.projectLabel.setText(QtGui.QApplication.translate("MainWindow", "Project:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("MainWindow", "Executable:", None, QtGui.QApplication.UnicodeUTF8))
-        self.submitButton.setText(QtGui.QApplication.translate("MainWindow", "Submit", None, QtGui.QApplication.UnicodeUTF8))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Submitter", None))
+        self.sceneLabel.setText(_translate("MainWindow", "scene:", None))
+        self.sceneText.setPlaceholderText(_translate("MainWindow", "scene name here", None))
+        self.projectDirLabel.setText(_translate("MainWindow", "project dir:", None))
+        self.projectDirLineEdit.setPlaceholderText(_translate("MainWindow", "browse to set project directory", None))
+        self.browseButton.setText(_translate("MainWindow", "Browse", None))
+        self.startFrameLabel.setText(_translate("MainWindow", "start frame:", None))
+        self.endFrameLabel.setText(_translate("MainWindow", "end frame:", None))
+        self.renderNodesLabel.setText(_translate("MainWindow", "<html><head/><body><p># of render<br/>nodes to use:</p></body></html>", None))
+        self.priorityLabel.setText(_translate("MainWindow", "priority:", None))
+        self.projectLabel.setText(_translate("MainWindow", "Project:", None))
+        self.label.setText(_translate("MainWindow", "Executable:", None))
+        self.label_2.setText(_translate("MainWindow", "Requirements:", None))
+        self.submitButton.setText(_translate("MainWindow", "Submit", None))
 
