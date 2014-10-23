@@ -38,8 +38,12 @@ class FarmView( QMainWindow, Ui_FarmView ):
         self.renderNodeTable.setColumnWidth(1, 200) # host
         self.renderNodeTable.setColumnWidth(2, 70)  # status
         self.renderNodeTable.setColumnWidth(3, 70)  # task id
-        self.renderNodeTable.setColumnWidth(5, 100) # project
-        self.renderNodeTable.setColumnWidth(6, 150) # heartbeat
+        self.renderNodeTable.setColumnWidth(4, 120) # project
+        self.renderNodeTable.setColumnWidth(5, 150) # restrict to project
+        self.renderNodeTable.setColumnWidth(6, 110) # minPriority
+        self.renderNodeTable.setColumnWidth(7, 200) # capabilities
+        self.renderNodeTable.setColumnWidth(8, 80)  # version
+        self.renderNodeTable.setColumnWidth(9, 110) # heartbeat
 
         # State variables for the This Node tab
         self.lastProjectIndex = -1
@@ -490,8 +494,10 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.updateTaskIDLabel(thisNode.task_id)
             self.nodeVersionLabel.setText(
                         getSoftwareVersionText(thisNode.software_version))
-            
             self.setCurrentProjectSelection(thisNode.project)
+            self.updateRestrictToProjectLabel(thisNode.restrict_to_project)
+            self.updateMinPriorityLabel(thisNode.minPriority)
+            self.updateCapabilitiesLabel(thisNode.capabilities)
             
         else:
             QMessageBox.about(self, "Notice", 
@@ -538,6 +544,15 @@ class FarmView( QMainWindow, Ui_FarmView ):
             self.taskIDLabel.setText(str(task_id))
         else:
             self.taskIDLabel.setText("None")
+
+    def updateRestrictToProjectLabel(self, restrictToProject):
+        self.restrictToProjectLabel.setText (str (restrictToProject))
+
+    def updateMinPriorityLabel (self, minPriority):
+        self.minPriorityLabel.setText (str (minPriority))
+
+    def updateCapabilitiesLabel (self, capabilities):
+        self.capabilitiesLabel.setText (capabilities)
     
     def setCurrentProjectSelection(self, project):
         """Set project selection based on node's current project setting."""
@@ -565,6 +580,9 @@ class FarmView( QMainWindow, Ui_FarmView ):
             lambda o: TableWidgetItem(str(niceNames[o.status])),
             lambda o: TableWidgetItem(str(o.task_id)),
             lambda o: TableWidgetItem(str(o.project)),
+            lambda o: TableWidgetItem(str(o.restrict_to_project)),
+            lambda o: TableWidgetItem(str(o.minPriority)),
+            lambda o: TableWidgetItem(str(o.capabilities)),
             lambda o: TableWidgetItem(
                                 getSoftwareVersionText(o.software_version)),
             lambda o: TableWidgetItem_dt(o.pulse),
