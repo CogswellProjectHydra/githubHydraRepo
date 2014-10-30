@@ -26,7 +26,10 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
                         self.doSubmit)
         QObject.connect(self.browseButton, SIGNAL("clicked()"),
                         self.setMayaProjectPath)
+        self.requirementsListWidget.setSelectionMode (QAbstractItemView.MultiSelection)
 
+        if len (sys.argv) < 2:
+            sys.argv.append ('???')
         sys.argv.extend (['1', '1', '1'])
         scene, start, end, by = sys.argv[1:5] # _TODO: proper command line args
         scene = scene.replace ('\\', '/')
@@ -36,6 +39,7 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         self.endSpinBox.setValue( eval( end ) )
         self.populateProjectComboBox()
         self.populateExecutableComboBox()
+        self.populateRequirementsListWidget()
 
     def populateProjectComboBox(self):
         """Populates the projects dropdown box."""
@@ -76,7 +80,22 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
         # populate the dropdown
         for program in executables:
             self.executableComboBox.addItem(program)
+
+    def populateRequirementsListWidget(self):
+        """Populates the requirements list widget."""
+
+        # get current list of capabilities from the database
+        tuples = None
+        with transaction() as t:
+            t.cur.execute("select * from Hydra_capabilities order by name")
+            tuples = t.cur.fetchall()
         
+        # flatten list of tuples fetched from the database
+        capabilities = [t for (t,) in tuples]
+        
+        # populate the dropdown
+        for item in capabilities:
+            self.requirementsListWidget.addItem(item)        
 ##        # show default project selection
 ##        [thisNode] = Hydra_rendernode.fetch(
 ##            "where host = '%s'" % Utils.myHostName())
@@ -92,6 +111,11 @@ class SubmitterWindow( QMainWindow, Ui_MainWindow ):
 
         logger.debug ('doSubmit')
 
+        reqs = sorted ([str (req.text ())
+                        for req in self.requirementsListWidget.selectedItems ()])
+        reqs_pattern = '%' + '%'.join (reqs) + '%' if reqs else '%'
+        print reqs_pattern
+        
         sceneFile = str( self.sceneText.text() ).replace ('\\', '/')
         startFrame = self.startSpinBox.value( )
         endFrame = self.endSpinBox.value( )
@@ -123,7 +147,8 @@ be located. Please set the project path manually.""")
 
         # executable names a class in the JobTicket module
         ticketClass = getattr (JobTicket, executable)
-        ticketClass(sceneFile, mayaProjectPath, startFrame, endFrame, batchSize, priority, project).submit()
+        ticketClass(sceneFile, mayaProjectPath, startFrame, endFrame, batchSize,
+                    priority, project, reqs_pattern).submit()
 
         aboutBox(self, "Success",
 "Job submitted. Please close the submitter window.")

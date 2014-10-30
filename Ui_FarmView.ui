@@ -49,7 +49,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="thisNodeTab">
        <attribute name="title">
@@ -60,8 +60,8 @@
          <rect>
           <x>10</x>
           <y>20</y>
-          <width>95</width>
-          <height>100</height>
+          <width>114</width>
+          <height>122</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_thisNodeButtons">
@@ -100,10 +100,10 @@
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
-          <x>120</x>
+          <x>150</x>
           <y>20</y>
           <width>651</width>
-          <height>87</height>
+          <height>223</height>
          </rect>
         </property>
         <layout class="QFormLayout" name="formLayout_thisNodeLabels">
@@ -166,19 +166,7 @@
            </property>
           </widget>
          </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>120</y>
-          <width>221</width>
-          <height>24</height>
-         </rect>
-        </property>
-        <layout class="QFormLayout" name="formLayout_thisNodeProject">
-         <item row="0" column="0">
+         <item row="4" column="0">
           <widget class="QLabel" name="projectLabel">
            <property name="text">
             <string>Project:</string>
@@ -188,10 +176,52 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item row="4" column="1">
           <widget class="QComboBox" name="projectComboBox">
            <property name="whatsThis">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="nodeVersionLabelLabel_2">
+           <property name="text">
+            <string>Restrict to project:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="restrictToProjectLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="nodeVersionLabelLabel_3">
+           <property name="text">
+            <string>Capabilities:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QLabel" name="capabilitiesLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="nodeVersionLabelLabel_4">
+           <property name="text">
+            <string>Min Priority:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QLabel" name="minPriorityLabel">
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>
@@ -203,6 +233,31 @@
         <string>Render Nodes</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6">
+        <item row="1" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_onOffButtons">
+          <item>
+           <widget class="QPushButton" name="onlineRenderNodesButton">
+            <property name="text">
+             <string>Online</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="offlineRenderNodesButton">
+            <property name="text">
+             <string>Offline</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="getOffRenderNodesButton">
+            <property name="text">
+             <string>Get Off!</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
         <item row="0" column="0">
          <widget class="QTableWidget" name="renderNodeTable">
           <property name="verticalScrollBarPolicy">
@@ -261,7 +316,22 @@
           </column>
           <column>
            <property name="text">
-            <string>Node Version</string>
+            <string>Restrict to Project</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Min Priority</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Capabilities</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Version</string>
            </property>
           </column>
           <column>
@@ -270,31 +340,6 @@
            </property>
           </column>
          </widget>
-        </item>
-        <item row="1" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_onOffButtons">
-          <item>
-           <widget class="QPushButton" name="onlineRenderNodesButton">
-            <property name="text">
-             <string>Online</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="offlineRenderNodesButton">
-            <property name="text">
-             <string>Offline</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="getOffRenderNodesButton">
-            <property name="text">
-             <string>Get Off!</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </item>
        </layout>
       </widget>
@@ -582,8 +627,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1242</width>
-             <height>421</height>
+             <width>1234</width>
+             <height>392</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">

@@ -64,7 +64,10 @@ class RenderTCPServer(TCPServer):
         
         logger.info("""Host: %r
          Status: %r
-         Project: %r""", thisNode.host, thisNode.status, thisNode.project)
+         Project: %r
+         Capabilities %r""",
+                    thisNode.host, thisNode.status, thisNode.project,
+                    thisNode.capabilities)
         
         # If this node is not idle, don't try to find a new job
         if thisNode.status != IDLE:
@@ -76,6 +79,7 @@ class RenderTCPServer(TCPServer):
         ## (optionally) is on this node's assigned project
         queryString = ("where status = '%s' and priority >= %s" 
                         % (READY, thisNode.minPriority))
+        queryString += " and '%s' like requirements" % thisNode.capabilities
         if thisNode.restrict_to_project:
             queryString += " and project = '%s'" % thisNode.project
         orderString = ("order by project = '%s' desc, priority desc, id asc" %

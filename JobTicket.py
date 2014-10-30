@@ -10,9 +10,10 @@ from MySQLSetup import Hydra_job, Hydra_rendertask, READY, transaction
 class JobTicket:
     """A generic job ticket"""
 
-    def __init__(self, project, priority):
+    def __init__(self, project, priority, capability_pattern):
         self.project = project
         self.priority = priority
+        self.capability_pattern = capability_pattern
     
     def submit( self ):
         job = self.createJob()
@@ -22,6 +23,7 @@ class JobTicket:
         job = Hydra_job( pickledTicket = pickle.dumps( self ), 
                          priority = self.priority, 
                          project = self.project,
+                         requirements = self.capability_pattern,
                          createTime = datetime.now())
         with transaction() as t:
             job.insert(transaction=t)
@@ -37,9 +39,9 @@ class JobTicket:
 class MayaTicket( JobTicket ):
 
     def __init__( self, sceneFile, mayaProjectPath, startFrame, endFrame, 
-                  batchSize, priority, project ):
+                  batchSize, priority, project, capability_pattern ):
         print ('initializing', self)
-        JobTicket.__init__(self, project, priority)
+        JobTicket.__init__(self, project, priority, capability_pattern)
         self.sceneFile = sceneFile
         self.mayaProjectPath = mayaProjectPath
         self.startFrame = startFrame
@@ -72,7 +74,9 @@ class MayaTicket( JobTicket ):
                                      job_id = job.id, 
                                      priority = self.priority, 
                                      project = self.project,
-                                     createTime = job.createTime)
+                                     createTime = job.createTime,
+                                     requirements = job.requirements,
+                                     )
             with transaction() as t:
                 task.insert(transaction=t)
 
