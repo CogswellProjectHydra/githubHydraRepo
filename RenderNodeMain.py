@@ -7,9 +7,6 @@ import datetime
 import traceback
 import subprocess
 
-# 3rd party
-from psutil import process_iter, AccessDenied
-
 # Project Hydra
 from Constants import *             # @UnusedWildImport
 from Servers import TCPServer
@@ -25,16 +22,15 @@ class RenderTCPServer(TCPServer):
     
     def __init__(self, *arglist, **kwargs):
         # check for another instance of RenderNodeMain.exe
-        nInstances = 0
-        for proc in process_iter():
-            try:
-                if 'RenderNodeMain' in proc.name:
-                    nInstances += 1
-            except (AccessDenied):
-                pass
+        nInstances = len (filter (lambda line: 'RenderNodeMain' in line,
+                                  subprocess.check_output ('tasklist').split('\n')))
+        logger.info ("%d RenderNodeMain instances running." % nInstances)
         if nInstances > 1:
             logger.info("Blocked RenderNodeMain from running because another"
                         " instance already exists.")
+            sys.exit(1)
+        if nInstances == 0 and not sys.argv[0].endswith('.py'):
+            logger.error("Can't find running RenderNodeMain.")
             sys.exit(1)
         
         TCPServer.__init__(self, *arglist, **kwargs) 
