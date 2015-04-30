@@ -82,7 +82,7 @@ class RenderTCPServer(TCPServer):
         queryString += " and '%s' like requirements" % thisNode.capabilities
         if thisNode.restrict_to_project:
             queryString += " and project = '%s'" % thisNode.project
-        orderString = ("order by project = '%s' desc, priority desc, id asc" %
+        orderString = ("order by project = '%s' desc, priority desc, length(requirements) desc, id asc" %
                        thisNode.project)
         
         with transaction() as t:
